@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { assets } from "../assets/assets";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useLocation } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
-import { InlineIcon } from "@iconify/react";
+import { Icon } from "@iconify/react";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
@@ -14,6 +14,8 @@ const Navbar = () => {
     setToken,
     setCartItems,
   } = useContext(ShopContext);
+
+  const currentPath = useLocation().pathname;
 
   const logout = () => {
     navigate("/login");
@@ -61,16 +63,18 @@ const Navbar = () => {
       </ul>
 
       <div className="flex items-center gap-6">
-        <InlineIcon
+        <Icon
           onClick={() => setShowSearch((prev) => (prev = !prev))}
           icon="si:search-line"
           height={28}
-          className="text-gray-800"
+          className={
+            currentPath === "/collection" ? "block text-gray-800" : "hidden"
+          }
           cursor="pointer"
         />
 
         <div className="group relative">
-          <InlineIcon
+          <Icon
             onClick={() => (token ? null : navigate("/login"))}
             icon="solar:user-outline"
             height={28}
@@ -97,7 +101,7 @@ const Navbar = () => {
         </div>
 
         <Link to="/cart" className="relative">
-          <InlineIcon
+          <Icon
             icon="solar:cart-large-4-outline"
             height={30}
             className="text-gray-800"
@@ -126,7 +130,7 @@ const Navbar = () => {
             onClick={() => setVisible(false)}
             className="flex cursor-pointer items-center gap-2 p-3"
           >
-            <InlineIcon icon="solar:alt-arrow-left-outline" height={22} />
+            <Icon icon="solar:alt-arrow-left-outline" height={22} />
 
             <p>Back</p>
           </div>
