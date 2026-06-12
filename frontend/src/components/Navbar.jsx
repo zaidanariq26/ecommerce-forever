@@ -45,10 +45,12 @@ const Navbar = () => {
 
   return (
     <div className="flex items-center justify-between border-b border-gray-300 py-5 font-medium">
+      {/* Logo */}
       <Link to="/">
         <img src={assets.logo} className="w-28 sm:w-36" alt="" />
       </Link>
 
+      {/* Nav Link */}
       <ul className="hidden gap-5 text-sm text-gray-700 md:flex">
         {navLinks.map((navLink, index) => (
           <NavLink
@@ -62,13 +64,15 @@ const Navbar = () => {
         ))}
       </ul>
 
-      <div className="flex items-center gap-6">
+      {/* Nav Actions */}
+      <div className="xs:gap-6 flex items-center gap-4">
         <Icon
           onClick={() => setShowSearch((prev) => (prev = !prev))}
           icon="si:search-line"
-          height={28}
           className={
-            currentPath === "/collection" ? "block text-gray-800" : "hidden"
+            currentPath === "/collection"
+              ? "xs:text-[28px] block text-2xl text-gray-800"
+              : "hidden"
           }
           cursor="pointer"
         />
@@ -77,8 +81,7 @@ const Navbar = () => {
           <Icon
             onClick={() => (token ? null : navigate("/login"))}
             icon="solar:user-outline"
-            height={28}
-            className="text-gray-800"
+            className="xs:text-[28px] block text-2xl text-gray-800"
             cursor="pointer"
           />
           {/* Dropdown Menu */}
@@ -103,19 +106,17 @@ const Navbar = () => {
         <Link to="/cart" className="relative">
           <Icon
             icon="solar:cart-large-4-outline"
-            height={30}
-            className="text-gray-800"
+            className="xs:text-[28px] block text-2xl text-gray-800"
           />
-          <p className="absolute -top-1 -right-1.25 aspect-square w-4 rounded-full bg-black text-center text-[8px] leading-4 text-white">
+          <p className="xs:w-4 absolute -top-1 -right-1.25 aspect-square w-4 rounded-full bg-black text-center text-[8px] leading-4 text-white">
             {getCartCount()}
           </p>
         </Link>
 
-        <img
-          src={assets.menu_icon}
+        <Icon
           onClick={() => setVisible(true)}
-          className="w-5 cursor-pointer md:hidden"
-          alt=""
+          icon="solar:hamburger-menu-outline"
+          className="xs:text-[28px] cursor-pointer text-2xl text-gray-800 md:hidden"
         />
       </div>
 
