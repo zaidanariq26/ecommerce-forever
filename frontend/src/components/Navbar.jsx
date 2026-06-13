@@ -3,6 +3,7 @@ import { assets } from "../assets/assets";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { Icon } from "@iconify/react";
+import { navLinks } from "../constant";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
@@ -23,13 +24,6 @@ const Navbar = () => {
     setToken("");
     setCartItems({});
   };
-
-  const navLinks = [
-    { name: "HOME", path: "/" },
-    { name: "COLLECTION", path: "/collection" },
-    { name: "ABOUT", path: "/about" },
-    { name: "CONTACT", path: "/contact" },
-  ];
 
   useEffect(() => {
     if (visible) {
@@ -58,7 +52,7 @@ const Navbar = () => {
             to={navLink.path}
             className="flex flex-col items-center gap-1"
           >
-            <p>{navLink.name}</p>
+            <p>{navLink.name.toUpperCase()}</p>
             <hr className="hidden h-[1.5px] w-2/4 border-none bg-gray-700" />
           </NavLink>
         ))}

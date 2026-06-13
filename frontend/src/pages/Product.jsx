@@ -107,17 +107,15 @@ const Product = () => {
         </div>
         <div className="flex flex-col gap-4 border border-gray-300 p-6 text-sm text-gray-500">
           <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Illum
-            maiores quidem recusandae iure sint quaerat velit non unde adipisci
-            quam? Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure
-            officia error quisquam fugit temporibus, adipisci hic? Harum modi at
-            unde fuga aliquam qui iure odit, quaerat officiis minus amet
-            incidunt?
+            Designed for everyday wear, this piece brings together comfort,
+            versatility, and a clean modern look. Pair it with your favorite
+            wardrobe staples for casual days, weekend plans, or easy layered
+            outfits.
           </p>
           <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Illum
-            maiores quidem recusandae iure sint quaerat velit non unde adipisci
-            quam?
+            Please check the available sizes before adding to cart. Product
+            colors may vary slightly depending on your screen, but every order
+            is packed with care and ready for daily rotation.
           </p>
         </div>
       </div>

@@ -22,12 +22,13 @@ const Contact = () => {
           <p className="text-gray-500">
             Tel: (324) 333-324 <br /> Email: admin@forever.com
           </p>
-          <p className="tegray500 text-xl font-semibold">Careers at Forever</p>
-          <p className="text-gray-500">
-            Learn more about our teams and jop openings.
+          <p className="text-xl font-semibold text-gray-600">Customer Care</p>
+          <p className="max-w-md text-center text-gray-500">
+            Need help with sizing, delivery, returns, or your order? Send us a
+            message and we will help you shop with confidence.
           </p>
           <button className="border border-black px-8 py-4 text-sm transition-all duration-500 hover:bg-black hover:text-white">
-            Explore Jobs
+            Contact Support
           </button>
         </div>
       </div>

@@ -28,3 +28,9 @@ a.active hr {
 @theme {
   --breakpoint-xs: 30rem;
 }
+
+select,
+input,
+textarea {
+  @apply outline-none;
+}

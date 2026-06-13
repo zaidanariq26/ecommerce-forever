@@ -15,22 +15,21 @@ const About = () => {
         />
         <div className="flex flex-col justify-center gap-6 text-gray-600 md:w-2/4">
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores
-            pariatur recusandae itaque sunt voluptatem corrupti minima molestias
-            voluptates voluptas sit, totam veniam! Repellendus aliquid dicta
-            nisi rem esse aperiam perspiciatis! Lorem ipsum dolor sit amet
-            consectetur adipisicing elit. Aperiam tempore atque ut commodi,
-            doloremque ex illo. Consectetur distinctio debitis ducimus?
+            Forever is built for everyday style that feels effortless, polished,
+            and easy to wear. We curate wardrobe essentials for men, women, and
+            kids with a focus on clean silhouettes, comfortable fabrics, and
+            pieces that can move with your routine.
           </p>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis
-            exercitationem ipsam vero molestias atque consectetur. Corrupti
-            commodi mollitia magnam adipisci.
+            From relaxed basics to standout seasonal picks, our collection is
+            designed to help you build outfits with confidence. We keep the
+            shopping experience simple, the product details clear, and the
+            checkout flow smooth from cart to doorstep.
           </p>
           <b className="text-gray-800">Our Mission</b>
           <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Mollitia
-            modi et nisi at laboriosam enim suscipit eum sapiente aut. Commodi!
+            Our mission is to make dependable fashion more accessible: styles
+            that look good, feel comfortable, and fit naturally into real life.
           </p>
         </div>
       </div>
@@ -43,22 +42,22 @@ const About = () => {
         <div className="flex flex-col gap-5 px-10 py-8 sm:py-20 md:px-16">
           <b>Quality Assurance: </b>
           <p className="text-gray-600">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit id,
-            doloribus maxime iure sint minima.
+            Every product is selected with attention to fabric, fit, and finish
+            so your order feels as good in person as it looks online.
           </p>
         </div>
         <div className="flex flex-col gap-5 px-10 py-8 sm:py-20 md:px-16">
           <b>Convenience: </b>
           <p className="text-gray-600">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit id,
-            doloribus maxime iure sint minima.
+            Browse by category, compare styles, choose your size, and complete
+            checkout with a flow designed to stay quick and simple.
           </p>
         </div>
         <div className="flex flex-col gap-5 px-10 py-8 sm:py-20 md:px-16">
           <b>Exeptional Customer Service: </b>
           <p className="text-gray-600">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit id,
-            doloribus maxime iure sint minima.
+            We keep support friendly and responsive, from order questions to
+            returns, exchanges, and delivery updates.
           </p>
         </div>
       </div>
