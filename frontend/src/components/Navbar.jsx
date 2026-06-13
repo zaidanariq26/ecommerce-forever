@@ -138,7 +138,7 @@ const Navbar = () => {
                 onClick={() => setVisible(false)}
                 to={navLink.path}
               >
-                {navLink.name}
+                {navLink.name.toUpperCase()}
               </NavLink>
             ))}
           </div>

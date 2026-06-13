@@ -42,7 +42,7 @@ const Orders = () => {
 
   return (
     <div className="pt-16">
-      <div className="text-2xl">
+      <div className="mb-3">
         <Title text1={"MY"} text2={"ORDERS"} />
       </div>
 

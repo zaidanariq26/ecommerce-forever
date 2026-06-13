@@ -111,7 +111,7 @@ const Collection = () => {
   return (
     <div className="flex flex-col gap-1 pt-10 sm:flex-row sm:gap-10">
       {/* Filter Options */}
-      <div className="hidden min-w-60 min-[864px]:block">
+      <div className="hidden min-w-60 min-[964px]:block">
         <p className="my-2 flex items-center gap-2 text-xl">FILTERS</p>
         {/* Category Filter */}
         {filterItems.map(({ key, label, options, onChange }) => (
@@ -142,12 +142,12 @@ const Collection = () => {
 
       {/* Right */}
       <div className="flex-1">
-        <div className="mb-4 flex justify-between text-base sm:text-2xl">
+        <div className="mb-4 flex justify-between">
           <Title text1={"ALL"} text2={"COLLECTIONS"} />
           {/* Product Sort */}
           <select
             onChange={(e) => setSortType(e.target.value)}
-            className="hidden border-2 border-gray-300 px-2 text-sm min-[864px]:block"
+            className="hidden border-2 border-gray-300 px-2 text-sm min-[964px]:block"
             name=""
             id=""
           >
@@ -160,7 +160,7 @@ const Collection = () => {
             onClick={() => setFilterOpen(true)}
             type="button"
             aria-label="Open filters"
-            className="inline cursor-pointer border border-gray-400 p-2 hover:bg-gray-200 min-[864px]:hidden"
+            className="flex size-10 cursor-pointer items-center justify-center border border-gray-400 hover:bg-gray-200 min-[964px]:hidden"
           >
             <Icon
               icon="solar:filter-outline"
