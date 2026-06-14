@@ -41,7 +41,7 @@ const Orders = () => {
   }, [token]);
 
   return (
-    <div className="pt-16">
+    <div className="min-h-screen pt-14">
       <div className="mb-3">
         <Title text1={"MY"} text2={"ORDERS"} />
       </div>
@@ -52,25 +52,27 @@ const Orders = () => {
             className="flex flex-col gap-4 border-gray-300 py-4 text-gray-700 first:border-t last:border-b md:flex-row md:items-center md:justify-between"
             key={index}
           >
-            <div className="flex items-start gap-6 text-sm">
+            <div className="flex items-start gap-6">
               <img className="w-16 sm:w-20" src={item.image[0]} alt="" />
               <div>
-                <p className="font-medium sm:text-base">{item.name}</p>
+                <p className="font-medium">{item.name}</p>
                 <div className="mt-1 flex items-center gap-3 text-base text-gray-700">
-                  <p className="text-lg">
+                  <p className="text-sm sm:text-base">
                     {currency}
                     {item.price}
                   </p>
-                  <p>Quantity: {item.quantity}</p>
-                  <p>Size: {item.size}</p>
+                  <p className="text-sm sm:text-base">
+                    Quantity: {item.quantity}
+                  </p>
+                  <p className="text-sm sm:text-base">Size: {item.size}</p>
                 </div>
-                <p className="mt-1">
+                <p className="mt-1 text-sm sm:text-base">
                   Date:{" "}
                   <span className="text-gray-400">
                     {new Date(item.date).toDateString()}
                   </span>
                 </p>
-                <p className="mt-1">
+                <p className="mt-1 text-sm sm:text-base">
                   Payment:{" "}
                   <span className="text-gray-400">{item.paymentMethod}</span>
                 </p>
