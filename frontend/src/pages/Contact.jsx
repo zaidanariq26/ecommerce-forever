@@ -27,7 +27,7 @@ const Contact = () => {
             Need help with sizing, delivery, returns, or your order? Send us a
             message and we will help you shop with confidence.
           </p>
-          <button className="border border-black px-8 py-4 text-sm transition-all duration-500 hover:bg-black hover:text-white">
+          <button className="border border-black px-8 py-4 text-sm transition-all duration-500 hover:bg-gray-900 hover:text-white">
             Contact Support
           </button>
         </div>

@@ -287,9 +287,9 @@ const PlaceOrder = () => {
           <div className="mt-8 w-full text-end">
             <button
               type="submit"
-              className="cursor-pointer bg-black px-16 py-3 text-sm text-white hover:bg-gray-800"
+              className="cursor-pointer bg-gray-900 px-16 py-3 text-sm text-white hover:bg-gray-800"
             >
-              PLACE ORDER
+              Place Order
             </button>
           </div>
         </div>

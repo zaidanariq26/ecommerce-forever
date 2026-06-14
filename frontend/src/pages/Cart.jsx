@@ -128,9 +128,9 @@ const Cart = () => {
           <div className="w-full text-end">
             <button
               onClick={() => navigate("/place-order")}
-              className="my-8 cursor-pointer bg-black px-8 py-3 text-sm text-white hover:bg-gray-800"
+              className="my-8 cursor-pointer bg-gray-900 px-8 py-3 text-sm text-white hover:bg-gray-800"
             >
-              PROCEED TO CHECKOUT
+              Proceed To Checkout
             </button>
           </div>
         </div>

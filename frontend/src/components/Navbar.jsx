@@ -102,7 +102,7 @@ const Navbar = () => {
             icon="solar:cart-large-4-outline"
             className="xs:text-[28px] block text-2xl text-gray-800"
           />
-          <p className="xs:w-4 absolute -top-1 -right-1.25 aspect-square w-4 rounded-full bg-black text-center text-[8px] leading-4 text-white">
+          <p className="xs:w-4 absolute -top-1 -right-1.25 aspect-square w-4 rounded-full bg-gray-900 text-center text-[8px] leading-4 text-white">
             {getCartCount()}
           </p>
         </Link>

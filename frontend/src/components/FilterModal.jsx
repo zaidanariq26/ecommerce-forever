@@ -139,9 +139,9 @@ const FilterModal = ({
           {/* Apply Button */}
           <button
             onClick={handleApply}
-            className="w-full cursor-pointer bg-black py-3 text-sm text-white hover:bg-gray-800"
+            className="w-full cursor-pointer bg-gray-900 py-3 text-sm text-white hover:bg-gray-800"
           >
-            APPLY
+            Apply
           </button>
         </div>
       </div>

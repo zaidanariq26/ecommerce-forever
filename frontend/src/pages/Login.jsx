@@ -108,7 +108,7 @@ const Login = () => {
           </p>
         )}
       </div>
-      <button className="mt-4 cursor-pointer bg-black px-8 py-2 font-light text-white hover:bg-gray-800">
+      <button className="mt-4 cursor-pointer bg-gray-900 px-8 py-2 font-light text-white hover:bg-gray-800">
         {currentState === "Login" ? "Sign In" : "Sign Up"}
       </button>
     </form>

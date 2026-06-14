@@ -82,9 +82,9 @@ const Product = () => {
           </div>
           <button
             onClick={() => addToCart(productData._id, size)}
-            className="cursor-pointer bg-black px-8 py-3 text-sm text-white active:bg-gray-700"
+            className="cursor-pointer bg-gray-900 px-8 py-3 text-sm text-white active:bg-gray-700"
           >
-            ADD TO CART
+            Add To Cart
           </button>
           <hr className="mt-8 sm:w-4/5" />
           <div className="mt-5 flex flex-col gap-1 text-sm text-gray-500">
