@@ -1,4 +1,3 @@
-// backend/seeder.js
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
@@ -29,10 +28,10 @@ const seedDB = async () => {
 			const uploadedImages = await Promise.all(
 				image.map(async (localPath) => {
 					const result = await cloudinary.uploader.upload(localPath, {
-						folder: 'e-commerce/products',
+						folder: 'e-commerce/products'
 					});
 					return result.secure_url;
-				}),
+				})
 			);
 
 			seededProducts.push({ ...rest, image: uploadedImages });

@@ -1,6 +1,3 @@
-// backend/database/cleanup.js
-// ⚠️  This will permanently delete ALL products from MongoDB AND Cloudinary
-
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';

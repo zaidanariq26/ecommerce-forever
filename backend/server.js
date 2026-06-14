@@ -1,6 +1,7 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import 'dotenv/config';
+import cookieParser from 'cookie-parser';
 import connectDB from './config/mongodb.js';
 import connectCloudinary from './config/cloudinary.js';
 import userRouter from './routes/userRoute.js';
@@ -8,17 +9,24 @@ import productRouter from './routes/productRoute.js';
 import cartRouter from './routes/cartRoute.js';
 import orderRouter from './routes/orderRoute.js';
 
-// App Config
 const app = express();
-const port = process.env.port || 4000;
+const port = process.env.PORT || 4000;
+
+// Connection
 connectDB();
 connectCloudinary();
 
-// middlewares
+// Middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
+app.use(
+	cors({
+		origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+		credentials: true
+	})
+);
 
-// api endpoints
+// API endpoints
 app.use('/api/user', userRouter);
 app.use('/api/product', productRouter);
 app.use('/api/cart', cartRouter);
