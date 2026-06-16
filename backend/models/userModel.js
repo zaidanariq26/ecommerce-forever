@@ -50,7 +50,9 @@ const userSchema = new mongoose.Schema(
 		cartData: {
 			type: Object,
 			default: {}
-		}
+		},
+		verifyToken: { type: String },
+		verifyTokenExpiry: { type: Date }
 	},
 	{
 		minimize: false,

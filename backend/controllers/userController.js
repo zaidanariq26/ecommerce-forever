@@ -1,7 +1,9 @@
 import userModel from '../models/userModel.js';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import sendVerificationEmail from '../services/emailService.js';
 
 const createAccessToken = (id, role) => {
 	return jwt.sign({ id, role }, process.env.JWT_ACCESS_SECRET, {
@@ -15,8 +17,28 @@ const createRefreshToken = (id) => {
 	});
 };
 
+const refreshToken = async (req, res) => {
+	try {
+		const token = req.cookies.refreshToken;
+		if (!token) {
+			return res.status(401).json({ success: false, message: 'No refresh token' });
+		}
+
+		const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+		const user = await userModel.findById(decoded.id);
+		if (!user) {
+			return res.status(401).json({ success: false, message: 'User not found' });
+		}
+
+		const accessToken = createAccessToken(user._id, user.role);
+		res.status(200).json({ success: true, accessToken });
+	} catch (error) {
+		console.log(error);
+		res.status(401).json({ success: false, message: 'Invalid refresh token' });
+	}
+};
+
 const loginUser = async (req, res) => {
-	console.log(req.email);
 	try {
 		const { email, password } = req.body;
 
@@ -39,6 +61,11 @@ const loginUser = async (req, res) => {
 		const isMatch = await bcrypt.compare(password, user.password);
 		if (!isMatch) {
 			return res.status(401).json({ success: false, message: 'Invalid credentials' });
+		}
+
+		// Check user verified
+		if (!user.isVerified) {
+			return res.status(403).json({ success: false, message: 'Please verify your email first' });
 		}
 
 		// Generate tokens
@@ -71,23 +98,105 @@ const loginUser = async (req, res) => {
 	}
 };
 
-const refreshToken = async (req, res) => {
+const registerUser = async (req, res) => {
 	try {
-		const token = req.cookies.refreshToken;
-		if (!token) {
-			return res.status(401).json({ success: false, message: 'No refresh token' });
+		const { firstName, lastName, email, password } = req.body;
+
+		// Validate input
+		if (!firstName || !email || !password) {
+			return res.status(400).json({ success: false, message: 'All fields are required' });
 		}
 
-		const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-		const user = await userModel.findById(decoded.id);
-		if (!user) {
-			return res.status(401).json({ success: false, message: 'User not found' });
+		if (!validator.isEmail(email)) {
+			return res.status(400).json({ success: false, message: 'Invalid email format' });
 		}
 
-		const accessToken = createAccessToken(user._id, user.role);
-		res.status(200).json({ success: true, accessToken });
+		if (password.length < 8) {
+			return res.status(400).json({ success: false, message: 'Password must be at least 8 characters' });
+		}
+
+		// Check email that is already registered
+		const exists = await userModel.findOne({ email });
+		if (exists) {
+			return res.status(409).json({ success: false, message: 'Email already registered' });
+		}
+
+		// Hash password
+		const hashedPassword = await bcrypt.hash(password, 10);
+
+		// Generate verification token
+		const verifyToken = crypto.randomBytes(32).toString('hex');
+		const verifyTokenExpiry = Date.now() + 15 * 60 * 1000;
+
+		// Save user data
+		await userModel.create({
+			firstName,
+			lastName,
+			email,
+			password: hashedPassword,
+			isVerified: false,
+			verifyToken,
+			verifyTokenExpiry
+		});
+
+		// Send verification email
+		await sendVerificationEmail(email, firstName, verifyToken);
+
+		res.status(201).json({
+			success: true,
+			message: 'Registration successful, please check your email to verify your account'
+		});
 	} catch (error) {
-		res.status(401).json({ success: false, message: 'Invalid refresh token' });
+		console.error(error);
+		res.status(500).json({ success: false, message: 'Internal server error' });
+	}
+};
+
+const verifyEmail = async (req, res) => {
+	try {
+		const { token } = req.query;
+
+		const user = await userModel.findOne({
+			verifyToken: token,
+			verifyTokenExpiry: { $gt: Date.now() }
+		});
+
+		if (!user) {
+			return res.status(400).json({ success: false, message: 'Invalid or expired verification link' });
+		}
+
+		// Update user
+		user.isVerified = true;
+		user.verifyToken = undefined;
+		user.verifyTokenExpiry = undefined;
+		await user.save();
+
+		// Auto-login — generate tokens
+		const accessToken = createAccessToken(user._id, user.role);
+		const refreshToken = createRefreshToken(user._id);
+
+		res.cookie('refreshToken', refreshToken, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: 'strict',
+			maxAge: 7 * 24 * 60 * 60 * 1000
+		});
+
+		res.status(200).json({
+			success: true,
+			accessToken,
+			message: 'Email verified successfully',
+			user: {
+				id: user._id,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				email: user.email,
+				role: user.role
+			}
+		});
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ success: false, message: 'Internal server error' });
 	}
 };
 
@@ -98,46 +207,6 @@ const logoutUser = (req, res) => {
 		sameSite: 'strict'
 	});
 	res.status(200).json({ success: true, message: 'Logged out successfully' });
-};
-
-//Route for user register
-const registerUser = async (req, res) => {
-	try {
-		const { email, name, password } = req.body;
-
-		//checking user already exists
-		const exists = await userModel.findOne({ email });
-		if (exists) {
-			return res.json({ success: false, message: 'User already exists' });
-		}
-
-		//validating email format & strong password
-		if (!validator.isEmail(email)) {
-			return res.json({ success: false, message: 'Please enter a valid email' });
-		}
-		if (password.length < 8) {
-			return res.json({ success: false, message: 'Please enter a strong password' });
-		}
-
-		//hashing user password
-		const salt = await bycrpt.genSalt(10);
-		const hashedPassword = await bycrpt.hash(password, salt);
-
-		const newUser = new userModel({
-			name,
-			email,
-			password: hashedPassword
-		});
-
-		const user = await newUser.save();
-
-		const token = createToken(user._id);
-
-		res.json({ success: 'true', token });
-	} catch (error) {
-		console.log(error);
-		res.json({ success: 'false', message: error.message });
-	}
 };
 
 //Route for admin login
@@ -156,4 +225,4 @@ const adminLogin = async (req, res) => {
 	}
 };
 
-export { registerUser, adminLogin, loginUser, refreshToken, logoutUser };
+export { registerUser, adminLogin, loginUser, refreshToken, logoutUser, verifyEmail };

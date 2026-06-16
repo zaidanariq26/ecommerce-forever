@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
-import path from 'path';
 import Product from '../models/productModel.js';
 import { products } from '../assets/assets.js';
 import connectCloudinary from '../config/cloudinary.js';
