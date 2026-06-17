@@ -34,3 +34,10 @@ input,
 textarea {
   @apply outline-none;
 }
+
+/* Custom Height Breakpoint */
+@custom-variant h-xs (@media (min-height: 480px));
+@custom-variant h-sm (@media (min-height: 640px));
+@custom-variant h-md (@media (min-height: 768px));
+@custom-variant h-lg (@media (min-height: 1024px));
+@custom-variant h-xl (@media (min-height: 1280px));

@@ -18,6 +18,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Verify from "./pages/Verify";
 import AuthLayout from "./pages/AuthLayout";
+import VerifyEmail from "./components/auth/VerifyEmail";
 
 const App = () => {
   return (
@@ -66,6 +67,15 @@ const App = () => {
             </AuthLayout>
           }
         />
+        <Route
+          path="/verify-email"
+          element={
+            <AuthLayout>
+              <VerifyEmail />
+            </AuthLayout>
+          }
+        />
+
         <Route path="/verify" element={<Verify />} />
       </Routes>
       <Footer />

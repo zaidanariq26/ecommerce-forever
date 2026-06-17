@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 
 const AuthLayout = ({ children }) => {
   return (
-    <div className="xs:-mt-20.5 -mt-18.25 flex min-h-screen items-center justify-center">
+    <div className="xs:min-h-[calc(100vh-82px)] flex min-h-[calc(100vh-73px)] items-center justify-center">
       {children}
     </div>
   );

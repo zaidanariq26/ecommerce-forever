@@ -5,7 +5,7 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
 
   return (
-    <form className="xs:max-w-96 flex w-full flex-col items-center gap-4 text-gray-800">
+    <form className="xs:max-w-96 not-h-xs:py-16 flex w-full flex-col items-center gap-4 text-gray-800">
       <div className="mb-2 inline-flex items-center gap-2">
         <p className="prata-regular text-2xl sm:text-3xl">Forgot Password</p>
         <hr className="h-[1.5px] w-8 border-none bg-gray-800" />
