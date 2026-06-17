@@ -126,7 +126,7 @@ const registerUser = async (req, res) => {
 
 		// Generate verification token
 		const verifyToken = crypto.randomBytes(32).toString('hex');
-		const verifyTokenExpiry = Date.now() + 15 * 60 * 1000;
+		const verifyTokenExpiry = Date.now();
 
 		// Save user data
 		await userModel.create({
@@ -160,6 +160,8 @@ const verifyEmail = async (req, res) => {
 			verifyToken: token,
 			verifyTokenExpiry: { $gt: Date.now() }
 		});
+
+		console.log(user);
 
 		if (!user) {
 			return res.status(400).json({ success: false, message: 'Invalid or expired verification link' });
@@ -209,6 +211,36 @@ const logoutUser = (req, res) => {
 	res.status(200).json({ success: true, message: 'Logged out successfully' });
 };
 
+const resendVerificationEmail = async (req, res) => {
+	try {
+		const { token } = req.query;
+
+		const user = await userModel.findOne({
+			verifyToken: token
+		});
+
+		if (!user) {
+			return res.status(400).json({ success: false, message: 'Invalid or expired verification link' });
+		}
+
+		// Generate new token
+		user.verifyToken = crypto.randomBytes(32).toString('hex');
+		user.verifyTokenExpiry = Date.now() + 15 * 60 * 1000;
+		await user.save();
+
+		// Send verification email
+		await sendVerificationEmail(user.email, user.firstName, user.verifyToken);
+
+		res.status(200).json({
+			success: true,
+			message: 'Verification email has been resent, please check your email'
+		});
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ success: false, message: 'Internal server error' });
+	}
+};
+
 //Route for admin login
 const adminLogin = async (req, res) => {
 	try {
@@ -225,4 +257,4 @@ const adminLogin = async (req, res) => {
 	}
 };
 
-export { registerUser, adminLogin, loginUser, refreshToken, logoutUser, verifyEmail };
+export { registerUser, adminLogin, loginUser, refreshToken, logoutUser, verifyEmail, resendVerificationEmail };
