@@ -1,8 +1,8 @@
-import axios from "axios";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import SubmitButton from "../ui/SubmitButton";
+import api from "../../api/axiosInstance";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -16,10 +16,12 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/user/register`,
-        { firstName, lastName, email, password },
-      );
+      const response = await api.post("/api/user/register", {
+        firstName,
+        lastName,
+        email,
+        password,
+      });
 
       if (response.data.success) {
         toast.success(response.data.message);

@@ -3,17 +3,14 @@ import VerifyLoading from "./verify-email/VerifyLoading.jsx";
 import VerifySuccess from "./verify-email/VerifySuccess.jsx";
 import VerifyError from "./verify-email/VerifyError.jsx";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import useAuthStore from "../../zustand/authStore.js";
 import { toast } from "react-toastify";
-import { ShopContext } from "../../context/ShopContext";
-import { useContext } from "react";
+import api from "../../api/axiosInstance.js";
 
 const VerifyEmail = () => {
   const [status, setStatus] = useState("loading");
   const [searchParams] = useSearchParams();
   const login = useAuthStore((state) => state.login);
-  const { backendUrl } = useContext(ShopContext);
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(10);
   const intervalRef = useRef(null);
@@ -29,13 +26,9 @@ const VerifyEmail = () => {
       }
 
       try {
-        const response = await axios.get(
-          `${backendUrl}/api/user/verify-email`,
-          {
-            params: { token },
-            withCredentials: true,
-          },
-        );
+        const response = await api.get("/api/user/verify-email", {
+          params: { token },
+        });
 
         if (response.data.success) {
           console.log(response.data);
@@ -77,6 +70,7 @@ const VerifyEmail = () => {
     return () => clearInterval(intervalRef.current);
   }, [status]);
 
+  // Handle Go to Homepage button
   const handleGoHome = () => {
     clearInterval(intervalRef.current);
     navigate("/");

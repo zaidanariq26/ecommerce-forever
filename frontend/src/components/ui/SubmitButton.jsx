@@ -7,17 +7,22 @@ const SubmitButton = ({
   isLoading = false,
   className = "",
   onClick,
+  disabled,
 }) => {
+  const isDisabled = (type === "loading" && isLoading) || disabled;
+
+  const baseStyle = "h-10 w-full";
+  const activeStyle =
+    "bg-gray-900 hover:bg-gray-800 text-gray-100 cursor-pointer";
+  const disabledStyle = " cursor-not-allowed bg-gray-800 text-gray-400";
+
+  const buttonStyle = `${baseStyle} ${isDisabled ? disabledStyle : activeStyle} ${className}`;
   return (
     <button
       type={onClick ? "button" : "submit"}
       onClick={onClick}
-      disabled={type === "loading" && isLoading}
-      className={`h-10 w-full cursor-pointer font-light text-white ${
-        type === "loading" && isLoading
-          ? "pointer-events-none cursor-not-allowed bg-gray-800"
-          : "bg-gray-900 hover:bg-gray-800"
-      } ${className}`}
+      disabled={isDisabled}
+      className={buttonStyle}
     >
       {type === "loading" && isLoading ? (
         <div className="flex items-center justify-center">
@@ -36,6 +41,7 @@ SubmitButton.propTypes = {
   isLoading: PropTypes.bool,
   className: PropTypes.string,
   onClick: PropTypes.func,
+  disabled: PropTypes.bool,
 };
 
 export default SubmitButton;

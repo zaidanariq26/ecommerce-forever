@@ -126,7 +126,7 @@ const registerUser = async (req, res) => {
 
 		// Generate verification token
 		const verifyToken = crypto.randomBytes(32).toString('hex');
-		const verifyTokenExpiry = Date.now();
+		const verifyTokenExpiry = Date.now() + 15 * 60 * 1000;
 
 		// Save user data
 		await userModel.create({
@@ -202,25 +202,28 @@ const verifyEmail = async (req, res) => {
 	}
 };
 
-const logoutUser = (req, res) => {
-	res.clearCookie('refreshToken', {
-		httpOnly: true,
-		secure: process.env.NODE_ENV === 'production',
-		sameSite: 'strict'
-	});
-	res.status(200).json({ success: true, message: 'Logged out successfully' });
-};
-
 const resendVerificationEmail = async (req, res) => {
 	try {
-		const { token } = req.query;
+		const { token } = req.body;
 
 		const user = await userModel.findOne({
 			verifyToken: token
 		});
 
 		if (!user) {
-			return res.status(400).json({ success: false, message: 'Invalid or expired verification link' });
+			return res.status(400).json({
+				success: false,
+				message: 'Invalid or expired verification token. Please register again',
+				errorType: 'TOKEN_NOT_FOUND'
+			});
+		}
+
+		if (user.isVerified) {
+			return res.status(400).json({
+				success: false,
+				message: 'Email already verified',
+				errorType: 'ALREADY_VERIFIED'
+			});
 		}
 
 		// Generate new token
@@ -239,6 +242,15 @@ const resendVerificationEmail = async (req, res) => {
 		console.log(error);
 		res.status(500).json({ success: false, message: 'Internal server error' });
 	}
+};
+
+const logoutUser = (req, res) => {
+	res.clearCookie('refreshToken', {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === 'production',
+		sameSite: 'strict'
+	});
+	res.status(200).json({ success: true, message: 'Logged out successfully' });
 };
 
 //Route for admin login
