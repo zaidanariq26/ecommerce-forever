@@ -4,25 +4,26 @@ import { NavLink, Link, useLocation } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { Icon } from "@iconify/react";
 import { navLinks } from "../constant";
+import SubmitButton from "./ui/SubmitButton";
+import useAuthStore from "../zustand/authStore";
 
 const Navbar = () => {
-  const [visible, setVisible] = useState(false);
-  const {
-    setShowSearch,
-    getCartCount,
-    navigate,
-    token,
-    setToken,
-    setCartItems,
-  } = useContext(ShopContext);
+  const { logout, isAuthenticated } = useAuthStore((state) => ({
+    logout: state.logout,
+    isAuthenticated: state.isAuthenticated,
+  }));
 
+  const [visible, setVisible] = useState(false);
+  const { setShowSearch, getCartCount, navigate } = useContext(ShopContext);
+  const [loading, setLoading] = useState(false);
   const currentPath = useLocation().pathname;
 
-  const logout = () => {
-    navigate("/login");
-    localStorage.removeItem("token");
-    setToken("");
-    setCartItems({});
+  const handleLogout = async () => {
+    setLoading(true);
+    await logout();
+    setLoading(false);
+
+    window.location.replace("/login");
   };
 
   useEffect(() => {
@@ -40,12 +41,14 @@ const Navbar = () => {
   return (
     <div className="flex items-center justify-between border-b border-gray-300 py-5 font-medium">
       {/* Logo */}
-      <Link to="/">
-        <img src={assets.logo} className="w-28 sm:w-36" alt="" />
-      </Link>
+      <div className="flex flex-1">
+        <Link to="/">
+          <img src={assets.logo} className="w-28 sm:w-36" alt="" />
+        </Link>
+      </div>
 
       {/* Nav Link */}
-      <ul className="hidden gap-5 text-sm text-gray-700 md:flex">
+      <ul className="hidden shrink-0 gap-5 text-sm text-gray-700 md:flex">
         {navLinks.map((navLink, index) => (
           <NavLink
             key={index}
@@ -59,7 +62,7 @@ const Navbar = () => {
       </ul>
 
       {/* Nav Actions */}
-      <div className="xs:gap-6 flex items-center gap-4">
+      <div className="xs:gap-6 flex flex-1 items-center justify-end gap-4">
         <Icon
           onClick={() => setShowSearch((prev) => (prev = !prev))}
           icon="si:search-line"
@@ -73,13 +76,13 @@ const Navbar = () => {
 
         <div className="group relative">
           <Icon
-            onClick={() => (token ? null : navigate("/login"))}
+            onClick={() => (isAuthenticated ? null : navigate("/login"))}
             icon="solar:user-outline"
             className="xs:text-[28px] block text-2xl text-gray-800"
             cursor="pointer"
           />
           {/* Dropdown Menu */}
-          {token && (
+          {isAuthenticated && (
             <div className="dropdown-menu absolute right-0 hidden pt-4 group-hover:block">
               <div className="flex w-36 flex-col gap-2 rounded bg-slate-100 px-5 py-3 text-gray-500">
                 <p className="cursor-pointer hover:text-black">My Profile</p>
@@ -89,15 +92,16 @@ const Navbar = () => {
                 >
                   Orders
                 </p>
-                <p onClick={logout} className="cursor-pointer hover:text-black">
-                  Logout
-                </p>
+                <p className="cursor-pointer hover:text-black">Logout</p>
               </div>
             </div>
           )}
         </div>
 
-        <Link to="/cart" className="relative">
+        <Link
+          to="/cart"
+          className={isAuthenticated ? "relative block" : "hidden"}
+        >
           <Icon
             icon="solar:cart-large-4-outline"
             className="xs:text-[28px] block text-2xl text-gray-800"
@@ -106,6 +110,14 @@ const Navbar = () => {
             {getCartCount()}
           </p>
         </Link>
+
+        <SubmitButton
+          onClick={handleLogout}
+          label="Log out"
+          type="loading"
+          className={isAuthenticated ? "block p-2" : "hidden"}
+          isLoading={loading}
+        />
 
         <Icon
           onClick={() => setVisible(true)}

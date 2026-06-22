@@ -7,7 +7,7 @@ import sendVerificationEmail from '../services/emailService.js';
 
 const createAccessToken = (id, role) => {
 	return jwt.sign({ id, role }, process.env.JWT_ACCESS_SECRET, {
-		expiresIn: '15m'
+		expiresIn: '10s'
 	});
 };
 
@@ -31,9 +31,20 @@ const refreshToken = async (req, res) => {
 		}
 
 		const accessToken = createAccessToken(user._id, user.role);
-		res.status(200).json({ success: true, accessToken });
+
+		res.status(200).json({
+			success: true,
+			accessToken,
+			user: {
+				id: user._id,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				email: user.email,
+				role: user.role
+			}
+		});
 	} catch (error) {
-		console.log(error);
+		console.log(error.message);
 		res.status(401).json({ success: false, message: 'Invalid refresh token' });
 	}
 };
@@ -153,6 +164,7 @@ const registerUser = async (req, res) => {
 };
 
 const verifyEmail = async (req, res) => {
+	return res.json({ message: 'tess' });
 	try {
 		const { token } = req.query;
 
@@ -160,8 +172,6 @@ const verifyEmail = async (req, res) => {
 			verifyToken: token,
 			verifyTokenExpiry: { $gt: Date.now() }
 		});
-
-		console.log(user);
 
 		if (!user) {
 			return res.status(400).json({ success: false, message: 'Invalid or expired verification link' });
@@ -245,6 +255,10 @@ const resendVerificationEmail = async (req, res) => {
 };
 
 const logoutUser = (req, res) => {
+	if (!req.user) {
+		return res.status(401).json({ success: false, message: 'Not authenticated' });
+	}
+
 	res.clearCookie('refreshToken', {
 		httpOnly: true,
 		secure: process.env.NODE_ENV === 'production',

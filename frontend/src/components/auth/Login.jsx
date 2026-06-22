@@ -1,14 +1,34 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import SubmitButton from "../ui/SubmitButton";
+import useAuthStore from "../../zustand/authStore";
+import { ShopContext } from "../../context/ShopContext";
 
 const Login = () => {
+  const login = useAuthStore((state) => state.login);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { navigate } = useContext(ShopContext);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const result = await login({ email, password });
+
+    setLoading(false);
+
+    if (result.success) {
+      navigate("/");
+    }
+  };
 
   return (
-    <form className="xs:max-w-96 not-h-sm:py-16 flex w-full flex-col items-center gap-4 text-gray-800">
+    <form
+      onSubmit={handleLogin}
+      className="xs:max-w-96 not-h-sm:py-16 flex w-full flex-col items-center gap-4 text-gray-800"
+    >
       <div className="mb-2 inline-flex items-center gap-2">
         <p className="prata-regular text-2xl sm:text-3xl">Login</p>
         <hr className="h-[1.5px] w-8 border-none bg-gray-800" />

@@ -5,4 +5,7 @@ const navLinks = [
   { name: "Contact", path: "/contact" },
 ];
 
-export { navLinks };
+const DEFAULT_TITLE = "Forever - Fashion E-commerce";
+const DEFAULT_DESCRIPTION = "Shop the latest fasion trends at Forever";
+
+export { navLinks, DEFAULT_TITLE, DEFAULT_DESCRIPTION };
