@@ -8,9 +8,9 @@ import { toast } from "react-toastify";
 import api from "../../api/axiosInstance.js";
 
 const VerifyEmail = () => {
+  const setAuth = useAuthStore((state) => state.setAuth);
   const [status, setStatus] = useState("loading");
   const [searchParams] = useSearchParams();
-  const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(10);
   const intervalRef = useRef(null);
@@ -31,8 +31,7 @@ const VerifyEmail = () => {
         });
 
         if (response.data.success) {
-          console.log(response.data);
-          login({
+          setAuth({
             user: response.data.user,
             accessToken: response.data.accessToken,
           });

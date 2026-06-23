@@ -3,11 +3,11 @@ import validator from 'validator';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import sendVerificationEmail from '../services/emailService.js';
+import { sendVerificationEmail } from '../services/emailService.js';
 
 const createAccessToken = (id, role) => {
 	return jwt.sign({ id, role }, process.env.JWT_ACCESS_SECRET, {
-		expiresIn: '10s'
+		expiresIn: '15m'
 	});
 };
 
@@ -151,7 +151,7 @@ const registerUser = async (req, res) => {
 		});
 
 		// Send verification email
-		await sendVerificationEmail(email, firstName, verifyToken);
+		await sendVerificationEmail(email, verifyToken);
 
 		res.status(201).json({
 			success: true,
@@ -164,7 +164,6 @@ const registerUser = async (req, res) => {
 };
 
 const verifyEmail = async (req, res) => {
-	return res.json({ message: 'tess' });
 	try {
 		const { token } = req.query;
 

@@ -5,13 +5,16 @@ import { ShopContext } from "../context/ShopContext";
 import { Icon } from "@iconify/react";
 import { navLinks } from "../constant";
 import SubmitButton from "./ui/SubmitButton";
+import { useShallow } from "zustand/react/shallow";
 import useAuthStore from "../zustand/authStore";
 
 const Navbar = () => {
-  const { logout, isAuthenticated } = useAuthStore((state) => ({
-    logout: state.logout,
-    isAuthenticated: state.isAuthenticated,
-  }));
+  const { logout, isAuthenticated } = useAuthStore(
+    useShallow((state) => ({
+      logout: state.logout,
+      isAuthenticated: state.isAuthenticated,
+    })),
+  );
 
   const [visible, setVisible] = useState(false);
   const { setShowSearch, getCartCount, navigate } = useContext(ShopContext);

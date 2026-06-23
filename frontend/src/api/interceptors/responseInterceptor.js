@@ -1,5 +1,5 @@
+import axios from "axios";
 import useAuthStore from "../../zustand/authStore";
-import api from "../axiosInstance";
 
 // Flag so that only one refresh process runs at a time
 let isRefreshing = false;
@@ -21,12 +21,13 @@ const notifySubscribers = (newToken) => {
 };
 
 // Hit the refresh-token endpoint, the refreshToken cookie is sent automatically
+// requestNewAccessToken — TETAP harus pakai axios biasa
 const requestNewAccessToken = async () => {
-  log("Requesting a new access token from /api/user/refresh-token...");
-
-  const response = await api.post("/api/user/refresh-token", {});
-
-  log("New access token received", response.data.accessToken);
+  const response = await axios.post(
+    `${import.meta.env.VITE_BACKEND_URL}/api/user/refresh-token`,
+    {},
+    { withCredentials: true },
+  );
   return response.data.accessToken;
 };
 

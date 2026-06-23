@@ -27,7 +27,7 @@ const VerifyError = () => {
 
       if (response.data.success) {
         toast.success(response.data.message);
-        setResendCooldown(300);
+        setResendCooldown(30);
       } else {
         toast.error(response.data.message);
       }
