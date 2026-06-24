@@ -4,11 +4,9 @@ import VerifySuccess from "./verify-email/VerifySuccess.jsx";
 import VerifyError from "./verify-email/VerifyError.jsx";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import useAuthStore from "../../zustand/authStore.js";
-import { toast } from "react-toastify";
-import api from "../../api/axiosInstance.js";
 
 const VerifyEmail = () => {
-  const setAuth = useAuthStore((state) => state.setAuth);
+  const verifyEmail = useAuthStore((state) => state.verifyEmail);
   const [status, setStatus] = useState("loading");
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -17,7 +15,7 @@ const VerifyEmail = () => {
 
   // Hit API verify-email
   useEffect(() => {
-    const verifyEmail = async () => {
+    const handleVerifyEmail = async () => {
       const token = searchParams.get("token");
 
       if (!token) {
@@ -25,31 +23,13 @@ const VerifyEmail = () => {
         return;
       }
 
-      try {
-        const response = await api.get("/api/user/verify-email", {
-          params: { token },
-        });
+      const result = await verifyEmail(token);
 
-        if (response.data.success) {
-          setAuth({
-            user: response.data.user,
-            accessToken: response.data.accessToken,
-          });
-
-          setStatus("success");
-        } else {
-          setStatus("error");
-          toast.error(response.data.message);
-        }
-      } catch (error) {
-        console.log(error);
-        setStatus("error");
-        toast.error(error.response?.data?.message || error.message);
-      }
+      setStatus(result.success ? "success" : "error");
     };
 
-    verifyEmail();
-  }, []);
+    handleVerifyEmail();
+  }, [searchParams, verifyEmail]);
 
   // Activate countdown
   useEffect(() => {
@@ -67,7 +47,7 @@ const VerifyEmail = () => {
     }, 1000);
 
     return () => clearInterval(intervalRef.current);
-  }, [status]);
+  }, [navigate, status]);
 
   // Handle Go to Homepage button
   const handleGoHome = () => {

@@ -1,49 +1,29 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
 import SubmitButton from "../ui/SubmitButton";
-import api from "../../api/axiosInstance";
+import useAuthStore from "../../zustand/authStore";
 
 const Register = () => {
+  const register = useAuthStore((state) => state.register);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const onSubmitHandler = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const response = await api.post("/api/user/register", {
-        firstName,
-        lastName,
-        email,
-        password,
-      });
+    await register({ firstName, lastName, email, password });
 
-      if (response.data.success) {
-        toast.success(response.data.message);
-        // reset form
-        setFirstName("");
-        setLastName("");
-        setEmail("");
-        setPassword("");
-      } else {
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || error.message);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
   };
 
   return (
     <form
       className="xs:max-w-96 not-h-sm:py-16 flex w-full flex-col items-center gap-4 text-gray-800"
-      onSubmit={onSubmitHandler}
+      onSubmit={handleRegister}
     >
       <div className="mb-2 inline-flex items-center gap-2">
         <p className="prata-regular text-2xl sm:text-3xl">Register</p>

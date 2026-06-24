@@ -3,9 +3,9 @@ import SubmitButton from "../../ui/SubmitButton";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import api from "../../../api/axiosInstance";
 import { useEffect } from "react";
 import AlertDialog from "../../ui/AlertDialog";
+import { resendVerifyEmail } from "../../../api/authApi";
 
 const VerifyError = () => {
   const [loading, setLoading] = useState(false);
@@ -21,9 +21,7 @@ const VerifyError = () => {
 
     try {
       setLoading(true);
-      const response = await api.post("/api/user/resend-verification-email", {
-        token,
-      });
+      const response = await resendVerifyEmail(token);
 
       if (response.data.success) {
         toast.success(response.data.message);

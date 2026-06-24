@@ -30,7 +30,7 @@ const AuthInitializer = ({ children }) => {
     };
 
     silentRefresh();
-  }, []);
+  }, [setAuth]);
 
   // Tampilkan loading sebentar sampai proses cek auth selesai
   if (isInitializing) {

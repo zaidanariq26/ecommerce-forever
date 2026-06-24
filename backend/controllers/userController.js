@@ -3,7 +3,7 @@ import validator from 'validator';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { sendVerificationEmail } from '../services/emailService.js';
+import { sendResetPasswordEmail, sendVerificationEmail } from '../services/emailService.js';
 
 const createAccessToken = (id, role) => {
 	return jwt.sign({ id, role }, process.env.JWT_ACCESS_SECRET, {
@@ -253,6 +253,70 @@ const resendVerificationEmail = async (req, res) => {
 	}
 };
 
+const forgotPassword = async (req, res) => {
+	try {
+		const { email } = req.body;
+
+		if (!email) {
+			return res.status(400).json({
+				success: false,
+				messsage: 'Email is required'
+			});
+		}
+
+		if (!validator.isEmail(email)) {
+			return res.status(400).json({
+				success: false,
+				message: 'Please enter a valid email'
+			});
+		}
+
+		const user = await userModel.findOne({ email });
+
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: 'Email is not available'
+			});
+		}
+
+		const resetToken = crypto.randomBytes(32).toString('hex');
+		const resetTokenExpiry = Date.now() + 5 * 60 * 1000;
+
+		user.resetPasswordToken = resetToken;
+		user.resetPasswordTokenExpiry = resetTokenExpiry;
+		await user.save();
+
+		try {
+			await sendResetPasswordEmail(user.email, resetToken);
+		} catch (emailError) {
+			console.error('Failed to send reset password email:', emailError);
+
+			user.resetPasswordToken = undefined;
+			user.resetPasswordTokenExpiry = undefined;
+			await user.save();
+
+			return res.status(502).json({
+				success: false,
+				message: "We couldn't send the reset email right now. Please try again in a moment."
+			});
+		}
+
+		return res.status(200).json({
+			success: true,
+			message: 'Reset link has been sent successfully'
+		});
+	} catch (error) {
+		console.error('forgotPassword error:', error);
+		return res.status(500).json({
+			success: false,
+			message: 'Internal server error'
+		});
+	}
+};
+
+const resetPassword = async (req, res) => {};
+
 const logoutUser = (req, res) => {
 	if (!req.user) {
 		return res.status(401).json({ success: false, message: 'Not authenticated' });
@@ -282,4 +346,13 @@ const adminLogin = async (req, res) => {
 	}
 };
 
-export { registerUser, adminLogin, loginUser, refreshToken, logoutUser, verifyEmail, resendVerificationEmail };
+export {
+	registerUser,
+	adminLogin,
+	loginUser,
+	refreshToken,
+	logoutUser,
+	verifyEmail,
+	resendVerificationEmail,
+	forgotPassword
+};

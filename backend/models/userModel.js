@@ -52,7 +52,9 @@ const userSchema = new mongoose.Schema(
 			default: {}
 		},
 		verifyToken: { type: String },
-		verifyTokenExpiry: { type: Date }
+		verifyTokenExpiry: { type: Date },
+		resetPasswordToken: { type: String },
+		resetPasswordTokenExpiry: { type: Date }
 	},
 	{
 		minimize: false,

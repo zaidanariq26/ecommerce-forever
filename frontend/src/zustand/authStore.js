@@ -1,5 +1,10 @@
 import { create } from "zustand";
-import { loginUser, logoutUser } from "../api/authApi";
+import {
+  loginUser,
+  logoutUser,
+  registerUser,
+  verifyEmail,
+} from "../api/authApi";
 import { toast } from "react-toastify";
 
 const useAuthStore = create((set) => ({
@@ -11,6 +16,28 @@ const useAuthStore = create((set) => ({
 
   setAuth: ({ user, accessToken }) => {
     set({ user, accessToken, isAuthenticated: true });
+  },
+
+  register: async ({ firstName, lastName, email, password }) => {
+    try {
+      const response = await registerUser({
+        firstName,
+        lastName,
+        email,
+        password,
+      });
+
+      if (!response.data.success) {
+        toast.error(response.data.message);
+        return { success: false };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || error.message);
+      return { success: false };
+    }
   },
 
   login: async ({ email, password }) => {
@@ -33,6 +60,25 @@ const useAuthStore = create((set) => ({
       return { success: true };
     } catch (error) {
       console.log(error);
+      toast.error(error.response?.data?.message || error.message);
+      return { success: false };
+    }
+  },
+
+  verifyEmail: async (token) => {
+    try {
+      const response = await verifyEmail(token);
+
+      if (!response.data.success) {
+        toast.error(response.data.message);
+        return { success: false };
+      }
+
+      const { user, accessToken } = response.data;
+      set({ user, accessToken, isAuthenticated: true });
+
+      return { success: true };
+    } catch (error) {
       toast.error(error.response?.data?.message || error.message);
       return { success: false };
     }
