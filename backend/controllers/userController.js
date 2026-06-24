@@ -140,7 +140,7 @@ const registerUser = async (req, res) => {
 		const verifyTokenExpiry = Date.now() + 15 * 60 * 1000;
 
 		// Save user data
-		await userModel.create({
+		const user = await userModel.create({
 			firstName,
 			lastName,
 			email,
@@ -150,8 +150,20 @@ const registerUser = async (req, res) => {
 			verifyTokenExpiry
 		});
 
-		// Send verification email
-		await sendVerificationEmail(email, verifyToken);
+		try {
+			await sendVerificationEmail(email, verifyToken);
+		} catch (emailError) {
+			console.error('Failed to send reset verification email:', emailError);
+
+			user.verifyToken = undefined;
+			user.verifyTokenExpiry = undefined;
+			await user.save();
+
+			return res.status(502).json({
+				success: false,
+				message: "We couldn't send the verification email right now. Please try again in a moment."
+			});
+		}
 
 		res.status(201).json({
 			success: true,
@@ -302,13 +314,13 @@ const forgotPassword = async (req, res) => {
 			});
 		}
 
-		return res.status(200).json({
+		res.status(200).json({
 			success: true,
 			message: 'Reset link has been sent successfully'
 		});
 	} catch (error) {
 		console.error('forgotPassword error:', error);
-		return res.status(500).json({
+		res.status(500).json({
 			success: false,
 			message: 'Internal server error'
 		});
@@ -369,13 +381,13 @@ const resetPassword = async (req, res) => {
 		user.resetPasswordTokenExpiry = undefined;
 		await user.save();
 
-		return res.status(200).json({
+		res.status(200).json({
 			success: true,
 			message: 'Password reset successfully, please login with your new password'
 		});
 	} catch (error) {
 		console.error('resetPassword error:', error);
-		return res.status(500).json({
+		res.status(500).json({
 			success: false,
 			message: 'Internal server error'
 		});

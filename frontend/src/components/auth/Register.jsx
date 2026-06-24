@@ -15,7 +15,14 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
 
-    await register({ firstName, lastName, email, password });
+    const result = await register({ firstName, lastName, email, password });
+
+    if (result.success) {
+      setEmail("");
+      setPassword("");
+      setFirstName("");
+      setLastName("");
+    }
 
     setLoading(false);
   };
