@@ -315,7 +315,72 @@ const forgotPassword = async (req, res) => {
 	}
 };
 
-const resetPassword = async (req, res) => {};
+const resetPassword = async (req, res) => {
+	try {
+		const { token, password, passwordConfirmation } = req.body;
+
+		// Validate inputs
+		if (!token) {
+			return res.status(400).json({
+				success: false,
+				message: 'Reset token is required'
+			});
+		}
+
+		if (!password || !passwordConfirmation) {
+			return res.status(400).json({
+				success: false,
+				message: 'Password and confirmation are required'
+			});
+		}
+
+		if (password.length < 8) {
+			return res.status(400).json({
+				success: false,
+				message: 'Password must be at least 8 characters'
+			});
+		}
+
+		if (password !== passwordConfirmation) {
+			return res.status(400).json({
+				success: false,
+				message: 'Passwords do not match'
+			});
+		}
+
+		// Check if user is available
+		const user = await userModel.findOne({
+			resetPasswordToken: token,
+			resetPasswordTokenExpiry: { $gt: Date.now() }
+		});
+
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: 'Invalid or expired reset link'
+			});
+		}
+
+		// Hashed password
+		const hashedPassword = await bcrypt.hash(password, 10);
+
+		user.password = hashedPassword;
+		user.resetPasswordToken = undefined;
+		user.resetPasswordTokenExpiry = undefined;
+		await user.save();
+
+		return res.status(200).json({
+			success: true,
+			message: 'Password reset successfully, please login with your new password'
+		});
+	} catch (error) {
+		console.error('resetPassword error:', error);
+		return res.status(500).json({
+			success: false,
+			message: 'Internal server error'
+		});
+	}
+};
 
 const logoutUser = (req, res) => {
 	if (!req.user) {
@@ -354,5 +419,6 @@ export {
 	logoutUser,
 	verifyEmail,
 	resendVerificationEmail,
-	forgotPassword
+	forgotPassword,
+	resetPassword
 };

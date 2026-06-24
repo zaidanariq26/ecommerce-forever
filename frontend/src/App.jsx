@@ -16,7 +16,7 @@ const App = () => {
     <AuthInitializer>
       <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
         <SEO title={currentRoute?.title} />
-        <ToastContainer autoClose={2000} />
+        <ToastContainer autoClose={3000} />
         <Navbar />
         <SearchBar />
         <Routes>

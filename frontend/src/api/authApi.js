@@ -16,3 +16,10 @@ export const resendVerifyEmail = (token) =>
 
 export const forgotPassword = (email) =>
   api.post("/api/user/forgot-password", { email });
+
+export const resetPassword = ({ token, password, passwordConfirmation }) =>
+  api.patch("/api/user/reset-password", {
+    token,
+    password,
+    passwordConfirmation,
+  });

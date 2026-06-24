@@ -7,6 +7,7 @@ import {
 	refreshToken,
 	registerUser,
 	resendVerificationEmail,
+	resetPassword,
 	verifyEmail
 } from '../controllers/userController.js';
 import authUser from '../middleware/auth.js';
@@ -20,7 +21,7 @@ userRouter.get('/verify-email', verifyEmail);
 userRouter.post('/resend-verification-email', resendVerificationEmail);
 
 userRouter.post('/forgot-password', forgotPassword);
-// userRouter.post('/reset-password');
+userRouter.patch('/reset-password', resetPassword);
 userRouter.post('/logout', authUser, logoutUser);
 userRouter.post('/admin', adminLogin);
 

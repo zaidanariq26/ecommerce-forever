@@ -39,7 +39,7 @@ const VerifyEmail = () => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(intervalRef.current);
-          navigate("/");
+          navigate("/", { replace: true });
           return 0;
         }
         return prev - 1;
@@ -52,7 +52,7 @@ const VerifyEmail = () => {
   // Handle Go to Homepage button
   const handleGoHome = () => {
     clearInterval(intervalRef.current);
-    navigate("/");
+    navigate("/", { replace: true });
   };
 
   const renderContent = () => {
