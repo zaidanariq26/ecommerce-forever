@@ -30,36 +30,17 @@ const VerifyError = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      const errorType = error.response?.data?.errorType;
       const message = error.response?.data?.message || error.message;
-
-      switch (errorType) {
-        case "TOKEN_NOT_FOUND":
-          setAlertConfig({
-            variant: "error",
-            title: "Invalid Token",
-            message: message,
-            confirmLabel: "Go to Register",
-            hideCancel: true,
-            closeOnBackdropClick: false,
-            onConfirm: () => (window.location.href = "/register"),
-          });
-          break;
-        case "ALREADY_VERIFIED":
-          setAlertConfig({
-            variant: "info",
-            title: "Already Verified",
-            message: message,
-            confirmLabel: "Go to Login",
-            closeOnBackdropClick: false,
-            hideCancel: true,
-            onConfirm: () => (window.location.href = "/login"),
-          });
-          break;
-        default:
-          toast.error(message);
-          break;
-      }
+      setAlertConfig({
+        variant: "error",
+        title: "Invalid Token",
+        message: message,
+        confirmLabel: "Go to Register",
+        hideCancel: true,
+        closeOnBackdropClick: false,
+        onConfirm: () => window.location.replace("/register"),
+      });
+      return;
     } finally {
       setLoading(false);
     }

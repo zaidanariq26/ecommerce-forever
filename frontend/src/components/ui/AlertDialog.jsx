@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "@iconify/react";
 import PropTypes from "prop-types";
+import Loading from "../Loading";
 
 const VARIANT_CONFIG = {
   default: {
@@ -40,7 +41,6 @@ const VARIANT_CONFIG = {
     buttonBg: "bg-red-500 hover:bg-red-600",
   },
 };
-
 const AlertDialog = ({
   isOpen,
   onClose,
@@ -56,8 +56,46 @@ const AlertDialog = ({
 }) => {
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
 
-  const config = VARIANT_CONFIG[variant] || VARIANT_CONFIG.default;
+  // ✅ Simpan props terakhir yang VALID, supaya tidak ikut berubah saat parent set null
+  const lastPropsRef = useRef({
+    variant,
+    title,
+    message,
+    confirmLabel,
+    cancelLabel,
+    hideCancel,
+    icon,
+  });
+
+  // ✅ Update "snapshot" HANYA ketika dialog terbuka, bukan saat akan ditutup
+  useEffect(() => {
+    if (isOpen) {
+      lastPropsRef.current = {
+        variant,
+        title,
+        message,
+        confirmLabel,
+        cancelLabel,
+        hideCancel,
+        icon,
+      };
+    }
+  }, [
+    isOpen,
+    variant,
+    title,
+    message,
+    confirmLabel,
+    cancelLabel,
+    hideCancel,
+    icon,
+  ]);
+
+  // Pakai snapshot ini untuk render, BUKAN props langsung
+  const displayProps = lastPropsRef.current;
+  const config = VARIANT_CONFIG[displayProps.variant] || VARIANT_CONFIG.default;
 
   useEffect(() => {
     if (isOpen) {
@@ -79,15 +117,30 @@ const AlertDialog = ({
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen) setIsConfirming(false);
+  }, [isOpen]);
+
   if (!shouldRender) return null;
 
-  const handleConfirm = () => {
-    if (onConfirm) onConfirm();
-    onClose();
+  const handleConfirm = async () => {
+    if (!onConfirm) {
+      onClose();
+      return;
+    }
+
+    try {
+      setIsConfirming(true);
+      await onConfirm();
+      onClose();
+    } catch (error) {
+      console.error("AlertDialog onConfirm error:", error);
+      setIsConfirming(false);
+    }
   };
 
   const handleBackdropClick = () => {
-    if (closeOnBackdropClick) onClose();
+    if (closeOnBackdropClick && !isConfirming) onClose();
   };
 
   return createPortal(
@@ -107,31 +160,39 @@ const AlertDialog = ({
           className={`mx-auto mb-5 flex size-16 items-center justify-center rounded-full border ${config.iconBg} ${config.iconBorder}`}
         >
           <Icon
-            icon={icon || config.icon}
+            icon={displayProps.icon || config.icon}
             className={`text-3xl ${config.iconColor}`}
           />
         </div>
 
         <p className="mb-2 text-lg font-medium text-gray-800 sm:text-xl">
-          {title}
+          {displayProps.title}
         </p>
         <p className="mb-6 text-sm leading-relaxed font-normal text-gray-500">
-          {message}
+          {displayProps.message}
         </p>
 
         <button
           onClick={handleConfirm}
-          className={`mb-2.5 w-full cursor-pointer py-3 text-sm text-gray-100 transition-colors ${config.buttonBg}`}
+          disabled={isConfirming}
+          className={`mb-2.5 flex h-10.5 w-full cursor-pointer items-center justify-center text-sm text-gray-100 transition-colors ${
+            isConfirming ? "cursor-not-allowed opacity-70" : ""
+          } ${config.buttonBg}`}
         >
-          {confirmLabel}
+          {isConfirming ? (
+            <Loading type="spinner" color="text-gray-100" size="text-xl" />
+          ) : (
+            displayProps.confirmLabel
+          )}
         </button>
 
-        {!hideCancel && (
+        {!displayProps.hideCancel && (
           <button
             onClick={onClose}
-            className="w-full cursor-pointer py-2.5 text-sm text-gray-600 transition-colors hover:bg-gray-200"
+            disabled={isConfirming}
+            className="h-10.5 w-full cursor-pointer text-sm text-gray-600 transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {cancelLabel}
+            {displayProps.cancelLabel}
           </button>
         )}
       </div>

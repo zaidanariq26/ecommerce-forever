@@ -50,17 +50,18 @@ const useAuthStore = create((set) => ({
       }
 
       const { user, accessToken } = response.data;
-
-      set({
-        user,
-        accessToken,
-        isAuthenticated: true,
-      });
+      set({ user, accessToken, isAuthenticated: true });
 
       return { success: true };
     } catch (error) {
-      console.log(error);
-      toast.error(error.response?.data?.message || error.message);
+      const errorType = error.response?.data?.errorType;
+      const message = error.response?.data?.message || error.message;
+
+      if (errorType === "NOT_VERIFIED") {
+        return { success: false, errorType, message };
+      }
+
+      toast.error(message);
       return { success: false };
     }
   },

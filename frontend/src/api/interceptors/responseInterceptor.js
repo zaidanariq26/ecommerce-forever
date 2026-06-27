@@ -1,6 +1,16 @@
 import axios from "axios";
 import useAuthStore from "../../zustand/authStore";
 
+const EXCLUDED_FROM_REFRESH = [
+  "/api/user/login",
+  "/api/user/register",
+  "/api/user/refresh-token",
+  "/api/user/verify-email",
+  "/api/user/resend-verification-email",
+  "/api/user/forgot-password",
+  "/api/user/reset-password",
+];
+
 // Flag so that only one refresh process runs at a time
 let isRefreshing = false;
 
@@ -61,7 +71,7 @@ const forceLogout = (refreshError) => {
   // Use a full reload (not navigate) so all state is completely reset
   if (window.location.pathname !== "/login") {
     log("Forcing redirect to /login (full reload)");
-    window.location.href = "/login";
+    window.location.replace("/login");
   }
 
   return Promise.reject(refreshError);
@@ -72,9 +82,15 @@ export const handleUnauthorized = async (error, api) => {
   const isUnauthorized = error.response?.status === 401;
   const alreadyRetried = originalRequest?._retry;
 
+  const isExcluded = EXCLUDED_FROM_REFRESH.some((endpoint) =>
+    originalRequest?.url?.includes(endpoint),
+  );
+
+  console.log(originalRequest);
+
   // Not a token issue (404, 500, etc.) or this request has already been retried
   // → let the error pass through as-is, don't intervene
-  if (!isUnauthorized || alreadyRetried) {
+  if (!isUnauthorized || alreadyRetried || isExcluded) {
     return Promise.reject(error);
   }
 

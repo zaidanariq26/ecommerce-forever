@@ -76,7 +76,9 @@ const loginUser = async (req, res) => {
 
 		// Check user verified
 		if (!user.isVerified) {
-			return res.status(403).json({ success: false, message: 'Please verify your email first' });
+			return res
+				.status(403)
+				.json({ success: false, message: 'Please verify your email first', errorType: 'NOT_VERIFIED' });
 		}
 
 		// Generate tokens
@@ -225,25 +227,32 @@ const verifyEmail = async (req, res) => {
 
 const resendVerificationEmail = async (req, res) => {
 	try {
-		const { token } = req.body;
+		const { token, email } = req.body;
 
-		const user = await userModel.findOne({
-			verifyToken: token
-		});
+		if (!token && !email) {
+			return res.status(400).json({
+				success: false,
+				message: 'Please provide either a token or an email address.'
+			});
+		}
+
+		const query = {};
+		if (token) query.verifyToken = token;
+		if (email) query.email = email;
+
+		const user = await userModel.findOne(query);
 
 		if (!user) {
 			return res.status(400).json({
 				success: false,
-				message: 'Invalid or expired verification token. Please register again',
-				errorType: 'TOKEN_NOT_FOUND'
+				message: 'Account not found or the link is invalid. Please double-check!'
 			});
 		}
 
 		if (user.isVerified) {
 			return res.status(400).json({
 				success: false,
-				message: 'Email already verified',
-				errorType: 'ALREADY_VERIFIED'
+				message: 'Email already verified'
 			});
 		}
 
@@ -253,7 +262,20 @@ const resendVerificationEmail = async (req, res) => {
 		await user.save();
 
 		// Send verification email
-		await sendVerificationEmail(user.email, user.firstName, user.verifyToken);
+		try {
+			await sendVerificationEmail(user.email, user.verifyToken);
+		} catch (emailError) {
+			console.error('Failed to send verification email:', emailError);
+
+			user.verifyToken = undefined;
+			user.verifyTokenExpiry = undefined;
+			await user.save();
+
+			return res.status(502).json({
+				success: false,
+				message: "We couldn't send the verification email right now. Please try again in a moment."
+			});
+		}
 
 		res.status(200).json({
 			success: true,

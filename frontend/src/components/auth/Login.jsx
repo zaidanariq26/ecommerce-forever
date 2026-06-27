@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import SubmitButton from "../ui/SubmitButton";
 import useAuthStore from "../../zustand/authStore";
 import { ShopContext } from "../../context/ShopContext";
+import AlertDialog from "../ui/AlertDialog";
+import { toast } from "react-toastify";
+import useResendVerificationEmail from "../../hooks/useResendVerificationEmail";
 
 const Login = () => {
   const login = useAuthStore((state) => state.login);
@@ -10,17 +13,48 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { navigate } = useContext(ShopContext);
+  const [alertConfig, setAlertConfig] = useState(null);
+  const closeAlert = () => setAlertConfig(null);
+  const { resend } = useResendVerificationEmail();
+
+  const handleResendEmail = async () => {
+    await resend(email, () => {
+      setEmail("");
+      setPassword("");
+    });
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (!email.trim() || !password.trim()) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
     setLoading(true);
-
     const result = await login({ email, password });
-
     setLoading(false);
 
     if (result.success) {
       navigate("/", { replace: true });
+      return;
+    }
+
+    if (result.errorType === "NOT_VERIFIED") {
+      setAlertConfig({
+        variant: "warning",
+        title: "Email Is Not Verified",
+        message: result.message,
+        confirmLabel: "Send Verification Email",
+        hideCancel: true,
+        onConfirm: handleResendEmail,
+      });
     }
   };
 
@@ -78,6 +112,18 @@ const Login = () => {
         label="Sign In"
         type="loading"
         isLoading={loading}
+      />
+
+      <AlertDialog
+        isOpen={!!alertConfig}
+        onClose={closeAlert}
+        onConfirm={alertConfig?.onConfirm}
+        variant={alertConfig?.variant}
+        title={alertConfig?.title}
+        message={alertConfig?.message}
+        confirmLabel={alertConfig?.confirmLabel}
+        closeOnBackdropClick={alertConfig?.closeOnBackdropClick}
+        hideCancel={alertConfig?.hideCancel}
       />
     </form>
   );

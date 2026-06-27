@@ -11,8 +11,8 @@ export const registerUser = ({ firstName, lastName, email, password }) =>
 export const verifyEmail = (token) =>
   api.get("/api/user/verify-email", { params: { token } });
 
-export const resendVerifyEmail = (token) =>
-  api.post("/api/user/resend-verification-email", { token });
+export const resendVerifyEmail = ({ token, email }) =>
+  api.post("/api/user/resend-verification-email", { token, email });
 
 export const forgotPassword = (email) =>
   api.post("/api/user/forgot-password", { email });
