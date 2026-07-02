@@ -2,47 +2,39 @@ import { Icon } from "@iconify/react";
 import SubmitButton from "../../ui/SubmitButton";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useEffect } from "react";
-import AlertDialog from "../../ui/AlertDialog";
-import { resendVerifyEmail } from "../../../api/authApi";
+import useResendVerificationEmail from "../../../hooks/useResendVerificationEmail";
+import useAlertStore from "../../../zustand/alertStore";
 
 const VerifyError = () => {
   const [loading, setLoading] = useState(false);
-  const [searchParams] = useSearchParams();
   const [resendCooldown, setResendCooldown] = useState(0);
-  const [alertConfig, setAlertConfig] = useState(null);
 
-  const closeAlert = () => setAlertConfig(null);
+  const [searchParams] = useSearchParams();
+  const { resend } = useResendVerificationEmail();
+
+  const showAlert = useAlertStore((state) => state.showAlert);
 
   // Handle resend verification email
   const handleResendEmail = async () => {
     const token = searchParams.get("token");
 
-    try {
-      setLoading(true);
-      const response = await resendVerifyEmail(token);
+    setLoading(true);
+    const result = await resend("", token, () => {
+      setResendCooldown(30);
+    });
+    setLoading(false);
 
-      if (response.data.success) {
-        toast.success(response.data.message);
-        setResendCooldown(30);
-      } else {
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      const message = error.response?.data?.message || error.message;
-      setAlertConfig({
+    if (!result.success) {
+      showAlert({
         variant: "error",
-        title: "Invalid Token",
-        message: message,
+        title: "Invalid Data",
+        message: result.message || "Failed to resend verification email.",
         confirmLabel: "Go to Register",
         hideCancel: true,
         closeOnBackdropClick: false,
         onConfirm: () => window.location.replace("/register"),
       });
-      return;
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -90,18 +82,6 @@ const VerifyError = () => {
       >
         You can resend again in {resendCooldown}s
       </div>
-
-      <AlertDialog
-        isOpen={!!alertConfig}
-        onClose={closeAlert}
-        onConfirm={alertConfig?.onConfirm}
-        variant={alertConfig?.variant}
-        title={alertConfig?.title}
-        message={alertConfig?.message}
-        confirmLabel={alertConfig?.confirmLabel}
-        closeOnBackdropClick={alertConfig?.closeOnBackdropClick}
-        hideCancel={alertConfig?.hideCancel}
-      />
     </div>
   );
 };

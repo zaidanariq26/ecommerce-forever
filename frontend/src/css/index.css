@@ -19,7 +19,7 @@ a.active hr {
   display: none;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   a.active {
     @apply bg-gray-900 text-white;
   }

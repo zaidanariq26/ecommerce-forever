@@ -27,16 +27,23 @@ const useAuthStore = create((set) => ({
         password,
       });
 
-      if (!response.data.success) {
-        toast.error(response.data.message);
-        return { success: false };
+      if (response.data.success) {
+        toast.success(response.data.message);
+        return { success: true };
       }
 
       toast.success(response.data.message);
-      return { success: true };
+      return { success: false };
     } catch (error) {
-      console.log(error);
-      toast.error(error.response?.data?.message || error.message);
+      const errorMessage = error.response?.data?.message;
+      const errorType = error.response?.data?.errorType;
+
+      if (errorType === "EMAIL_NOT_VERIFIED") {
+        return { success: false, errorType, errorMessage };
+      }
+
+      toast.error(errorMessage);
+      return { success: false, errorMessage };
     }
   },
 
@@ -57,7 +64,7 @@ const useAuthStore = create((set) => ({
       const errorType = error.response?.data?.errorType;
       const message = error.response?.data?.message || error.message;
 
-      if (errorType === "NOT_VERIFIED") {
+      if (errorType === "EMAIL_NOT_VERIFIED") {
         return { success: false, errorType, message };
       }
 
@@ -96,7 +103,7 @@ const useAuthStore = create((set) => ({
 
       return { success: true };
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error(error.response?.data?.message || error.message);
     } finally {
       set({

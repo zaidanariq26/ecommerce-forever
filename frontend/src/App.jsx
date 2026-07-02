@@ -7,10 +7,15 @@ import "react-toastify/dist/ReactToastify.css";
 import AuthInitializer from "./components/auth/AuthInitializer";
 import { routes } from "./routes/routes";
 import SEO from "./components/SEO";
+import useAlertStore from "./zustand/alertStore";
+import AlertDialog from "./components/ui/AlertDialog";
 
 const App = () => {
   const location = useLocation();
   const currentRoute = routes.find((route) => route.path === location.pathname);
+
+  const alertConfig = useAlertStore((state) => state.alertConfig);
+  const closeAlert = useAlertStore((state) => state.closeAlert);
 
   return (
     <AuthInitializer>
@@ -26,6 +31,18 @@ const App = () => {
         </Routes>
         <Footer />
       </div>
+
+      <AlertDialog
+        isOpen={!!alertConfig}
+        onClose={closeAlert}
+        onConfirm={alertConfig?.onConfirm}
+        variant={alertConfig?.variant}
+        title={alertConfig?.title}
+        message={alertConfig?.message}
+        confirmLabel={alertConfig?.confirmLabel}
+        closeOnBackdropClick={alertConfig?.closeOnBackdropClick}
+        hideCancel={alertConfig?.hideCancel}
+      />
     </AuthInitializer>
   );
 };

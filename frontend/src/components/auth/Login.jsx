@@ -3,22 +3,23 @@ import { Link } from "react-router-dom";
 import SubmitButton from "../ui/SubmitButton";
 import useAuthStore from "../../zustand/authStore";
 import { ShopContext } from "../../context/ShopContext";
-import AlertDialog from "../ui/AlertDialog";
 import { toast } from "react-toastify";
 import useResendVerificationEmail from "../../hooks/useResendVerificationEmail";
+import useAlertStore from "../../zustand/alertStore";
 
 const Login = () => {
-  const login = useAuthStore((state) => state.login);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { navigate } = useContext(ShopContext);
-  const [alertConfig, setAlertConfig] = useState(null);
-  const closeAlert = () => setAlertConfig(null);
+
   const { resend } = useResendVerificationEmail();
+  const { navigate } = useContext(ShopContext);
+  const login = useAuthStore((state) => state.login);
+
+  const showAlert = useAlertStore((state) => state.showAlert);
 
   const handleResendEmail = async () => {
-    await resend(email, () => {
+    await resend(email, "", () => {
       setEmail("");
       setPassword("");
     });
@@ -46,8 +47,8 @@ const Login = () => {
       return;
     }
 
-    if (result.errorType === "NOT_VERIFIED") {
-      setAlertConfig({
+    if (result.errorType === "EMAIL_NOT_VERIFIED") {
+      showAlert({
         variant: "warning",
         title: "Email Is Not Verified",
         message: result.message,
@@ -112,18 +113,6 @@ const Login = () => {
         label="Sign In"
         type="loading"
         isLoading={loading}
-      />
-
-      <AlertDialog
-        isOpen={!!alertConfig}
-        onClose={closeAlert}
-        onConfirm={alertConfig?.onConfirm}
-        variant={alertConfig?.variant}
-        title={alertConfig?.title}
-        message={alertConfig?.message}
-        confirmLabel={alertConfig?.confirmLabel}
-        closeOnBackdropClick={alertConfig?.closeOnBackdropClick}
-        hideCancel={alertConfig?.hideCancel}
       />
     </form>
   );

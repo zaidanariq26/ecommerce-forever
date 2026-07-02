@@ -2,20 +2,46 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import SubmitButton from "../ui/SubmitButton";
 import useAuthStore from "../../zustand/authStore";
+import { toast } from "react-toastify";
+import useResendVerificationEmail from "../../hooks/useResendVerificationEmail";
+import useAlertStore from "../../zustand/alertStore";
 
 const Register = () => {
-  const register = useAuthStore((state) => state.register);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const { resend } = useResendVerificationEmail();
+  const showAlert = useAlertStore((state) => state.showAlert);
+  const register = useAuthStore((state) => state.register);
+
+  const handleResendEmail = async () => {
+    await resend(email, "");
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
+    if (!firstName.trim() || !email.trim() || !password.trim()) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+
+    setLoading(true);
     const result = await register({ firstName, lastName, email, password });
+    setLoading(false);
 
     if (result.success) {
       setEmail("");
@@ -24,7 +50,16 @@ const Register = () => {
       setLastName("");
     }
 
-    setLoading(false);
+    if (result.errorType === "EMAIL_NOT_VERIFIED") {
+      showAlert({
+        variant: "warning",
+        title: "Email Is Not Verified",
+        message: result.errorMessage,
+        confirmLabel: "Send Verification Email",
+        hideCancel: true,
+        onConfirm: handleResendEmail,
+      });
+    }
   };
 
   return (
@@ -49,7 +84,6 @@ const Register = () => {
           id="firstName"
           className="w-full border border-gray-500 px-3 py-2"
           placeholder="First Name"
-          required
         />
       </div>
 
@@ -81,7 +115,6 @@ const Register = () => {
           value={email}
           className="w-full border border-gray-500 px-3 py-2"
           placeholder="email@example.com"
-          required
         />
       </div>
 
@@ -98,7 +131,6 @@ const Register = () => {
           value={password}
           className="w-full border border-gray-500 px-3 py-2"
           placeholder="••••••••"
-          required
         />
       </div>
       <div className="-mt-2 flex w-full justify-between text-sm">

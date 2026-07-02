@@ -78,7 +78,7 @@ const loginUser = async (req, res) => {
 		if (!user.isVerified) {
 			return res
 				.status(403)
-				.json({ success: false, message: 'Please verify your email first', errorType: 'NOT_VERIFIED' });
+				.json({ success: false, message: 'Please verify your email first', errorType: 'EMAIL_NOT_VERIFIED' });
 		}
 
 		// Generate tokens
@@ -129,9 +129,22 @@ const registerUser = async (req, res) => {
 		}
 
 		// Check email that is already registered
-		const exists = await userModel.findOne({ email });
-		if (exists) {
-			return res.status(409).json({ success: false, message: 'Email already registered' });
+		const user = await userModel.findOne({ email: email.toLowerCase().trim() });
+
+		if (user) {
+			if (user.isVerified) {
+				return res.status(409).json({
+					success: false,
+					message: 'Email already registered'
+				});
+			}
+
+			// Jika belum verified
+			return res.status(403).json({
+				success: false,
+				message: 'This email is registered but not verified yet',
+				errorType: 'EMAIL_NOT_VERIFIED'
+			});
 		}
 
 		// Hash password
@@ -142,7 +155,7 @@ const registerUser = async (req, res) => {
 		const verifyTokenExpiry = Date.now() + 15 * 60 * 1000;
 
 		// Save user data
-		const user = await userModel.create({
+		const newUser = await userModel.create({
 			firstName,
 			lastName,
 			email,
@@ -157,9 +170,9 @@ const registerUser = async (req, res) => {
 		} catch (emailError) {
 			console.error('Failed to send reset verification email:', emailError);
 
-			user.verifyToken = undefined;
-			user.verifyTokenExpiry = undefined;
-			await user.save();
+			newUser.verifyToken = undefined;
+			newUser.verifyTokenExpiry = undefined;
+			await newUser.save();
 
 			return res.status(502).json({
 				success: false,
@@ -240,6 +253,8 @@ const resendVerificationEmail = async (req, res) => {
 		if (token) query.verifyToken = token;
 		if (email) query.email = email;
 
+		console.log(query);
+
 		const user = await userModel.findOne(query);
 
 		if (!user) {
@@ -258,7 +273,8 @@ const resendVerificationEmail = async (req, res) => {
 
 		// Generate new token
 		user.verifyToken = crypto.randomBytes(32).toString('hex');
-		user.verifyTokenExpiry = Date.now() + 15 * 60 * 1000;
+		// user.verifyTokenExpiry = Date.now() + 15 * 60 * 1000;
+		user.verifyTokenExpiry = Date.now();
 		await user.save();
 
 		// Send verification email

@@ -86,8 +86,6 @@ export const handleUnauthorized = async (error, api) => {
     originalRequest?.url?.includes(endpoint),
   );
 
-  console.log(originalRequest);
-
   // Not a token issue (404, 500, etc.) or this request has already been retried
   // → let the error pass through as-is, don't intervene
   if (!isUnauthorized || alreadyRetried || isExcluded) {
