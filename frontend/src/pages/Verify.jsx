@@ -12,6 +12,7 @@ const Verify = () => {
 
   const success = searchParams.get("success");
   const orderId = searchParams.get("orderId");
+  const sessionId = searchParams.get("session_id");
 
   const verifyPayment = useCallback(async () => {
     try {
@@ -20,6 +21,7 @@ const Verify = () => {
       const response = await api.post("/api/order/verifyStripe", {
         success,
         orderId,
+        sessionId,
       });
 
       if (response.data.success) {
@@ -32,7 +34,7 @@ const Verify = () => {
       console.log(error);
       toast.error(error.message);
     }
-  }, [isAuthenticated, success, orderId, setCartItems, navigate]);
+  }, [isAuthenticated, success, orderId, sessionId, setCartItems, navigate]);
 
   useEffect(() => {
     verifyPayment();

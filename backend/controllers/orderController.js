@@ -85,7 +85,7 @@ const placeOrderStripe = async (req, res) => {
 		});
 
 		const session = await stripe.checkout.sessions.create({
-			success_url: `${origin}/verify?success=true&orderId=${newOrder._id}`,
+			success_url: `${origin}/verify?success=true&orderId=${newOrder._id}&session_id={CHECKOUT_SESSION_ID}`,
 			cancel_url: `${origin}/verify?success=false&orderId=${newOrder._id}`,
 			line_items,
 			mode: "payment",
@@ -100,18 +100,20 @@ const placeOrderStripe = async (req, res) => {
 
 // Verify Stripe
 const verifyStripe = async (req, res) => {
-	const { orderId, success } = req.body;
+	const { orderId, success, sessionId } = req.body;
 	const userId = req.user.id;
 
 	try {
 		if (success === "true") {
-			await orderModel.findByIdAndUpdate(orderId, { payment: true });
-			await userModel.findByIdAndUpdate(userId, { cartData: {} });
-			res.json({ success: true });
-		} else {
-			await orderModel.findByIdAndDelete(orderId);
-			res.json({ success: false });
+			const session = await stripe.checkout.sessions.retrieve(sessionId);
+			if (session.payment_status === "paid") {
+				await orderModel.findByIdAndUpdate(orderId, { payment: true });
+				await userModel.findByIdAndUpdate(userId, { cartData: {} });
+				return res.json({ success: true });
+			}
 		}
+		await orderModel.findByIdAndDelete(orderId);
+		res.json({ success: false });
 	} catch (error) {
 		console.log(error);
 		res.json({ success: false, message: error.message });

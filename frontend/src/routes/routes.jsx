@@ -13,6 +13,7 @@ import ResetPassword from "../components/auth/ResetPassword";
 import VerifyEmail from "../components/auth/VerifyEmail";
 import Verify from "../pages/Verify";
 import AuthLayout from "../pages/AuthLayout";
+import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 export const routes = [
   { path: "/", element: <Home />, title: "Home" },
@@ -20,7 +21,11 @@ export const routes = [
   { path: "/about", element: <About />, title: "About Us" },
   { path: "/contact", element: <Contact />, title: "Contact" },
   { path: "/product/:productId", element: <Product /> },
-  { path: "/cart", element: <Cart />, title: "Cart" },
+  {
+    path: "/cart",
+    element: <ProtectedRoute><Cart /></ProtectedRoute>,
+    title: "Cart",
+  },
   {
     path: "/login",
     element: (
@@ -39,8 +44,16 @@ export const routes = [
     ),
     title: "Register",
   },
-  { path: "/place-order", element: <PlaceOrder />, title: "Place Order" },
-  { path: "/orders", element: <Orders />, title: "My Orders" },
+  {
+    path: "/place-order",
+    element: <ProtectedRoute><PlaceOrder /></ProtectedRoute>,
+    title: "Place Order",
+  },
+  {
+    path: "/orders",
+    element: <ProtectedRoute><Orders /></ProtectedRoute>,
+    title: "My Orders",
+  },
   {
     path: "/forgot-password",
     element: (
