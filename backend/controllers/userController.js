@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { sendResetPasswordEmail, sendVerificationEmail } from '../services/emailService.js';
+import { addToBlocklist, isBlocked } from '../middleware/tokenBlocklist.js';
 
 const createAccessToken = (id, role) => {
 	return jwt.sign({ id, role }, process.env.JWT_ACCESS_SECRET, {
@@ -22,6 +23,10 @@ const refreshToken = async (req, res) => {
 		const token = req.cookies.refreshToken;
 		if (!token) {
 			return res.status(401).json({ success: false, message: 'No refresh token' });
+		}
+
+		if (isBlocked(token)) {
+			return res.status(401).json({ success: false, message: 'Token has been revoked' });
 		}
 
 		const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
@@ -432,6 +437,11 @@ const resetPassword = async (req, res) => {
 const logoutUser = (req, res) => {
 	if (!req.user) {
 		return res.status(401).json({ success: false, message: 'Not authenticated' });
+	}
+
+	const refreshToken = req.cookies.refreshToken;
+	if (refreshToken) {
+		addToBlocklist(refreshToken);
 	}
 
 	res.clearCookie('refreshToken', {
