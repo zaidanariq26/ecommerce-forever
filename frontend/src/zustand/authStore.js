@@ -32,7 +32,7 @@ const useAuthStore = create((set) => ({
         return { success: true };
       }
 
-      toast.success(response.data.message);
+      toast.error(response.data.message);
       return { success: false };
     } catch (error) {
       const errorMessage = error.response?.data?.message;
