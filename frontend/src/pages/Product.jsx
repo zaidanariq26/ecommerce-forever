@@ -3,6 +3,9 @@ import { useParams } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import RelatedProducts from "../components/RelatedProducts";
+import Loading from "../components/Loading";
+import { Link } from "react-router-dom";
+import { Icon } from "@iconify/react";
 
 const Product = () => {
   const { productId } = useParams();
@@ -24,6 +27,29 @@ const Product = () => {
     fetchProductData();
     setSize("");
   }, [fetchProductData]);
+
+  if (products.length === 0) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center pt-10">
+        <Loading type="spinner" size="text-4xl" />
+      </div>
+    );
+  }
+
+  if (!productData) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 pt-10">
+        <Icon icon="solar:question-circle-outline" className="text-6xl text-gray-300" />
+        <p className="text-xl text-gray-500">Product not found</p>
+        <Link
+          to="/collection"
+          className="mt-2 bg-gray-900 px-8 py-3 text-sm text-white hover:bg-gray-800"
+        >
+          Back to Collection
+        </Link>
+      </div>
+    );
+  }
 
   return productData ? (
     <div className="pt-10 opacity-100 transition-opacity duration-500 ease-in">

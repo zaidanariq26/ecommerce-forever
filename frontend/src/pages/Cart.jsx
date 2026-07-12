@@ -3,6 +3,7 @@ import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
 import { Icon } from "@iconify/react";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
   const { products, currency, cartItems, updateQuantity, navigate } =
@@ -26,6 +27,21 @@ const Cart = () => {
       setCartData(tempData);
     }
   }, [cartItems, products]);
+
+  if (products.length > 0 && cartData.length === 0) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 pt-14">
+        <Icon icon="solar:cart-outline" className="text-6xl text-gray-300" />
+        <p className="text-xl text-gray-500">Your cart is empty</p>
+        <Link
+          to="/collection"
+          className="mt-2 bg-gray-900 px-8 py-3 text-sm text-white hover:bg-gray-800"
+        >
+          Continue Shopping
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-14">

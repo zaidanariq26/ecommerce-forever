@@ -12,6 +12,7 @@ const Collection = () => {
   const [subCategory, setSubCategory] = useState([]);
   const [sortType, setSortType] = useState("relevant");
   const [filterOpen, setFilterOpen] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const toggleCategory = (e) => {
     if (category.includes(e.target.value)) {
@@ -100,13 +101,12 @@ const Collection = () => {
     setSortType(sortMap[sort] || "relevant");
   };
 
-  // useEffect(() => {
-  //    setFilterProducts(products);
-  // }, []);
-
   useEffect(() => {
     applyFilterAndSort();
-  }, [applyFilterAndSort]);
+    if (initialLoading && products.length > 0) {
+      setInitialLoading(false);
+    }
+  }, [applyFilterAndSort, initialLoading, products.length]);
 
   return (
     <div className="flex flex-col gap-1 pt-10 sm:flex-row sm:gap-10">
@@ -181,15 +181,25 @@ const Collection = () => {
 
         {/* Map Products */}
         <div className="grid grid-cols-2 gap-4 gap-y-6 md:grid-cols-3 lg:grid-cols-4">
-          {filterProducts.map((item, index) => (
-            <ProductItem
-              key={index}
-              id={item._id}
-              image={item.image}
-              name={item.name}
-              price={item.price}
-            />
-          ))}
+          {filterProducts.length > 0 ? (
+            filterProducts.map((item, index) => (
+              <ProductItem
+                key={index}
+                id={item._id}
+                image={item.image}
+                name={item.name}
+                price={item.price}
+              />
+            ))
+          ) : !initialLoading ? (
+            <div className="col-span-full flex min-h-[40vh] flex-col items-center justify-center gap-4">
+              <Icon
+                icon="solar:magnifer-outline"
+                className="text-6xl text-gray-300"
+              />
+              <p className="text-xl text-gray-500">No products found</p>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
