@@ -11,18 +11,24 @@ import {
 	verifyEmail
 } from '../controllers/userController.js';
 import authUser from '../middleware/auth.js';
+import {
+	loginLimiter,
+	registerLimiter,
+	forgotPasswordLimiter,
+	resendVerificationLimiter
+} from '../middleware/rateLimiter.js';
 
 const userRouter = express.Router();
 
 userRouter.post('/refresh-token', refreshToken);
-userRouter.post('/login', loginUser);
-userRouter.post('/register', registerUser);
+userRouter.post('/login', loginLimiter, loginUser);
+userRouter.post('/register', registerLimiter, registerUser);
 userRouter.get('/verify-email', verifyEmail);
-userRouter.post('/resend-verification-email', resendVerificationEmail);
+userRouter.post('/resend-verification-email', resendVerificationLimiter, resendVerificationEmail);
 
-userRouter.post('/forgot-password', forgotPassword);
+userRouter.post('/forgot-password', forgotPasswordLimiter, forgotPassword);
 userRouter.patch('/reset-password', resetPassword);
 userRouter.post('/logout', authUser, logoutUser);
-userRouter.post('/admin', adminLogin);
+userRouter.post('/admin', loginLimiter, adminLogin);
 
 export default userRouter;
