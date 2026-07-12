@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
@@ -7,24 +6,24 @@ import RelatedProducts from "../components/RelatedProducts";
 
 const Product = () => {
   const { productId } = useParams();
-  const { products, currency, addToCart, cartItems } = useContext(ShopContext);
-  const [productData, setProductData] = useState(false);
+  const { products, currency, addToCart } = useContext(ShopContext);
+  const [productData, setProductData] = useState(null);
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
 
-  const fetchProductData = async () => {
-    products.map((item) => {
-      if (item._id === productId) {
-        setProductData(item);
-        setImage(item.image[0]);
-        return null;
-      }
-    });
-  };
+  const fetchProductData = useCallback(() => {
+    const product = products.find((item) => item._id === productId);
+
+    if (product) {
+      setProductData(product);
+      setImage(product.image[0]);
+    }
+  }, [products, productId]);
 
   useEffect(() => {
     fetchProductData();
-  }, [productId, products]);
+    setSize("");
+  }, [fetchProductData]);
 
   return productData ? (
     <div className="pt-10 opacity-100 transition-opacity duration-500 ease-in">

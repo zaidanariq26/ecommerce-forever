@@ -1,44 +1,47 @@
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import { useState } from "react";
 import { useEffect } from "react";
-import axios from "axios";
+import useAuthStore from "../zustand/authStore";
+import api from "../api/axiosInstance";
 
 const Orders = () => {
-  const { backendUrl, token, currency } = useContext(ShopContext);
+  const { currency } = useContext(ShopContext);
   const [orderData, setOrderData] = useState([]);
-  const loadOrderData = async () => {
-    try {
-      if (!token) return null;
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-      const response = await axios.post(
-        backendUrl + "/api/order/userorders",
-        {},
-        { headers: { token } },
-      );
+  const loadOrderData = useCallback(async () => {
+    try {
+      if (!isAuthenticated) return null;
+
+      const response = await api.post("/api/order/userorders", {});
 
       if (response.data.success) {
         let allOrdersItem = [];
-        response.data.orders.map((order) => {
-          order.items.map((item) => {
-            item["status"] = order.status;
-            item["payment"] = order.payment;
-            item["paymentMethod"] = order.paymentMethod;
-            item["date"] = order.date;
-            allOrdersItem.push(item);
+
+        response.data.orders.forEach((order) => {
+          order.items.forEach((item) => {
+            allOrdersItem.push({
+              ...item,
+              status: order.status,
+              payment: order.payment,
+              paymentMethod: order.paymentMethod,
+              date: order.date,
+            });
           });
         });
+
         setOrderData(allOrdersItem.reverse());
       }
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [isAuthenticated]);
 
   useEffect(() => {
     loadOrderData();
-  }, [token]);
+  }, [isAuthenticated, loadOrderData]);
 
   return (
     <div className="min-h-screen pt-14">

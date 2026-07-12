@@ -5,20 +5,19 @@ import { assets } from "../assets/assets";
 import { useContext, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
-import axios from "axios";
+import api from "../api/axiosInstance";
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("cod");
   const {
     navigate,
-    backendUrl,
-    token,
     cartItems,
     setCartItems,
     getCartAmount,
     delivery_fee,
     products,
   } = useContext(ShopContext);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -49,11 +48,7 @@ const PlaceOrder = () => {
       handler: async (res) => {
         console.log(res);
         try {
-          const { data } = await axios.post(
-            backendUrl + "/api/order/verifyRazorpay",
-            res,
-            { headers: { token } },
-          );
+          const { data } = await api.post("/api/order/verifyRazorpay", res, {});
           if (data.success) {
             navigate("/orders");
             setCartItems({});
@@ -105,11 +100,7 @@ const PlaceOrder = () => {
       switch (method) {
         // API calls for COD
         case "cod":
-          const response = await axios.post(
-            backendUrl + "/api/order/place",
-            orderData,
-            { headers: { token } },
-          );
+          const response = await api.post("/api/order/place", orderData);
           if (response.data.success) {
             setCartItems({});
             navigate("/orders");
@@ -119,11 +110,7 @@ const PlaceOrder = () => {
           break;
 
         case "stripe":
-          const responseStripe = await axios.post(
-            backendUrl + "/api/order/stripe",
-            orderData,
-            { headers: { token } },
-          );
+          const responseStripe = await api.post("/api/order/stripe", orderData);
           if (responseStripe.data.success) {
             const { session_url } = responseStripe.data;
             window.location.replace(session_url);
@@ -131,12 +118,10 @@ const PlaceOrder = () => {
           break;
 
         case "razorpay":
-          const responseRazorpay = await axios.post(
-            backendUrl + "/api/order/razorpay",
+          const responseRazorpay = await api.post(
+            "/api/order/razorpay",
             orderData,
-            {
-              headers: { token },
-            },
+            {},
           );
           if (responseRazorpay.data.success) {
             initPay(responseRazorpay.data.order);
@@ -160,7 +145,7 @@ const PlaceOrder = () => {
       className="flex min-h-[80v] flex-col justify-between gap-4 pt-5 sm:flex-row sm:pt-14"
     >
       {/* ----- Left Side ----- */}
-      <div className="flex w-full flex-col gap-4 sm:max-w-[480px]">
+      <div className="flex w-full flex-col gap-4 sm:max-w-120">
         <div className="my-3 text-xl sm:text-2xl">
           <Title text1={"DELIVERY"} text2={"INFORMATION"} />
         </div>
