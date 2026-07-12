@@ -63,7 +63,7 @@ const loginUser = async (req, res) => {
 		}
 
 		// User check
-		const user = await userModel.findOne({ email });
+		const user = await userModel.findOne({ email }).select('+password');
 		if (!user) {
 			return res.status(401).json({ success: false, message: 'Invalid credentials' });
 		}
@@ -197,7 +197,7 @@ const verifyEmail = async (req, res) => {
 		const user = await userModel.findOne({
 			verifyToken: token,
 			verifyTokenExpiry: { $gt: Date.now() }
-		});
+		}).select('+verifyToken +verifyTokenExpiry');
 
 		if (!user) {
 			return res.status(400).json({ success: false, message: 'Invalid or expired verification link' });
@@ -253,9 +253,7 @@ const resendVerificationEmail = async (req, res) => {
 		if (token) query.verifyToken = token;
 		if (email) query.email = email;
 
-		console.log(query);
-
-		const user = await userModel.findOne(query);
+		const user = await userModel.findOne(query).select('+verifyToken +verifyTokenExpiry');
 
 		if (!user) {
 			return res.status(400).json({
@@ -320,7 +318,7 @@ const forgotPassword = async (req, res) => {
 			});
 		}
 
-		const user = await userModel.findOne({ email });
+		const user = await userModel.findOne({ email }).select('+resetPasswordToken +resetPasswordTokenExpiry');
 
 		if (!user) {
 			return res.status(400).json({
@@ -401,7 +399,7 @@ const resetPassword = async (req, res) => {
 		const user = await userModel.findOne({
 			resetPasswordToken: token,
 			resetPasswordTokenExpiry: { $gt: Date.now() }
-		});
+		}).select('+resetPasswordToken +resetPasswordTokenExpiry');
 
 		if (!user) {
 			return res.status(400).json({
@@ -453,7 +451,7 @@ const adminLogin = async (req, res) => {
 			return res.status(400).json({ success: false, message: 'Email and password are required' });
 		}
 
-		const user = await userModel.findOne({ email });
+		const user = await userModel.findOne({ email }).select('+password');
 		if (!user) {
 			return res.status(401).json({ success: false, message: 'Invalid credentials' });
 		}

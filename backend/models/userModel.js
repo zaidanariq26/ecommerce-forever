@@ -24,7 +24,8 @@ const userSchema = new mongoose.Schema(
 		password: {
 			type: String,
 			required: true,
-			minlength: 8
+			minlength: 8,
+			select: false
 		},
 		phone: {
 			type: String,
@@ -51,10 +52,10 @@ const userSchema = new mongoose.Schema(
 			type: Object,
 			default: {}
 		},
-		verifyToken: { type: String },
-		verifyTokenExpiry: { type: Date },
-		resetPasswordToken: { type: String },
-		resetPasswordTokenExpiry: { type: Date }
+		verifyToken: { type: String, select: false },
+		verifyTokenExpiry: { type: Date, select: false },
+		resetPasswordToken: { type: String, select: false },
+		resetPasswordTokenExpiry: { type: Date, select: false }
 	},
 	{
 		minimize: false,
