@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
-import { assets } from "../assets/assets";
 import RelatedProducts from "../components/RelatedProducts";
 import Loading from "../components/Loading";
 import { Link } from "react-router-dom";
@@ -83,14 +82,6 @@ const Product = () => {
         {/* ----- Product Info ----- */}
         <div className="flex-1">
           <h1 className="mt-2 text-2xl font-medium">{productData.name}</h1>
-          <div className="mt-2 flex items-center gap-1">
-            <img src={assets.star_icon} alt="" className="w-3.5" />
-            <img src={assets.star_icon} alt="" className="w-3.5" />
-            <img src={assets.star_icon} alt="" className="w-3.5" />
-            <img src={assets.star_icon} alt="" className="w-3.5" />
-            <img src={assets.star_dull_icon} alt="" className="w-3.5" />
-            <p className="pl-2">(122)</p>
-          </div>
           <p className="mt-5 text-3xl font-medium">
             {currency}
             {productData.price}
@@ -127,23 +118,15 @@ const Product = () => {
         </div>
       </div>
 
-      {/* ----- Description & Review Section ----- */}
+      {/* ----- Description Section ----- */}
       <div className="mt-20">
         <div className="mb-px flex gap-px">
           <strong className="border border-gray-300 px-5 py-3 text-sm">
             Description
           </strong>
-          <p className="border border-gray-300 px-5 py-3 text-sm">
-            Reviews (122)
-          </p>
         </div>
         <div className="flex flex-col gap-4 border border-gray-300 p-6 text-sm text-gray-500">
-          <p>
-            Designed for everyday wear, this piece brings together comfort,
-            versatility, and a clean modern look. Pair it with your favorite
-            wardrobe staples for casual days, weekend plans, or easy layered
-            outfits.
-          </p>
+          <p>{productData.description}</p>
           <p>
             Please check the available sizes before adding to cart. Product
             colors may vary slightly depending on your screen, but every order
