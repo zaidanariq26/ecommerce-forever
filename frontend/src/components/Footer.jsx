@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { navLinks } from "../constant";
 
@@ -18,9 +19,9 @@ const Footer = () => {
           <p className="mb-5 text-xl font-medium">COMPANY</p>
           <ul className="flex flex-col gap-1 text-gray-600">
             {navLinks.map((navLink, index) => (
-              <a key={index} href={navLink.path}>
-                <span>{navLink.name}</span>
-              </a>
+              <Link key={index} to={navLink.path}>
+                <span className="hover:underline">{navLink.name}</span>
+              </Link>
             ))}
           </ul>
         </div>
