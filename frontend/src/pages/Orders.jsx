@@ -8,6 +8,7 @@ import api from "../api/axiosInstance";
 import Loading from "../components/Loading";
 import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
+import SEO from "../components/SEO";
 
 const Orders = () => {
   const { currency } = useContext(ShopContext);
@@ -51,6 +52,7 @@ const Orders = () => {
 
   return (
     <div className="min-h-screen pt-14">
+      <SEO title="My Orders" />
       <div className="mb-3">
         <Title text1={"MY"} text2={"ORDERS"} />
       </div>

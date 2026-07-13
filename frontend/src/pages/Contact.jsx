@@ -1,9 +1,11 @@
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
+import SEO from "../components/SEO";
 
 const Contact = () => {
   return (
     <div>
+      <SEO title="Contact" />
       <div className="pt-10 text-center text-2xl">
         <Title text1={"CONTACT"} text2={"US"} />
       </div>

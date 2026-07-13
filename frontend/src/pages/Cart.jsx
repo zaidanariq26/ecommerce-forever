@@ -4,6 +4,7 @@ import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
 import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
+import SEO from "../components/SEO";
 
 const Cart = () => {
   const { products, currency, cartItems, updateQuantity, navigate } =
@@ -45,6 +46,7 @@ const Cart = () => {
 
   return (
     <div className="pt-14">
+      <SEO title="Cart" />
       <div className="mb-3 text-2xl">
         <Title text1={"YOUR"} text2={"CART"} />
       </div>

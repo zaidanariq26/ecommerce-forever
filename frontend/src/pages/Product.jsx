@@ -5,6 +5,7 @@ import RelatedProducts from "../components/RelatedProducts";
 import Loading from "../components/Loading";
 import { Link } from "react-router-dom";
 import { Icon } from "@iconify/react";
+import SEO from "../components/SEO";
 
 const Product = () => {
   const { productId } = useParams();
@@ -59,6 +60,7 @@ const Product = () => {
 
   return productData ? (
     <div className="pt-10 opacity-100 transition-opacity duration-500 ease-in">
+      <SEO title={productData.name} />
       {/* Product Data */}
       <div className="flex flex-col gap-12 sm:flex-row sm:gap-12">
         {/* ----- Product Images ----- */}

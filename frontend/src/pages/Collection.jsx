@@ -4,6 +4,7 @@ import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
 import { Icon } from "@iconify/react";
 import FilterModal from "../components/FilterModal";
+import SEO from "../components/SEO";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -114,6 +115,7 @@ const Collection = () => {
 
   return (
     <div className="flex flex-col gap-1 pt-10 sm:flex-row sm:gap-10">
+      <SEO title="Collection" />
       {/* Filter Options */}
       <div className="hidden min-w-60 min-[964px]:block">
         <p className="my-2 flex items-center gap-2 text-xl">FILTERS</p>
