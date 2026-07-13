@@ -159,22 +159,24 @@ const Navbar = () => {
             ))}
           </div>
 
-          <div className="xs:flex-row xs:justify-center xs:items-center mt-6 flex flex-col gap-2 px-3 sm:hidden">
-            <Link
-              to="/login"
-              onClick={() => setVisible(false)}
-              className="border border-gray-900 bg-transparent px-4 py-2 text-center text-sm font-normal text-gray-900 hover:bg-gray-100"
-            >
-              Login
-            </Link>
-            <Link
-              to="/register"
-              onClick={() => setVisible(false)}
-              className="border border-gray-900 bg-gray-900 px-4 py-2 text-center text-sm font-normal text-gray-100 hover:bg-gray-800"
-            >
-              Register
-            </Link>
-          </div>
+          {!isAuthenticated && (
+            <div className="xs:flex-row xs:justify-center xs:items-center mt-6 flex flex-col gap-2 px-3 sm:hidden">
+              <Link
+                to="/login"
+                onClick={() => setVisible(false)}
+                className="border border-gray-900 bg-transparent px-4 py-2 text-center text-sm font-normal text-gray-900 hover:bg-gray-100"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                onClick={() => setVisible(false)}
+                className="border border-gray-900 bg-gray-900 px-4 py-2 text-center text-sm font-normal text-gray-100 hover:bg-gray-800"
+              >
+                Register
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </div>

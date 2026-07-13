@@ -5,6 +5,8 @@ import ProductItem from "../components/ProductItem";
 import { Icon } from "@iconify/react";
 import FilterModal from "../components/FilterModal";
 
+const ITEMS_PER_PAGE = 8;
+
 const Collection = () => {
   const { products, search, showSearch } = useContext(ShopContext);
   const [filterProducts, setFilterProducts] = useState([]);
@@ -13,6 +15,7 @@ const Collection = () => {
   const [sortType, setSortType] = useState("relevant");
   const [filterOpen, setFilterOpen] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const toggleCategory = (e) => {
     if (category.includes(e.target.value)) {
@@ -103,6 +106,7 @@ const Collection = () => {
 
   useEffect(() => {
     applyFilterAndSort();
+    setCurrentPage(1);
     if (initialLoading && products.length > 0) {
       setInitialLoading(false);
     }
@@ -182,15 +186,20 @@ const Collection = () => {
         {/* Map Products */}
         <div className="grid grid-cols-2 gap-4 gap-y-6 md:grid-cols-3 lg:grid-cols-4">
           {filterProducts.length > 0 ? (
-            filterProducts.map((item, index) => (
-              <ProductItem
-                key={index}
-                id={item._id}
-                image={item.image}
-                name={item.name}
-                price={item.price}
-              />
-            ))
+            filterProducts
+              .slice(
+                (currentPage - 1) * ITEMS_PER_PAGE,
+                currentPage * ITEMS_PER_PAGE,
+              )
+              .map((item, index) => (
+                <ProductItem
+                  key={item._id}
+                  id={item._id}
+                  image={item.image}
+                  name={item.name}
+                  price={item.price}
+                />
+              ))
           ) : !initialLoading ? (
             <div className="col-span-full flex min-h-[40vh] flex-col items-center justify-center gap-4">
               <Icon
@@ -201,6 +210,57 @@ const Collection = () => {
             </div>
           ) : null}
         </div>
+
+        {/* Pagination */}
+        {filterProducts.length > ITEMS_PER_PAGE && (
+          <div className="mt-8 flex items-center justify-center gap-2 flex-wrap">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="cursor-pointer border border-gray-300 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Prev
+            </button>
+            {/* Mobile: page indicator */}
+            <span className="text-sm text-gray-600 sm:hidden">
+              {currentPage} / {Math.ceil(filterProducts.length / ITEMS_PER_PAGE)}
+            </span>
+            {/* Desktop: page numbers */}
+            {Array.from(
+              { length: Math.ceil(filterProducts.length / ITEMS_PER_PAGE) },
+              (_, i) => i + 1,
+            ).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`cursor-pointer border px-3 py-1 text-sm hidden sm:inline-block ${
+                  currentPage === page
+                    ? "border-gray-900 bg-gray-900 text-white"
+                    : "border-gray-300 hover:bg-gray-100"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              onClick={() =>
+                setCurrentPage((p) =>
+                  Math.min(
+                    Math.ceil(filterProducts.length / ITEMS_PER_PAGE),
+                    p + 1,
+                  ),
+                )
+              }
+              disabled={
+                currentPage ===
+                Math.ceil(filterProducts.length / ITEMS_PER_PAGE)
+              }
+              className="cursor-pointer border border-gray-300 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
