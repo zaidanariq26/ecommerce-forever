@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { BACKEND_URL, CURRENCY } from '../constants';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const List = ({ token }) => {
 	const [list, setList] = useState([]);
+	const navigate = useNavigate();
 
 	const fetchList = async () => {
 		try {
@@ -14,8 +16,6 @@ const List = ({ token }) => {
 			} else {
 				toast.error(response.data.message);
 			}
-
-			console.log(response.data);
 		} catch (error) {
 			console.log(error);
 			toast.error(error.message);
@@ -69,6 +69,11 @@ const List = ({ token }) => {
 						<p>
 							{CURRENCY}
 							{item.price}
+						</p>
+						<p
+							onClick={() => navigate(`/edit?id=${item._id}`)}
+							className='text-right md:text-center cursor-pointer text-lg text-blue-600 mr-3 inline-block'>
+							E
 						</p>
 						<p onClick={() => removeProduct(item._id)} className='text-right md:text-center cursor-pointer text-lg'>
 							X
