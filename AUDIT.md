@@ -207,23 +207,23 @@
 
 - [*] **Redesign admin auth system** — Replace the current plaintext-credentials-in-JWT pattern with proper admin user records in the database. Create an `adminUser` model or add an `isAdmin` role to `userModel`. Use standard JWT with `expiresIn`, role-based middleware, and bcrypt password comparison. Remove `JWT_SECRET = "forever"` and use a proper random secret. (Files: `backend/middleware/adminAuth.js`, `backend/controllers/userController.js:448-461`, `backend/models/userModel.js`)
 
-- [ ] **Add rate limiting** — Install `express-rate-limit` and apply to auth routes: login (5/15min), register (3/15min), forgot-password (3/15min), resend-verification (3/15min). (File: `backend/server.js`, new middleware)
+- [*] **Add rate limiting** — Install `express-rate-limit` and apply to auth routes: login (5/15min), register (3/15min), forgot-password (3/15min), resend-verification (3/15min). (File: `backend/server.js`, new middleware)
 
-- [ ] **Add multer file upload limits** — In `backend/middleware/multer.js`, add `limits: { fileSize: 5 * 1024 * 1024 }` (5MB) and a `fileFilter` that only allows `image/jpeg`, `image/png`, `image/webp`. (File: `backend/middleware/multer.js`)
+- [*] **Add multer file upload limits** — In `backend/middleware/multer.js`, add `limits: { fileSize: 5 * 1024 * 1024 }` (5MB) and a `fileFilter` that only allows `image/jpeg`, `image/png`, `image/webp`. (File: `backend/middleware/multer.js`)
 
-- [ ] **Add `select: false` to sensitive fields** — In `backend/models/userModel.js`, add `select: false` to `password`, `verifyToken`, `resetPasswordToken`, `verifyTokenExpiry`, `resetPasswordTokenExpiry` fields. (File: `backend/models/userModel.js`)
+- [*] **Add `select: false` to sensitive fields** — In `backend/models/userModel.js`, add `select: false` to `password`, `verifyToken`, `resetPasswordToken`, `verifyTokenExpiry`, `resetPasswordTokenExpiry` fields. (File: `backend/models/userModel.js`)
 
-- [ ] **Fix invalidation on logout** — Add a server-side token blocklist (Redis or a simple `Set` in memory for now) in the logout endpoint. Check the blocklist in `auth.js` middleware. (Files: `backend/controllers/userController.js:434-445`, `backend/middleware/auth.js`)
+- [*] **Fix invalidation on logout** — Add a server-side token blocklist (Redis or a simple `Set` in memory for now) in the logout endpoint. Check the blocklist in `auth.js` middleware. (Files: `backend/controllers/userController.js:434-445`, `backend/middleware/auth.js`)
 
-- [ ] **Add empty states and loading indicators** — Add skeleton/loading spinners to: Collection page (product grid), Cart page (cart items), Orders page (order list), Product detail page. Add empty state messages for: Cart (empty cart), Orders (no orders), Collection (no matching products). (Files: `frontend/src/pages/Cart.jsx`, `frontend/src/pages/Orders.jsx`, `frontend/src/pages/Collection.jsx`, `frontend/src/pages/Product.jsx`)
+- [*] **Add empty states and loading indicators** — Add skeleton/loading spinners to: Collection page (product grid), Cart page (cart items), Orders page (order list), Product detail page. Add empty state messages for: Cart (empty cart), Orders (no orders), Collection (no matching products). (Files: `frontend/src/pages/Cart.jsx`, `frontend/src/pages/Orders.jsx`, `frontend/src/pages/Collection.jsx`, `frontend/src/pages/Product.jsx`)
 
-- [ ] **Fix register success toast bug** — In `frontend/src/zustand/authStore.js:35`, change `toast.success(...)` to `toast.error(...)` when `response.data.success` is false. (File: `frontend/src/zustand/authStore.js:35`)
+- [*] **Fix register success toast bug** — In `frontend/src/zustand/authStore.js:35`, change `toast.success(...)` to `toast.error(...)` when `response.data.success` is false. (File: `frontend/src/zustand/authStore.js:35`)
 
-- [ ] **Add helmet security headers** — Install `helmet` and add `app.use(helmet())` in `backend/server.js`. (File: `backend/server.js`)
+- [*] **Add helmet security headers** — Install `helmet` and add `app.use(helmet())` in `backend/server.js`. (File: `backend/server.js`)
 
-- [ ] **Add product edit functionality in admin** — Create an edit page/modal in the admin panel. Add a backend `updateProduct` controller function and route. Allow editing name, description, price, category, subcategory, sizes, bestseller, and replacing images. (Files: new admin page, `backend/controllers/productController.js`, `backend/routes/productRoute.js`)
+- [*] **Add product edit functionality in admin** — Create an edit page/modal in the admin panel. Add a backend `updateProduct` controller function and route. Allow editing name, description, price, category, subcategory, sizes, bestseller, and replacing images. (Files: new admin page, `backend/controllers/productController.js`, `backend/routes/productRoute.js`)
 
-- [ ] **Add delete confirmation dialogs** — In `admin/src/pages/List.jsx`, add a confirmation modal (use `window.confirm` or a custom dialog) before deleting a product. Similarly for status changes in `admin/src/pages/Orders.jsx`. (Files: `admin/src/pages/List.jsx:73`, `admin/src/pages/Orders.jsx`)
+- [*] **Add delete confirmation dialogs** — In `admin/src/pages/List.jsx`, add a confirmation modal (use `window.confirm` or a custom dialog) before deleting a product. Similarly for status changes in `admin/src/pages/Orders.jsx`. (Files: `admin/src/pages/List.jsx:73`, `admin/src/pages/Orders.jsx`)
 
 ### Phase 3 — Medium Priority (improves completeness/quality)
 
