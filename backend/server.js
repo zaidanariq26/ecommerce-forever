@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
 import connectDB from "./config/mongodb.js";
 import connectCloudinary from "./config/cloudinary.js";
 import userRouter from "./routes/userRoute.js";
@@ -17,6 +18,7 @@ connectDB();
 connectCloudinary();
 
 // Middlewares
+app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
 app.use(
