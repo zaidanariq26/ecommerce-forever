@@ -23,6 +23,8 @@ const List = ({ token }) => {
 	};
 
 	const removeProduct = async (id) => {
+		if (!window.confirm('Are you sure you want to delete this product?')) return;
+
 		try {
 			const response = await axios.post(BACKEND_URL + '/api/product/remove', { id }, { headers: { token } });
 

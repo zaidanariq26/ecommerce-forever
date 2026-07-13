@@ -24,6 +24,10 @@ const Product = () => {
   }, [products, productId]);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [productId, products]);
+
+  useEffect(() => {
     fetchProductData();
     setSize("");
   }, [fetchProductData]);
@@ -39,7 +43,10 @@ const Product = () => {
   if (!productData) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 pt-10">
-        <Icon icon="solar:question-circle-outline" className="text-6xl text-gray-300" />
+        <Icon
+          icon="solar:question-circle-outline"
+          className="text-6xl text-gray-300"
+        />
         <p className="text-xl text-gray-500">Product not found</p>
         <Link
           to="/collection"

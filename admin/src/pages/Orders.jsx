@@ -26,10 +26,16 @@ const Orders = ({ token }) => {
 	};
 
 	const statusHandler = async (e, orderId) => {
+		const newStatus = e.target.value;
+		if (!window.confirm(`Change order status to "${newStatus}"?`)) {
+			e.target.value = orders.find((o) => o._id === orderId)?.status || '';
+			return;
+		}
+
 		try {
 			const response = await axios.post(
 				BACKEND_URL + '/api/order/status',
-				{ orderId, status: e.target.value },
+				{ orderId, status: newStatus },
 				{ headers: { token } }
 			);
 
