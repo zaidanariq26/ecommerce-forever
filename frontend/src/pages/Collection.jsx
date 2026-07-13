@@ -63,6 +63,10 @@ const Collection = () => {
         productsCopy.sort((a, b) => b.price - a.price);
         break;
 
+      case "newest":
+        productsCopy.sort((a, b) => b.date - a.date);
+        break;
+
       default:
         break;
     }
