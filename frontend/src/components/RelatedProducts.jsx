@@ -10,18 +10,6 @@ const RelatedProducts = ({ category, subCategory }) => {
 
    useEffect(() => {
       if (products.length > 0) {
-         let productsCopy = products.slice();
-
-         productsCopy
-            .filter((item) => item.category === category)
-            .filter((item) => item.subCategory === subCategory);
-
-         setRelated(productsCopy.slice(0, 5));
-      }
-   }, [products, category, subCategory]);
-
-   useEffect(() => {
-      if (products.length > 0) {
          let relatedProducts = products
             .filter((item) => item.category === category)
             .filter((item) => item.subCategory === subCategory);
