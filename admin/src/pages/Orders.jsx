@@ -105,7 +105,11 @@ const Orders = ({ token }) => {
 							{CURRENCY}
 							{order.amount}
 						</p>
-						<select onChange={(e) => statusHandler(e, order._id)} value={order.status} className='p-2 font-semibold'>
+						<select
+							onChange={(e) => statusHandler(e, order._id)}
+							value={order.status}
+							disabled={order.status === 'Delivered'}
+							className={`p-2 font-semibold ${order.status === 'Delivered' ? 'cursor-not-allowed opacity-50' : ''}`}>
 							<option value='Order Placed'>Order Placed</option>
 							<option value='Packing'>Packing</option>
 							<option value='Shipped'>Shipped</option>

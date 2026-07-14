@@ -52,6 +52,10 @@ const userSchema = new mongoose.Schema(
 			type: Object,
 			default: {}
 		},
+		wishlist: {
+			type: [String],
+			default: []
+		},
 		verifyToken: { type: String, select: false },
 		verifyTokenExpiry: { type: Date, select: false },
 		resetPasswordToken: { type: String, select: false },

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
 	{
@@ -33,6 +33,14 @@ const productSchema = new mongoose.Schema(
 		bestseller: {
 			type: Boolean,
 		},
+		rating: {
+			type: Number,
+			default: 0,
+		},
+		numReviews: {
+			type: Number,
+			default: 0,
+		},
 		date: {
 			type: Number,
 			required: true,
@@ -41,6 +49,7 @@ const productSchema = new mongoose.Schema(
 	{ minimize: false },
 );
 
-const productModel = mongoose.models.product || mongoose.model('products', productSchema);
+const productModel =
+	mongoose.models.product || mongoose.model("products", productSchema);
 
 export default productModel;

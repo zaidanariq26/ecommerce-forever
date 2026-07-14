@@ -118,7 +118,7 @@ const Collection = () => {
   }, [applyFilterAndSort, initialLoading, products.length]);
 
   return (
-    <div className="flex flex-col gap-1 pt-10 sm:flex-row sm:gap-10">
+    <div className="mb-28 flex flex-col gap-1 pt-10 sm:flex-row sm:gap-10">
       <SEO title="Collection" />
       {/* Filter Options */}
       <div className="hidden min-w-60 min-[964px]:block">
@@ -204,6 +204,8 @@ const Collection = () => {
                   image={item.image}
                   name={item.name}
                   price={item.price}
+                  rating={item.rating}
+                  numReviews={item.numReviews}
                 />
               ))
           ) : !initialLoading ? (
@@ -219,7 +221,7 @@ const Collection = () => {
 
         {/* Pagination */}
         {filterProducts.length > ITEMS_PER_PAGE && (
-          <div className="mt-8 flex items-center justify-center gap-2 flex-wrap">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
@@ -229,7 +231,8 @@ const Collection = () => {
             </button>
             {/* Mobile: page indicator */}
             <span className="text-sm text-gray-600 sm:hidden">
-              {currentPage} / {Math.ceil(filterProducts.length / ITEMS_PER_PAGE)}
+              {currentPage} /{" "}
+              {Math.ceil(filterProducts.length / ITEMS_PER_PAGE)}
             </span>
             {/* Desktop: page numbers */}
             {Array.from(
@@ -239,7 +242,7 @@ const Collection = () => {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`cursor-pointer border px-3 py-1 text-sm hidden sm:inline-block ${
+                className={`hidden cursor-pointer border px-3 py-1 text-sm sm:inline-block ${
                   currentPage === page
                     ? "border-gray-900 bg-gray-900 text-white"
                     : "border-gray-300 hover:bg-gray-100"

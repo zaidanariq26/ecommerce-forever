@@ -32,6 +32,8 @@ const BestSeller = () => {
               name={item.name}
               image={item.image}
               price={item.price}
+              rating={item.rating}
+              numReviews={item.numReviews}
             />
           );
         })}

@@ -227,33 +227,33 @@
 
 ### Phase 3 — Medium Priority (improves completeness/quality)
 
-- [ ] **Add product price as Number type** — Change `price` field in `backend/models/productModel.js` from `type: String` to `type: Number`. Update the controller to stop doing `Number(price)` (Mongoose will cast automatically). (File: `backend/models/productModel.js:14`)
+- [*] **Add product price as Number type** — Change `price` field in `backend/models/productModel.js` from `type: String` to `type: Number`. Update the controller to stop doing `Number(price)` (Mongoose will cast automatically). (File: `backend/models/productModel.js:14`)
 
-- [ ] **Add pagination** — Add `skip` and `limit` query params to `listProducts` in `backend/controllers/productController.js`. Add page controls in the frontend Collection page and admin List page. (Files: `backend/controllers/productController.js:48-55`, `frontend/src/pages/Collection.jsx`, `admin/src/pages/List.jsx`)
+- [*] **Add pagination** — Add `skip` and `limit` query params to `listProducts` in `backend/controllers/productController.js`. Add page controls in the frontend Collection page and admin List page. (Files: `backend/controllers/productController.js:48-55`, `frontend/src/pages/Collection.jsx`, `admin/src/pages/List.jsx`)
 
-- [ ] **Fix Product page description** — In `frontend/src/pages/Product.jsx`, display the actual `productData.description` from the database instead of hardcoded marketing text. Remove the hardcoded star rating or implement a real review system. (Files: `frontend/src/pages/Product.jsx`)
+- [*] **Fix Product page description** — In `frontend/src/pages/Product.jsx`, display the actual `productData.description` from the database instead of hardcoded marketing text. Remove the hardcoded star rating or implement a real review system. (Files: `frontend/src/pages/Product.jsx`)
 
-- [ ] **Fix `RelatedProducts.jsx` double useEffect** — Remove the first broken `useEffect` (lines 11-20). Keep only the second correct one (lines 23-31). (File: `frontend/src/components/RelatedProducts.jsx:11-20`)
+- [*] **Fix `RelatedProducts.jsx` double useEffect** — Remove the first broken `useEffect` (lines 11-20). Keep only the second correct one (lines 23-31). (File: `frontend/src/components/RelatedProducts.jsx:11-20`)
 
-- [ ] **Fix SEO for parameterized routes** — In `frontend/src/App.jsx`, use `react-helmet-async`'s `<Helmet>` directly in each page component instead of trying to match `location.pathname` against route patterns. Each page should set its own `<title>`. (File: `frontend/src/App.jsx`, `frontend/src/pages/Product.jsx`)
+- [*] **Fix SEO for parameterized routes** — In `frontend/src/App.jsx`, use `react-helmet-async`'s `<Helmet>` directly in each page component instead of trying to match `location.pathname` against route patterns. Each page should set its own `<title>`. (File: `frontend/src/App.jsx`, `frontend/src/pages/Product.jsx`)
 
-- [ ] **Fix `CartTotal.jsx` decimal formatting** — Replace the hardcoded `.00` suffix with proper currency formatting (e.g., `Number(amount).toFixed(2)`). (File: `frontend/src/components/CartTotal.jsx:17,24,33`)
+- [*] **Fix `CartTotal.jsx` decimal formatting** — Replace the hardcoded `.00` suffix with proper currency formatting (e.g., `Number(amount).toFixed(2)`). (File: `frontend/src/components/CartTotal.jsx:17,24,33`)
 
-- [ ] **Add "Newest" sort implementation** — In `frontend/src/pages/Collection.jsx`, add a `case "newest"` to the sort switch statement that sorts by `date` field in descending order. (File: `frontend/src/pages/Collection.jsx`)
+- [*] **Add "Newest" sort implementation** — In `frontend/src/pages/Collection.jsx`, add a `case "newest"` to the sort switch statement that sorts by `date` field in descending order. (File: `frontend/src/pages/Collection.jsx`)
 
-- [ ] **Add null checks in Cart.jsx** — Guard against `products.find()` returning undefined for cart items that reference deleted products. (File: `frontend/src/pages/Cart.jsx:50`)
+- [*] **Add null checks in Cart.jsx** — Guard against `products.find()` returning undefined for cart items that reference deleted products. (File: `frontend/src/pages/Cart.jsx:50`)
 
-- [ ] **Add try/catch around `JSON.parse(sizes)`** — In `backend/controllers/productController.js:30`, wrap in try/catch to handle malformed JSON gracefully. (File: `backend/controllers/productController.js:30`)
+- [*] **Add try/catch around `JSON.parse(sizes)`** — In `backend/controllers/productController.js:30`, wrap in try/catch to handle malformed JSON gracefully. (File: `backend/controllers/productController.js:30`)
 
-- [ ] **Add null check in `updateCart`** — In `backend/controllers/cartController.js:40`, check that `cartData[itemId]` exists before accessing `cartData[itemId][size]`. (File: `backend/controllers/cartController.js:40`)
+- [*] **Add null check in `updateCart`** — In `backend/controllers/cartController.js:40`, check that `cartData[itemId]` exists before accessing `cartData[itemId][size]`. (File: `backend/controllers/cartController.js:40`)
 
-- [ ] **Fix AlertDialog default language** — Change default labels from Indonesian to English in `frontend/src/components/ui/AlertDialog.jsx`. (File: `frontend/src/components/ui/AlertDialog.jsx`)
+- [*] **Fix AlertDialog default language** — Change default labels from Indonesian to English in `frontend/src/components/ui/AlertDialog.jsx`. (File: `frontend/src/components/ui/AlertDialog.jsx`)
 
-- [ ] **Fix Footer to use React Router Links** — Replace `<a href>` with `<Link to>` for internal navigation links in `frontend/src/components/Footer.jsx`. (File: `frontend/src/components/Footer.jsx`)
+- [*] **Fix Footer to use React Router Links** — Replace `<a href>` with `<Link to>` for internal navigation links in `frontend/src/components/Footer.jsx`. (File: `frontend/src/components/Footer.jsx`)
 
-- [ ] **Add `<StrictMode>`** — Wrap the app in `<React.StrictMode>` in `frontend/src/main.jsx`. (File: `frontend/src/main.jsx`)
+- [*] **Add `<StrictMode>`** — Wrap the app in `<React.StrictMode>` in `frontend/src/main.jsx`. (File: `frontend/src/main.jsx`)
 
-- [ ] **Add contact page button handler** — Add an `onClick` or `<a href="mailto:...">` to the "Contact Support" button in `frontend/src/pages/Contact.jsx`. (File: `frontend/src/pages/Contact.jsx`)
+- [*] **Add contact page button handler** — Add an `onClick` or `<a href="mailto:...">` to the "Contact Support" button in `frontend/src/pages/Contact.jsx`. (File: `frontend/src/pages/Contact.jsx`)
 
 ### Phase 4 — Polish (portfolio "wow factor")
 

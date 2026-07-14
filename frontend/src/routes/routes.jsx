@@ -8,6 +8,7 @@ import Login from "../components/auth/Login";
 import Register from "../components/auth/Register";
 import PlaceOrder from "../pages/PlaceOrder";
 import Orders from "../pages/Orders";
+import Wishlist from "../pages/Wishlist";
 import ForgotPassword from "../components/auth/ForgotPassword";
 import ResetPassword from "../components/auth/ResetPassword";
 import VerifyEmail from "../components/auth/VerifyEmail";
@@ -53,6 +54,11 @@ export const routes = [
     path: "/orders",
     element: <ProtectedRoute><Orders /></ProtectedRoute>,
     title: "My Orders",
+  },
+  {
+    path: "/wishlist",
+    element: <ProtectedRoute><Wishlist /></ProtectedRoute>,
+    title: "Wishlist",
   },
   {
     path: "/forgot-password",
