@@ -6,14 +6,14 @@ const Contact = () => {
   return (
     <div>
       <SEO title="Contact" />
-      <div className="pt-10 text-center text-2xl">
+      <div className="pt-10 text-center">
         <Title text1={"CONTACT"} text2={"US"} />
       </div>
 
-      <div className="my-10 mb-28 flex flex-col justify-center gap-10 md:flex-row">
+      <div className="mt-6 mb-28 flex flex-col justify-center gap-10 sm:mt-10 md:flex-row">
         <img
           src={assets.contact_img}
-          className="w-full md:max-w-[480px]"
+          className="w-full object-cover object-center md:max-w-120"
           alt=""
         />
         <div className="flex flex-col items-center justify-center gap-6">

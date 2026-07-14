@@ -142,11 +142,11 @@ const PlaceOrder = () => {
   return (
     <form
       onSubmit={onSubmitHandler}
-      className="flex min-h-[80v] flex-col justify-between gap-4 pt-5 sm:flex-row sm:pt-14"
+      className="flex min-h-[80v] flex-col justify-between gap-4 pt-8 md:flex-row md:pt-10"
     >
       {/* ----- Left Side ----- */}
-      <div className="flex w-full flex-col gap-4 sm:max-w-120">
-        <div className="my-3 text-xl sm:text-2xl">
+      <div className="flex flex-1 flex-col gap-4">
+        <div className="mt-3">
           <Title text1={"DELIVERY"} text2={"INFORMATION"} />
         </div>
         <div className="flex gap-3">
@@ -239,16 +239,16 @@ const PlaceOrder = () => {
       </div>
 
       {/* ----- Right Side ----- */}
-      <div className="mt-4 sm:mt-8">
-        <div className="mt-8 min-w-80">
+      <div className="mt-6 md:mt-8">
+        <div className="w-full">
           <CartTotal />
         </div>
 
-        <div className="mt-12">
+        <div className="mt-8 md:mt-12">
           <Title text1={"PAYMENT"} text2={"METHOD"} />
 
           {/* ----- Payment Method Selection ----- */}
-          <div className="flex flex-col gap-3 lg:flex-row">
+          <div className="flex flex-col gap-3 xl:flex-row">
             {paymentMethods.map(({ id, logo, label }) => (
               <div
                 key={id}
@@ -272,7 +272,7 @@ const PlaceOrder = () => {
           <div className="mt-8 w-full text-end">
             <button
               type="submit"
-              className="cursor-pointer bg-gray-900 px-16 py-3 text-sm text-white hover:bg-gray-800"
+              className="xs:w-auto w-full cursor-pointer bg-gray-900 px-16 py-3 text-sm text-white hover:bg-gray-800"
             >
               Place Order
             </button>

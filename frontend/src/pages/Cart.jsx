@@ -45,9 +45,9 @@ const Cart = () => {
   }
 
   return (
-    <div className="pt-14">
+    <div className="min-h-screen pt-8 md:pt-10">
       <SEO title="Cart" />
-      <div className="mb-3 text-2xl">
+      <div className="mb-3">
         <Title text1={"YOUR"} text2={"CART"} />
       </div>
 
@@ -142,7 +142,7 @@ const Cart = () => {
         })}
       </div>
 
-      <div className="my-20 flex justify-end">
+      <div className="mt-6 flex justify-end md:mt-8">
         <div className="w-full sm:w-[450px]">
           <CartTotal />
           <div className="w-full text-end">

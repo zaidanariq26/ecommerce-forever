@@ -63,7 +63,7 @@ const Navbar = () => {
       </ul>
 
       {/* Nav Actions */}
-      <div className="xs:gap-6 flex flex-1 items-center justify-end gap-4">
+      <div className="flex flex-1 items-center justify-end gap-4 lg:gap-6">
         <Icon
           onClick={() => setShowSearch((prev) => (prev = !prev))}
           icon="si:search-line"

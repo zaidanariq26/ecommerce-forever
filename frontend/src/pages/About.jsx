@@ -6,12 +6,12 @@ const About = () => {
   return (
     <div>
       <SEO title="About Us" />
-      <div className="pt-8 text-center text-2xl">
+      <div className="pt-10 text-center">
         <Title text1={"ABOUT"} text2={"US"} />
       </div>
-      <div className="my-10 flex flex-col gap-16 md:flex-row">
+      <div className="mt-6 flex flex-col gap-12 sm:mt-10 sm:gap-16 md:flex-row">
         <img
-          className="w-full md:max-w-[450px]"
+          className="w-full object-cover object-center md:max-w-112.5"
           src={assets.about_img}
           alt=""
         />
@@ -36,26 +36,26 @@ const About = () => {
         </div>
       </div>
 
-      <div className="py-4 text-xl">
+      <div className="mt-6 py-4 sm:mt-10">
         <Title text1={"WHY"} text2={"CHOOSE US"} />
       </div>
 
-      <div className="mb-20 flex flex-col divide-y divide-gray-300 border border-gray-300 text-sm md:flex-row md:divide-x">
-        <div className="flex flex-col gap-5 px-10 py-8 sm:py-20 md:px-16">
+      <div className="mb-20 flex flex-col divide-y divide-gray-300 border border-gray-300 text-sm sm:flex-row sm:divide-x">
+        <div className="flex flex-col gap-5 px-10 py-8 sm:py-12 md:px-8">
           <b>Quality Assurance: </b>
           <p className="text-gray-600">
             Every product is selected with attention to fabric, fit, and finish
             so your order feels as good in person as it looks online.
           </p>
         </div>
-        <div className="flex flex-col gap-5 px-10 py-8 sm:py-20 md:px-16">
+        <div className="flex flex-col gap-5 px-10 py-8 sm:py-12 md:px-8">
           <b>Convenience: </b>
           <p className="text-gray-600">
             Browse by category, compare styles, choose your size, and complete
             checkout with a flow designed to stay quick and simple.
           </p>
         </div>
-        <div className="flex flex-col gap-5 px-10 py-8 sm:py-20 md:px-16">
+        <div className="flex flex-col gap-5 px-10 py-8 sm:py-12 md:px-8">
           <b>Exeptional Customer Service: </b>
           <p className="text-gray-600">
             We keep support friendly and responsive, from order questions to

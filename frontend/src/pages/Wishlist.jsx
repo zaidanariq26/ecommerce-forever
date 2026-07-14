@@ -23,7 +23,7 @@ const Wishlist = () => {
   const wishlistProducts = products.filter((p) => wishlist.includes(p._id));
 
   return (
-    <div className="min-h-screen pt-14">
+    <div className="min-h-screen pt-8 md:pt-10">
       <SEO title="Wishlist" />
       <div className="mb-3">
         <Title text1={"MY"} text2={"WISHLIST"} />
@@ -32,7 +32,9 @@ const Wishlist = () => {
       {!isAuthenticated ? (
         <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4">
           <Icon icon="solar:heart-outline" className="text-6xl text-gray-300" />
-          <p className="text-xl text-gray-500">Please login to view your wishlist</p>
+          <p className="text-xl text-gray-500">
+            Please login to view your wishlist
+          </p>
           <Link
             to="/login"
             className="mt-2 bg-gray-900 px-8 py-3 text-sm text-white hover:bg-gray-800"

@@ -14,12 +14,8 @@ const StarRating = ({ value = 0, size = "text-xl" }) => {
       {[1, 2, 3, 4, 5].map((star) => (
         <Icon
           key={star}
-          icon={
-            star <= value ? "solar:star-bold" : "solar:star-outline"
-          }
-          className={
-            star <= value ? "text-amber-400" : "text-gray-300"
-          }
+          icon={star <= value ? "solar:star-bold" : "solar:star-outline"}
+          className={star <= value ? "text-amber-400" : "text-gray-300"}
         />
       ))}
     </div>
@@ -174,7 +170,7 @@ const Product = () => {
       </div>
 
       {/* ----- Description Section ----- */}
-      <div className="mt-20">
+      <div className="mt-12">
         <div className="mb-px flex gap-px">
           <strong className="border border-gray-300 px-5 py-3 text-sm">
             Description
@@ -191,8 +187,8 @@ const Product = () => {
       </div>
 
       {/* ----- Reviews Section ----- */}
-      <div className="mt-20">
-        <h2 className="mb-6 text-xl font-medium">
+      <div className="mt-12">
+        <h2 className="mb-2 text-xl font-medium">
           Customer Reviews
           {totalReviews > 0 && (
             <span className="ml-2 text-sm font-normal text-gray-500">
@@ -206,9 +202,7 @@ const Product = () => {
             <Loading type="spinner" size="text-3xl" />
           </div>
         ) : reviews.length === 0 ? (
-          <p className="py-6 text-sm text-gray-500">
-            No reviews yet.
-          </p>
+          <p className="py-4 text-sm text-gray-500">No reviews yet.</p>
         ) : (
           <div className="flex flex-col gap-6">
             {reviews.map((review) => (

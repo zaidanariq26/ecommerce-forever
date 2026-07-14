@@ -84,8 +84,8 @@ const Orders = () => {
   };
 
   return (
-    <div className="min-h-screen pt-14">
-      <SEO title="My Orders" />
+    <div className="min-h-screen pt-8 md:pt-10">
+      <SEO title="Wishlist" />
       <div className="mb-3">
         <Title text1={"MY"} text2={"ORDERS"} />
       </div>
@@ -139,11 +139,13 @@ const Orders = () => {
                     </p>
                     <p className="mt-1 text-sm sm:text-base">
                       Payment:{" "}
-                      <span className="text-gray-400">{item.paymentMethod}</span>
+                      <span className="text-gray-400">
+                        {item.paymentMethod}
+                      </span>
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-col items-start gap-2 md:w-1/2 md:flex-row md:items-center md:justify-between">
+                <div className="flex flex-row items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <p className="h-2 min-w-2 rounded-full bg-green-500"></p>
                     <p className="text-sm md:text-base">{item.status}</p>
@@ -174,8 +176,8 @@ const Orders = () => {
                                 }
                                 className={
                                   star <= reviewable.review.rating
-                                    ? "text-amber-400 text-sm"
-                                    : "text-gray-300 text-sm"
+                                    ? "text-sm text-amber-400"
+                                    : "text-sm text-gray-300"
                                 }
                               />
                             ))}
