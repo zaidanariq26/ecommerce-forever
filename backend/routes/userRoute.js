@@ -8,7 +8,9 @@ import {
 	registerUser,
 	resendVerificationEmail,
 	resetPassword,
-	verifyEmail
+	verifyEmail,
+	getProfile,
+	updateProfile
 } from '../controllers/userController.js';
 import authUser from '../middleware/auth.js';
 import {
@@ -29,6 +31,8 @@ userRouter.post('/resend-verification-email', resendVerificationLimiter, resendV
 userRouter.post('/forgot-password', forgotPasswordLimiter, forgotPassword);
 userRouter.patch('/reset-password', resetPassword);
 userRouter.post('/logout', authUser, logoutUser);
+userRouter.get('/profile', authUser, getProfile);
+userRouter.put('/profile', authUser, updateProfile);
 userRouter.post('/admin', loginLimiter, adminLogin);
 
 export default userRouter;

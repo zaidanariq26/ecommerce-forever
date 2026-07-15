@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { assets } from "../assets/assets";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
@@ -14,6 +14,8 @@ const Navbar = () => {
   const { setShowSearch, getCartCount, navigate } = useContext(ShopContext);
   const currentPath = useLocation().pathname;
   const { wishlist, fetchWishlist, resetWishlist } = useWishlistStore();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const handleLogout = async () => {
     await logout();
@@ -38,6 +40,20 @@ const Navbar = () => {
       document.body.style.overflow = "";
     };
   }, [visible]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="flex items-center justify-between border-b border-gray-300 py-5 font-medium">
@@ -75,17 +91,31 @@ const Navbar = () => {
           cursor="pointer"
         />
 
-        <div className={isAuthenticated ? "group relative" : "hidden"}>
+        <div className={isAuthenticated ? "relative" : "hidden"}>
           <Icon
             icon="solar:user-outline"
             className="xs:text-[28px] block text-2xl text-gray-800"
             cursor="pointer"
+            onClick={() => {
+              setUserMenuOpen((prev) => !prev);
+            }}
           />
 
           {/* Dropdown Menu */}
-          <div className="dropdown-menu absolute right-0 z-99 hidden pt-4 group-hover:block">
+          <div
+            className={`absolute right-0 z-99 pt-4 transition-all duration-300 ease-in-out ${userMenuOpen ? "block" : "hidden"}`}
+            ref={dropdownRef}
+            onClick={() => {
+              setUserMenuOpen((prev) => !prev);
+            }}
+          >
             <div className="flex w-36 flex-col gap-2 rounded bg-slate-100 px-5 py-3 text-gray-500">
-              <p className="cursor-pointer hover:text-black">My Profile</p>
+              <p
+                onClick={() => navigate("/profile")}
+                className="cursor-pointer hover:text-black"
+              >
+                My Profile
+              </p>
               <p
                 onClick={() => navigate("/wishlist")}
                 className="cursor-pointer hover:text-black"

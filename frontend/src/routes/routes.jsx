@@ -9,6 +9,7 @@ import Register from "../components/auth/Register";
 import PlaceOrder from "../pages/PlaceOrder";
 import Orders from "../pages/Orders";
 import Wishlist from "../pages/Wishlist";
+import Profile from "../pages/Profile";
 import ForgotPassword from "../components/auth/ForgotPassword";
 import ResetPassword from "../components/auth/ResetPassword";
 import VerifyEmail from "../components/auth/VerifyEmail";
@@ -59,6 +60,11 @@ export const routes = [
     path: "/wishlist",
     element: <ProtectedRoute><Wishlist /></ProtectedRoute>,
     title: "Wishlist",
+  },
+  {
+    path: "/profile",
+    element: <ProtectedRoute><Profile /></ProtectedRoute>,
+    title: "My Profile",
   },
   {
     path: "/forgot-password",

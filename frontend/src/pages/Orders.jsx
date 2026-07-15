@@ -85,8 +85,8 @@ const Orders = () => {
 
   return (
     <div className="min-h-screen pt-8 md:pt-10">
-      <SEO title="Wishlist" />
-      <div className="mb-3">
+      <SEO title="Orders" />
+      <div className="mb-3 text-center">
         <Title text1={"MY"} text2={"ORDERS"} />
       </div>
 
@@ -106,7 +106,7 @@ const Orders = () => {
           </Link>
         </div>
       ) : (
-        <div className="divide-y divide-gray-300">
+        <div className="divide-y divide-gray-300 md:mt-6">
           {orderData.map((item, index) => {
             const reviewKey = `${item.orderId}-${item._id}`;
             const reviewable = reviewableMap[reviewKey];
@@ -145,7 +145,7 @@ const Orders = () => {
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-row items-center justify-between gap-2">
+                <div className="flex justify-between md:w-1/2">
                   <div className="flex items-center gap-2">
                     <p className="h-2 min-w-2 rounded-full bg-green-500"></p>
                     <p className="text-sm md:text-base">{item.status}</p>

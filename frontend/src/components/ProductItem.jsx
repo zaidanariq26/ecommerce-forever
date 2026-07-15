@@ -6,7 +6,14 @@ import { Icon } from "@iconify/react";
 import useWishlistStore from "../zustand/wishlistStore";
 import useAuthStore from "../zustand/authStore";
 
-const ProductItem = ({ id, name, image, price, rating = 0, numReviews = 0 }) => {
+const ProductItem = ({
+  id,
+  name,
+  image,
+  price,
+  rating = 0,
+  numReviews = 0,
+}) => {
   const { currency } = useContext(ShopContext);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const toggleWishlist = useWishlistStore((state) => state.toggleWishlist);
@@ -53,8 +60,8 @@ const ProductItem = ({ id, name, image, price, rating = 0, numReviews = 0 }) => 
                 }
                 className={
                   star <= Math.round(rating)
-                    ? "text-amber-400 text-sm"
-                    : "text-gray-300 text-sm"
+                    ? "text-sm text-amber-400"
+                    : "text-sm text-gray-300"
                 }
               />
             ))}

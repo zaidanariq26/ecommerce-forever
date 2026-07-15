@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { sendResetPasswordEmail, sendVerificationEmail } from '../services/emailService.js';
 import { addToBlocklist, isBlocked } from '../middleware/tokenBlocklist.js';
+import { Country, State, City } from 'country-state-city';
 
 const createAccessToken = (id, role) => {
 	return jwt.sign({ id, role }, process.env.JWT_ACCESS_SECRET, {
@@ -16,6 +17,57 @@ const createRefreshToken = (id) => {
 	return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, {
 		expiresIn: '7d'
 	});
+};
+
+const validateAddress = (address) => {
+	const errors = [];
+
+	if (!address || typeof address !== 'object') {
+		return { valid: false, errors: ['Address is required'] };
+	}
+
+	const { country, state, city, zipcode } = address;
+
+	if (!country || !country.trim()) {
+		errors.push('Country is required');
+	} else {
+		const found = Country.getAllCountries().find(
+			(c) => c.name.toLowerCase() === country.trim().toLowerCase()
+		);
+		if (!found) {
+			errors.push('Invalid country');
+		} else {
+			if (!state || !state.trim()) {
+				errors.push('State is required');
+			} else {
+				const states = State.getStatesOfCountry(found.isoCode);
+				const stateFound = states.find(
+					(s) => s.name.toLowerCase() === state.trim().toLowerCase()
+				);
+				if (!stateFound) {
+					errors.push('Invalid state for the selected country');
+				} else if (!city || !city.trim()) {
+					errors.push('City is required');
+				} else {
+					const cities = City.getCitiesOfState(found.isoCode, stateFound.isoCode);
+					const cityFound = cities.find(
+						(c) => c.name.toLowerCase() === city.trim().toLowerCase()
+					);
+					if (!cityFound) {
+						errors.push('Invalid city for the selected state');
+					}
+				}
+			}
+		}
+	}
+
+	if (!zipcode || !zipcode.trim()) {
+		errors.push('Zipcode is required');
+	} else if (!/^[a-zA-Z0-9\s\-]{1,10}$/.test(zipcode.trim())) {
+		errors.push('Invalid zipcode format');
+	}
+
+	return { valid: errors.length === 0, errors };
 };
 
 const refreshToken = async (req, res) => {
@@ -486,6 +538,83 @@ const adminLogin = async (req, res) => {
 	}
 };
 
+const getProfile = async (req, res) => {
+	try {
+		const user = await userModel.findById(req.user.id);
+		if (!user) {
+			return res.status(404).json({ success: false, message: 'User not found' });
+		}
+
+		res.status(200).json({
+			success: true,
+			user: {
+				id: user._id,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				email: user.email,
+				phone: user.phone || '',
+				address: user.address || {},
+				role: user.role,
+			}
+		});
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ success: false, message: 'Internal server error' });
+	}
+};
+
+const updateProfile = async (req, res) => {
+	try {
+		const { firstName, lastName, phone, address } = req.body;
+		const userId = req.user.id;
+
+		const user = await userModel.findById(userId);
+		if (!user) {
+			return res.status(404).json({ success: false, message: 'User not found' });
+		}
+
+		// Validate required fields
+		const errors = [];
+		if (!firstName || !firstName.trim()) errors.push('First name is required');
+		if (!phone || !phone.trim()) errors.push('Phone number is required');
+		else if (!/^\+[0-9]{7,15}$/.test(phone.trim())) errors.push('Invalid phone number format');
+
+		if (errors.length > 0) {
+			return res.status(400).json({ success: false, message: errors.join(', ') });
+		}
+
+		// Validate address
+		const { valid, errors: addressErrors } = validateAddress(address);
+		if (!valid) {
+			return res.status(400).json({ success: false, message: addressErrors.join(', ') });
+		}
+
+		user.firstName = firstName.trim();
+		user.lastName = lastName ? lastName.trim() : '';
+		user.phone = phone.trim();
+		user.address = address;
+
+		await user.save();
+
+		res.status(200).json({
+			success: true,
+			message: 'Profile updated successfully',
+			user: {
+				id: user._id,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				email: user.email,
+				phone: user.phone || '',
+				address: user.address || {},
+				role: user.role,
+			}
+		});
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ success: false, message: 'Internal server error' });
+	}
+};
+
 export {
 	registerUser,
 	adminLogin,
@@ -495,5 +624,7 @@ export {
 	verifyEmail,
 	resendVerificationEmail,
 	forgotPassword,
-	resetPassword
+	resetPassword,
+	getProfile,
+	updateProfile
 };

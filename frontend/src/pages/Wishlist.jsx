@@ -25,7 +25,7 @@ const Wishlist = () => {
   return (
     <div className="min-h-screen pt-8 md:pt-10">
       <SEO title="Wishlist" />
-      <div className="mb-3">
+      <div className="mb-3 text-center">
         <Title text1={"MY"} text2={"WISHLIST"} />
       </div>
 

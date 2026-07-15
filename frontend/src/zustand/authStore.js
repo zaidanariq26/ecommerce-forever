@@ -117,6 +117,10 @@ const useAuthStore = create((set) => ({
   clearAuth: () => {
     set({ user: null, accessToken: null, isAuthenticated: false });
   },
+
+  updateUser: (userData) => {
+    set((state) => ({ user: { ...state.user, ...userData } }));
+  },
 }));
 
 export default useAuthStore;
