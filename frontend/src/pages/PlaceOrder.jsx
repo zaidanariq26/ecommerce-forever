@@ -125,8 +125,17 @@ const PlaceOrder = () => {
       let orderData = {
         address: formData,
         items: orderItems,
-        amount: getCartAmount() + delivery_fee - (appliedCoupon ? appliedCoupon.discount : 0),
-        coupon: appliedCoupon ? { code: appliedCoupon.code, discountPercent: appliedCoupon.discountPercent, discount: appliedCoupon.discount } : null,
+        amount:
+          getCartAmount() +
+          delivery_fee -
+          (appliedCoupon ? appliedCoupon.discount : 0),
+        coupon: appliedCoupon
+          ? {
+              code: appliedCoupon.code,
+              discountPercent: appliedCoupon.discountPercent,
+              discount: appliedCoupon.discount,
+            }
+          : null,
       };
 
       switch (method) {

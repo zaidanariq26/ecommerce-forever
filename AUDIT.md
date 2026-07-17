@@ -257,13 +257,13 @@
 
 ### Phase 4 — Polish (portfolio "wow factor")
 
-- [ ] **Add reviews and ratings system** — Create a `reviewModel` (userId, productId, rating, comment, date). Add CRUD API endpoints. Add review section to Product page with star selector and text input. Show average rating on product cards.
+- [x] **Add reviews and ratings system** — Create a `reviewModel` (userId, productId, rating, comment, date). Add CRUD API endpoints. Add review section to Product page with star selector and text input. Show average rating on product cards.
 
-- [ ] **Add wishlist/favorites** — Add a `wishlist` array field to `userModel`. Create add/remove/check API endpoints. Add a heart icon to `ProductItem` and a wishlist page.
+- [x] **Add wishlist/favorites** — Add a `wishlist` array field to `userModel`. Create add/remove/check API endpoints. Add a heart icon to `ProductItem` and a wishlist page.
 
-- [ ] **Add profile page** — Create a profile page where users can view/edit their name, email, phone, and saved addresses. Add a backend endpoint for profile updates.
+- [x] **Add profile page** — Create a profile page where users can view/edit their name, email, phone, and saved addresses. Add a backend endpoint for profile updates.
 
-- [ ] **Add coupon/discount system** — Create a `couponModel` (code, discountPercent, minOrder, maxUses, expiry). Add validation in checkout and apply discount to order total.
+- [x] **Add coupon/discount system** — Create a `couponModel` (code, discountPercent, minOrder, maxUses, expiry). Add validation in checkout and apply discount to order total.
 
 - [ ] **Add order tracking UI** — Replace the "Track Order" button refresh behavior with a proper order detail view showing a timeline of status changes with dates.
 

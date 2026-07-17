@@ -80,7 +80,7 @@ const CartTotal = ({
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                 placeholder="Coupon code"
-                className="max-w-full border border-gray-300 px-3 py-2 text-sm"
+                className="min-w-0 flex-1 border border-gray-300 px-3 py-2 text-sm"
               />
               <button
                 type="button"

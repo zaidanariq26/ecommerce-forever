@@ -56,7 +56,13 @@ const ShopContextProvider = (props) => {
 
     if (isAuthenticated) {
       try {
-        await api.post("/api/cart/add", { itemId, size });
+        const response = await api.post("/api/cart/add", { itemId, size });
+
+        if (response.data.success) {
+          toast.success("Product has been added to your cart!");
+        } else {
+          toast.error(response.data.message);
+        }
       } catch (error) {
         console.log(error);
         toast.error(error.message);
