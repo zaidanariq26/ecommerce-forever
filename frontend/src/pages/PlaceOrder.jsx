@@ -18,6 +18,10 @@ const PlaceOrder = () => {
     products,
   } = useContext(ShopContext);
 
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -35,6 +39,33 @@ const PlaceOrder = () => {
     { id: "razorpay", logo: assets.razorpay_logo },
     { id: "cod", label: "CASH ON DELIVERY" },
   ];
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    try {
+      const subtotal = getCartAmount();
+      const { data } = await api.post("/api/coupon/validate", {
+        code: couponCode.trim(),
+        subtotal,
+      });
+      if (data.success) {
+        setAppliedCoupon(data.coupon);
+        toast.success(`Coupon applied! ${data.coupon.discountPercent}% off`);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Invalid coupon");
+      setAppliedCoupon(null);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    toast.info("Coupon removed");
+  };
 
   const initPay = (order) => {
     const options = {
@@ -94,7 +125,8 @@ const PlaceOrder = () => {
       let orderData = {
         address: formData,
         items: orderItems,
-        amount: getCartAmount() + delivery_fee,
+        amount: getCartAmount() + delivery_fee - (appliedCoupon ? appliedCoupon.discount : 0),
+        coupon: appliedCoupon ? { code: appliedCoupon.code, discountPercent: appliedCoupon.discountPercent, discount: appliedCoupon.discount } : null,
       };
 
       switch (method) {
@@ -241,7 +273,14 @@ const PlaceOrder = () => {
       {/* ----- Right Side ----- */}
       <div className="mt-6 md:mt-8">
         <div className="w-full">
-          <CartTotal />
+          <CartTotal
+            appliedCoupon={appliedCoupon}
+            onApplyCoupon={handleApplyCoupon}
+            onRemoveCoupon={handleRemoveCoupon}
+            couponCode={couponCode}
+            setCouponCode={setCouponCode}
+            couponLoading={couponLoading}
+          />
         </div>
 
         <div className="mt-8 md:mt-12">

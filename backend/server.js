@@ -11,6 +11,7 @@ import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import reviewRouter from "./routes/reviewRoute.js";
 import wishlistRouter from "./routes/wishlistRoute.js";
+import couponRouter from "./routes/couponRoute.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -41,6 +42,7 @@ app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/review", reviewRouter);
 app.use("/api/wishlist", wishlistRouter);
+app.use("/api/coupon", couponRouter);
 
 app.get("/", (req, res) => {
 	res.send("API WORKING");

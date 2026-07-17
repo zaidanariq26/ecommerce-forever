@@ -28,17 +28,28 @@ const Sidebar = () => {
 					/>
 					<p className='hidden md:block'>List Items</p>
 				</NavLink>
-				<NavLink
-					to='/orders'
-					className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2
+			<NavLink
+				to='/orders'
+				className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2
 				rounded-l'>
-					<img
-						src={assets.order_icon}
-						className='size-5'
-						alt=''
-					/>
-					<p className='hidden md:block'>Orders</p>
-				</NavLink>
+				<img
+					src={assets.order_icon}
+					className='size-5'
+					alt=''
+				/>
+				<p className='hidden md:block'>Orders</p>
+			</NavLink>
+			<NavLink
+				to='/coupons'
+				className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2
+				rounded-l'>
+				<img
+					src={assets.order_icon}
+					className='size-5'
+					alt=''
+				/>
+				<p className='hidden md:block'>Coupons</p>
+			</NavLink>
 			</div>
 		</div>
 	);

@@ -2,6 +2,7 @@ import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import Stripe from "stripe";
 import Razorpay from "razorpay";
+import { incrementCouponUsage } from "../controllers/couponController.js";
 
 // global variables
 const currency = "usd";
@@ -17,7 +18,7 @@ const razorpayInstance = new Razorpay({
 // Placing orders using COD Method
 const placeOrder = async (req, res) => {
 	try {
-		const { items, amount, address } = req.body;
+		const { items, amount, address, coupon } = req.body;
 		const userId = req.user.id;
 
 		const orderData = {
@@ -28,12 +29,17 @@ const placeOrder = async (req, res) => {
 			paymentMethod: "COD",
 			payment: false,
 			date: Date.now(),
+			coupon: coupon || null,
 		};
 
 		const newOrder = new orderModel(orderData);
 		await newOrder.save();
 
 		await userModel.findByIdAndUpdate(userId, { cartData: {} });
+
+		if (coupon?.code) {
+			await incrementCouponUsage(coupon.code);
+		}
 
 		res.json({ success: true, message: "Order Placed" });
 	} catch (error) {
@@ -45,7 +51,7 @@ const placeOrder = async (req, res) => {
 // Placing orders using Stripe
 const placeOrderStripe = async (req, res) => {
 	try {
-		const { items, amount, address } = req.body;
+		const { items, amount, address, coupon } = req.body;
 		const userId = req.user.id;
 		const { origin } = req.headers;
 
@@ -57,6 +63,7 @@ const placeOrderStripe = async (req, res) => {
 			paymentMethod: "Stripe",
 			payment: false,
 			date: Date.now(),
+			coupon: coupon || null,
 		};
 
 		const newOrder = new orderModel(orderData);
@@ -107,8 +114,12 @@ const verifyStripe = async (req, res) => {
 		if (success === "true") {
 			const session = await stripe.checkout.sessions.retrieve(sessionId);
 			if (session.payment_status === "paid") {
+				const order = await orderModel.findById(orderId);
 				await orderModel.findByIdAndUpdate(orderId, { payment: true });
 				await userModel.findByIdAndUpdate(userId, { cartData: {} });
+				if (order?.coupon?.code) {
+					await incrementCouponUsage(order.coupon.code);
+				}
 				return res.json({ success: true });
 			}
 		}
@@ -123,7 +134,7 @@ const verifyStripe = async (req, res) => {
 // Placing orders using Razorpay
 const placeOrderRazorpay = async (req, res) => {
 	try {
-		const { items, amount, address } = req.body;
+		const { items, amount, address, coupon } = req.body;
 		const userId = req.user.id;
 
 		const orderData = {
@@ -134,6 +145,7 @@ const placeOrderRazorpay = async (req, res) => {
 			paymentMethod: "Razorpay",
 			payment: false,
 			date: Date.now(),
+			coupon: coupon || null,
 		};
 
 		const newOrder = new orderModel(orderData);
@@ -166,8 +178,12 @@ const verifyRazorpay = async (req, res) => {
 
 		const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id);
 		if (orderInfo.status === "paid") {
+			const order = await orderModel.findById(orderInfo.receipt);
 			await orderModel.findByIdAndUpdate(orderInfo.receipt, { payment: true });
 			await userModel.findByIdAndUpdate(userId, { cartData: {} });
+			if (order?.coupon?.code) {
+				await incrementCouponUsage(order.coupon.code);
+			}
 			res.json({ success: true, message: "Payment Successful" });
 		} else {
 			res.json({ success: false, message: "Payment Failed" });

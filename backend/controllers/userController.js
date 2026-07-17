@@ -577,7 +577,7 @@ const updateProfile = async (req, res) => {
 		const errors = [];
 		if (!firstName || !firstName.trim()) errors.push('First name is required');
 		if (!phone || !phone.trim()) errors.push('Phone number is required');
-		else if (!/^\+[0-9]{7,15}$/.test(phone.trim())) errors.push('Invalid phone number format');
+		else if (!/^[0-9]{7,15}$/.test(phone.trim())) errors.push('Invalid phone number format');
 
 		if (errors.length > 0) {
 			return res.status(400).json({ success: false, message: errors.join(', ') });
