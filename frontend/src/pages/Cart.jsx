@@ -85,7 +85,7 @@ const Cart = () => {
 
                     <div className="xs:hidden flex items-center gap-2 justify-self-start">
                       <span className="text-sm text-gray-400">Size</span>
-                      <div className="xs:text-sm border border-gray-300 bg-slate-50 px-2 py-1 text-xs">
+                      <div className="xs:text-sm flex size-6 items-center justify-center border border-gray-300 bg-slate-50 text-xs">
                         <span>{item.size}</span>
                       </div>
                     </div>
@@ -93,7 +93,7 @@ const Cart = () => {
 
                   <div className="xs:flex col-start-1 row-start-3 hidden items-center gap-2 justify-self-start">
                     <span className="text-sm text-gray-400">Size</span>
-                    <div className="xs:text-sm border border-gray-300 bg-slate-50 px-2 py-1 text-xs">
+                    <div className="xs:text-sm flex size-6 items-center justify-center border border-gray-300 bg-slate-50 text-xs">
                       <span>{item.size}</span>
                     </div>
                   </div>

@@ -10,6 +10,7 @@ const orderSchema = new mongoose.Schema({
 	payment: { type: Boolean, required: true, default: false },
 	date: { type: Number, required: true },
 	coupon: { type: Object, default: null },
+	statusHistory: { type: Array, default: [] },
 });
 
 const orderModel = mongoose.model.order || mongoose.model('order', orderSchema);

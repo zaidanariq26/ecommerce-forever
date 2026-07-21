@@ -2,10 +2,12 @@
 import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
 import { assets } from "../assets/assets";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
 import api from "../api/axiosInstance";
+import useAlertStore from "../zustand/alertStore";
+import Loading from "../components/Loading";
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("cod");
@@ -18,27 +20,60 @@ const PlaceOrder = () => {
     products,
   } = useContext(ShopContext);
 
+  const showAlert = useAlertStore((state) => state.showAlert);
+
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponLoading, setCouponLoading] = useState(false);
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    street: "",
-    city: "",
-    state: "",
-    zipcode: "",
-    country: "",
-    phone: "",
-  });
+  const [profile, setProfile] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(true);
 
   const paymentMethods = [
     { id: "stripe", logo: assets.stripe_logo },
     { id: "razorpay", logo: assets.razorpay_logo },
     { id: "cod", label: "CASH ON DELIVERY" },
   ];
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const { data } = await api.get("/api/user/profile");
+        if (data.success) {
+          const p = data.user;
+          const addr = p.address || {};
+          const isComplete =
+            p.firstName?.trim() &&
+            p.email?.trim() &&
+            p.phone?.trim() &&
+            addr.country?.trim() &&
+            addr.state?.trim() &&
+            addr.city?.trim() &&
+            addr.zipcode?.trim();
+
+          if (!isComplete) {
+            showAlert({
+              variant: "warning",
+              title: "Complete Your Profile",
+              message:
+                "Please complete your profile (name, email, phone, and full address) before placing an order.",
+              confirmLabel: "Go to Profile",
+              hideCancel: true,
+              onConfirm: () => navigate("/profile"),
+            });
+          } else {
+            setProfile(p);
+          }
+        }
+      } catch {
+        toast.error("Failed to load profile");
+      } finally {
+        setProfileLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [navigate, showAlert]);
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -95,15 +130,9 @@ const PlaceOrder = () => {
     rzp.open();
   };
 
-  const onChangeHandler = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
+  const onSubmitHandler = async () => {
+    if (!profile) return;
 
-    setFormData((data) => ({ ...data, [name]: value }));
-  };
-
-  const onSubmitHandler = async (e) => {
-    e.preventDefault();
     try {
       let orderItems = [];
 
@@ -122,8 +151,19 @@ const PlaceOrder = () => {
         }
       }
 
-      let orderData = {
-        address: formData,
+      const addr = profile.address || {};
+      const orderData = {
+        address: {
+          firstName: profile.firstName,
+          lastName: profile.lastName || "",
+          email: profile.email,
+          phone: profile.phone,
+          street: addr.street || "",
+          city: addr.city,
+          state: addr.state,
+          zipcode: addr.zipcode,
+          country: addr.country,
+        },
         items: orderItems,
         amount:
           getCartAmount() +
@@ -139,7 +179,6 @@ const PlaceOrder = () => {
       };
 
       switch (method) {
-        // API calls for COD
         case "cod":
           const response = await api.post("/api/order/place", orderData);
           if (response.data.success) {
@@ -180,107 +219,56 @@ const PlaceOrder = () => {
     }
   };
 
+  if (profileLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center pt-10">
+        <Loading type="spinner" size="text-4xl" />
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return null;
+  }
+
+  const addr = profile.address || {};
+
   return (
-    <form
-      onSubmit={onSubmitHandler}
-      className="flex min-h-[80v] flex-col justify-between gap-4 pt-8 md:flex-row md:pt-10"
-    >
+    <div className="flex min-h-[80v] flex-col justify-between gap-4 pt-8 md:flex-row md:pt-10">
       {/* ----- Left Side ----- */}
-      <div className="flex flex-1 flex-col gap-4">
-        <div className="mt-3">
+      <div>
+        <div className="mb-3">
           <Title text1={"DELIVERY"} text2={"INFORMATION"} />
         </div>
-        <div className="flex gap-3">
-          <input
-            required
-            onChange={onChangeHandler}
-            name="firstName"
-            value={formData.firstName}
-            type="text"
-            placeholder="First Name"
-            className="w-full rounded border border-gray-300 px-3.5 py-1.5"
-          />
-          <input
-            required
-            onChange={onChangeHandler}
-            name="lastName"
-            value={formData.lastName}
-            type="text"
-            placeholder="Last Name"
-            className="w-full rounded border border-gray-300 px-3.5 py-1.5"
-          />
+
+        <div className="rounded border border-gray-200 bg-gray-50 p-4 text-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="font-medium text-gray-800">
+              {profile.firstName} {profile.lastName}
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate("/profile")}
+              className="cursor-pointer text-xs text-gray-500 underline hover:text-gray-800"
+            >
+              Edit Profile
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-2 text-gray-600">
+            <p>{profile.email}</p>
+            <p>{profile.phone}</p>
+            {addr.street && <p>{addr.street}</p>}
+            <p>
+              {[addr.city, addr.state, addr.zipcode].filter(Boolean).join(", ")}
+            </p>
+            <p>{addr.country}</p>
+          </div>
         </div>
-        <input
-          required
-          onChange={onChangeHandler}
-          name="email"
-          value={formData.email}
-          type="email"
-          placeholder="Email Address"
-          className="w-full rounded border border-gray-300 px-3.5 py-1.5"
-        />
-        <input
-          required
-          onChange={onChangeHandler}
-          name="street"
-          value={formData.street}
-          type="text"
-          placeholder="Street"
-          className="w-full rounded border border-gray-300 px-3.5 py-1.5"
-        />
-        <div className="flex gap-3">
-          <input
-            required
-            onChange={onChangeHandler}
-            name="city"
-            value={formData.city}
-            type="text"
-            placeholder="City"
-            className="w-full rounded border border-gray-300 px-3.5 py-1.5"
-          />
-          <input
-            required
-            onChange={onChangeHandler}
-            name="state"
-            value={formData.state}
-            type="text"
-            placeholder="State"
-            className="w-full rounded border border-gray-300 px-3.5 py-1.5"
-          />
-        </div>
-        <div className="flex gap-3">
-          <input
-            required
-            onChange={onChangeHandler}
-            name="zipcode"
-            value={formData.zipcode}
-            type="number"
-            placeholder="Zipcode"
-            className="w-full rounded border border-gray-300 px-3.5 py-1.5"
-          />
-          <input
-            required
-            onChange={onChangeHandler}
-            name="country"
-            value={formData.country}
-            type="text"
-            placeholder="Country"
-            className="w-full rounded border border-gray-300 px-3.5 py-1.5"
-          />
-        </div>
-        <input
-          required
-          onChange={onChangeHandler}
-          name="phone"
-          value={formData.phone}
-          type="number"
-          placeholder="Phone"
-          className="w-full rounded border border-gray-300 px-3.5 py-1.5"
-        />
       </div>
 
       {/* ----- Right Side ----- */}
-      <div className="mt-6 md:mt-8">
+      <div className="mt-6 md:mt-0">
         <div className="w-full">
           <CartTotal
             appliedCoupon={appliedCoupon}
@@ -319,7 +307,8 @@ const PlaceOrder = () => {
 
           <div className="mt-8 w-full text-end">
             <button
-              type="submit"
+              type="button"
+              onClick={onSubmitHandler}
               className="xs:w-auto w-full cursor-pointer bg-gray-900 px-16 py-3 text-sm text-white hover:bg-gray-800"
             >
               Place Order
@@ -327,7 +316,7 @@ const PlaceOrder = () => {
           </div>
         </div>
       </div>
-    </form>
+    </div>
   );
 };
 

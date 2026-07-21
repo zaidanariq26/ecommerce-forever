@@ -30,6 +30,7 @@ const placeOrder = async (req, res) => {
 			payment: false,
 			date: Date.now(),
 			coupon: coupon || null,
+			statusHistory: [{ status: "Order Placed", date: Date.now() }],
 		};
 
 		const newOrder = new orderModel(orderData);
@@ -64,6 +65,7 @@ const placeOrderStripe = async (req, res) => {
 			payment: false,
 			date: Date.now(),
 			coupon: coupon || null,
+			statusHistory: [{ status: "Order Placed", date: Date.now() }],
 		};
 
 		const newOrder = new orderModel(orderData);
@@ -146,6 +148,7 @@ const placeOrderRazorpay = async (req, res) => {
 			payment: false,
 			date: Date.now(),
 			coupon: coupon || null,
+			statusHistory: [{ status: "Order Placed", date: Date.now() }],
 		};
 
 		const newOrder = new orderModel(orderData);
@@ -223,7 +226,10 @@ const updateStatus = async (req, res) => {
 	try {
 		const { orderId, status } = req.body;
 
-		await orderModel.findByIdAndUpdate(orderId, { status });
+		await orderModel.findByIdAndUpdate(orderId, {
+			status,
+			$push: { statusHistory: { status, date: Date.now() } },
+		});
 		res.json({ success: true, message: "Status Updated" });
 	} catch (error) {
 		console.log(error);
