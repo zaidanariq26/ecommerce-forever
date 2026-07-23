@@ -277,7 +277,7 @@
 
 - [x] **Clean up dead code** — Remove commented-out mock data from `frontend/src/assets/assets.js` (600+ lines). Remove dead `products` import from `frontend/src/context/ShopContext.jsx:5`. Remove dead first `useEffect` in `frontend/src/components/RelatedProducts.jsx:11-20`. Remove `nodemailer` from `backend/package.json`. Remove unused Iconify imports from `admin/src/main.jsx`.
 
-- [ ] **Add admin sales dashboard** — Create a dashboard page with: total orders, total revenue, orders by status, recent orders, and top-selling products. Use a simple charting library (e.g., Chart.js or Recharts).
+- [x] **Add admin sales dashboard** — Create a dashboard page with: total orders, total revenue, orders by status, recent orders, and top-selling products. Use a simple charting library (e.g., Chart.js or Recharts).
 
 - [ ] **Add product inventory/stock** — Add a `stock` field to `productModel`. Decrease stock on order placement. Show "Out of Stock" on product cards when stock is 0. Disable add-to-cart when out of stock.
 

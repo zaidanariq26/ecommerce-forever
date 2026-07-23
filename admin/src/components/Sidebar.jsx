@@ -1,58 +1,38 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { assets } from '../assets/assets';
+import { NavLink } from "react-router-dom";
+import { Icon } from "@iconify/react";
+
+const navItems = [
+  { to: "/", label: "Dashboard", icon: "solar:home-outline" },
+  { to: "/add", label: "Add Items", icon: "solar:add-circle-outline" },
+  { to: "/list", label: "List Items", icon: "solar:document-text-outline" },
+  { to: "/orders", label: "Orders", icon: "solar:bag-outline" },
+  { to: "/coupons", label: "Coupons", icon: "solar:ticket-outline" },
+];
 
 const Sidebar = () => {
-	return (
-		<div className='w-[18%] min-h-screen border-r-2'>
-			<div className='flex flex-col gap-4 pt-6 pl-[20%] text-[15px]'>
-				<NavLink
-					to='/add'
-					className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2
-				rounded-l'>
-					<img
-						src={assets.add_icon}
-						className='size-5'
-						alt=''
-					/>
-					<p className='hidden md:block'>Add Items</p>
-				</NavLink>
-				<NavLink
-					to='/list'
-					className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2
-				rounded-l'>
-					<img
-						src={assets.order_icon}
-						className='size-5'
-						alt=''
-					/>
-					<p className='hidden md:block'>List Items</p>
-				</NavLink>
-			<NavLink
-				to='/orders'
-				className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2
-				rounded-l'>
-				<img
-					src={assets.order_icon}
-					className='size-5'
-					alt=''
-				/>
-				<p className='hidden md:block'>Orders</p>
-			</NavLink>
-			<NavLink
-				to='/coupons'
-				className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2
-				rounded-l'>
-				<img
-					src={assets.order_icon}
-					className='size-5'
-					alt=''
-				/>
-				<p className='hidden md:block'>Coupons</p>
-			</NavLink>
-			</div>
-		</div>
-	);
+  return (
+    <div className="min-h-screen w-56 border-r border-gray-200 bg-white py-6">
+      <div className="flex flex-col gap-1 px-3">
+        {navItems.map(({ to, label, icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={to === "/"}
+            className={({ isActive }) =>
+              `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                isActive
+                  ? "bg-gray-900 text-white"
+                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+              }`
+            }
+          >
+            <Icon icon={icon} className="text-lg" />
+            <span>{label}</span>
+          </NavLink>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default Sidebar;

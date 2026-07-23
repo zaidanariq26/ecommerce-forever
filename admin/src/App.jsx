@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import { Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
 import Add from "./pages/Add";
 import Edit from "./pages/Edit";
 import List from "./pages/List";
@@ -24,23 +25,23 @@ const App = () => {
 	};
 
 	return (
-		<div className="bg-gray-50 min-h-screen">
+		<div className="min-h-screen bg-gray-50">
 			<ToastContainer />
 			{token === "" ? (
 				<Login setToken={handleSetToken} />
 			) : (
 				<>
 					<Navbar setToken={handleSetToken} />
-					<hr />
-					<div className="flex w-full">
+					<div className="flex">
 						<Sidebar />
-						<div className="w-[70%] mx-auto ml-[max(5vw,25px)] my-8 text-gray-600 text-base">
+						<div className="flex-1 p-8">
 							<Routes>
+								<Route path="/" element={<Dashboard token={token} />} />
 								<Route path="/add" element={<Add token={token} />} />
 								<Route path="/edit" element={<Edit token={token} />} />
 								<Route path="/list" element={<List token={token} />} />
 								<Route path="/orders" element={<Orders token={token} />} />
-							<Route path="/coupons" element={<Coupons token={token} />} />
+								<Route path="/coupons" element={<Coupons token={token} />} />
 							</Routes>
 						</div>
 					</div>

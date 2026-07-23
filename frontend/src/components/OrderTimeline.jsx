@@ -40,11 +40,8 @@ const OrderTimeline = ({ statusHistory = [], currentStatus }) => {
         const hasHistory = !!historyMap[step];
 
         return (
-          // 1. Tambahkan "group/item" untuk trik menyembunyikan garis terakhir
           <div key={step} className="group/item flex gap-3">
-            {/* Kiri: Lingkaran + Garis Vertikal */}
             <div className="flex flex-col items-center">
-              {/* Lingkaran */}
               <div
                 className={`flex size-7 shrink-0 items-center justify-center rounded-full border-2 ${
                   isCompleted
@@ -62,19 +59,15 @@ const OrderTimeline = ({ statusHistory = [], currentStatus }) => {
                 )}
               </div>
 
-              {/* Garis Vertikal (PERBAIKAN DI SINI) */}
               {index < STEPS.length - 1 && (
                 <div
                   className={`w-0.5 flex-1 ${
                     index < currentStepIndex ? "bg-green-500" : "bg-gray-200"
                   }`}
-                  // Hapus minHeight kaku, biarkan flex-1 yang menarik garisnya ke bawah
                 />
               )}
             </div>
 
-            {/* Kanan: Label + Date (PERBAIKAN DI SINI) */}
-            {/* Tambahkan pb-6 agar ada jarak antar langkah yang aman, kecuali untuk item terakhir */}
             <div className="flex-1 pt-0.5 pb-5 group-last/item:pb-0">
               <p
                 className={`text-sm ${
