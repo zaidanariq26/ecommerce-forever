@@ -1,5 +1,6 @@
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
+import productModel from "../models/productModel.js";
 import Stripe from "stripe";
 import Razorpay from "razorpay";
 import { incrementCouponUsage } from "../controllers/couponController.js";
@@ -15,11 +16,35 @@ const razorpayInstance = new Razorpay({
 	key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+const decreaseStock = async (items) => {
+	for (const item of items) {
+		await productModel.findByIdAndUpdate(item._id, {
+			$inc: { stock: -item.quantity },
+		});
+	}
+};
+
+const checkStock = async (items) => {
+	for (const item of items) {
+		const product = await productModel.findById(item._id).select("name stock");
+		if (!product) {
+			throw new Error(`Product not found: ${item.name}`);
+		}
+		if (product.stock < item.quantity) {
+			throw new Error(
+				`Insufficient stock for "${product.name}": only ${product.stock} available`,
+			);
+		}
+	}
+};
+
 // Placing orders using COD Method
 const placeOrder = async (req, res) => {
 	try {
 		const { items, amount, address, coupon } = req.body;
 		const userId = req.user.id;
+
+		await checkStock(items);
 
 		const orderData = {
 			userId,
@@ -36,6 +61,7 @@ const placeOrder = async (req, res) => {
 		const newOrder = new orderModel(orderData);
 		await newOrder.save();
 
+		await decreaseStock(items);
 		await userModel.findByIdAndUpdate(userId, { cartData: {} });
 
 		if (coupon?.code) {
@@ -45,7 +71,7 @@ const placeOrder = async (req, res) => {
 		res.json({ success: true, message: "Order Placed" });
 	} catch (error) {
 		console.log(error);
-		res.json({ success: false, message: error.message });
+		res.status(500).json({ success: false, message: error.message });
 	}
 };
 
@@ -55,6 +81,8 @@ const placeOrderStripe = async (req, res) => {
 		const { items, amount, address, coupon } = req.body;
 		const userId = req.user.id;
 		const { origin } = req.headers;
+
+		await checkStock(items);
 
 		const orderData = {
 			userId,
@@ -70,6 +98,8 @@ const placeOrderStripe = async (req, res) => {
 
 		const newOrder = new orderModel(orderData);
 		await newOrder.save();
+
+		await decreaseStock(items);
 
 		const line_items = items.map((item) => ({
 			price_data: {
@@ -103,7 +133,7 @@ const placeOrderStripe = async (req, res) => {
 		res.json({ success: true, session_url: session.url });
 	} catch (error) {
 		console.log(error);
-		res.json({ success: false, message: error.message });
+		res.status(500).json({ success: false, message: error.message });
 	}
 };
 
@@ -129,7 +159,7 @@ const verifyStripe = async (req, res) => {
 		res.json({ success: false });
 	} catch (error) {
 		console.log(error);
-		res.json({ success: false, message: error.message });
+		res.status(500).json({ success: false, message: error.message });
 	}
 };
 
@@ -138,6 +168,8 @@ const placeOrderRazorpay = async (req, res) => {
 	try {
 		const { items, amount, address, coupon } = req.body;
 		const userId = req.user.id;
+
+		await checkStock(items);
 
 		const orderData = {
 			userId,
@@ -154,6 +186,8 @@ const placeOrderRazorpay = async (req, res) => {
 		const newOrder = new orderModel(orderData);
 		await newOrder.save();
 
+		await decreaseStock(items);
+
 		const options = {
 			amount: amount * 100,
 			currency: currency.toUpperCase(),
@@ -169,7 +203,7 @@ const placeOrderRazorpay = async (req, res) => {
 		});
 	} catch (error) {
 		console.log(error);
-		res.json({ success: false, message: error.message });
+		res.status(500).json({ success: false, message: error.message });
 	}
 };
 
@@ -193,7 +227,7 @@ const verifyRazorpay = async (req, res) => {
 		}
 	} catch (error) {
 		console.log(error);
-		res.json({ success: false, message: error.message });
+		res.status(500).json({ success: false, message: error.message });
 	}
 };
 
@@ -204,7 +238,7 @@ const allOrders = async (req, res) => {
 		res.json({ success: true, orders });
 	} catch (error) {
 		console.log(error);
-		res.json({ success: false, message: error.message });
+		res.status(500).json({ success: false, message: error.message });
 	}
 };
 
@@ -217,7 +251,7 @@ const userOrders = async (req, res) => {
 		res.json({ success: true, orders });
 	} catch (error) {
 		console.log(error);
-		res.json({ success: false, message: error.message });
+		res.status(500).json({ success: false, message: error.message });
 	}
 };
 
@@ -233,7 +267,7 @@ const updateStatus = async (req, res) => {
 		res.json({ success: true, message: "Status Updated" });
 	} catch (error) {
 		console.log(error);
-		res.json({ success: false, message: error.message });
+		res.status(500).json({ success: false, message: error.message });
 	}
 };
 

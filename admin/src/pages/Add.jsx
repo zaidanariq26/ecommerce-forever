@@ -17,6 +17,7 @@ const Add = ({ token }) => {
 	const [subCategory, setSubCategory] = useState("Topwear");
 	const [bestseller, setBestseller] = useState(false);
 	const [sizes, setSizes] = useState([]);
+	const [stock, setStock] = useState("");
 
 	const onSubmitHandler = async (e) => {
 		e.preventDefault();
@@ -31,6 +32,7 @@ const Add = ({ token }) => {
 			formData.append("subCategory", subCategory);
 			formData.append("bestseller", bestseller);
 			formData.append("sizes", JSON.stringify(sizes));
+			formData.append("stock", stock);
 
 			image1 && formData.append("image1", image1);
 			image2 && formData.append("image2", image2);
@@ -53,6 +55,7 @@ const Add = ({ token }) => {
 				setImage3(false);
 				setImage4(false);
 				setSizes([]);
+				setStock("");
 				setBestseller(false);
 			} else {
 				toast.error(response.data.message);
@@ -185,6 +188,18 @@ const Add = ({ token }) => {
 						type="number"
 						className="w-full px-3 py-2 sm:w-[120px]"
 						placeholder="0"
+					/>
+				</div>
+
+				<div>
+					<p className="mb-2">Stock</p>
+					<input
+						onChange={(e) => setStock(e.target.value)}
+						value={stock}
+						type="number"
+						className="w-full px-3 py-2 sm:w-[120px]"
+						placeholder="0"
+						min="0"
 					/>
 				</div>
 			</div>

@@ -44,7 +44,7 @@
 | Product listing with pagination/infinite scroll                   | ❌ Missing     | `backend/controllers/productController.js:50` returns all products; frontend `Collection.jsx` has no pagination                                             | `find({})` returns entire collection, rendered all at once                                                                                                                                      |
 | Filtering (size, color, price) and sorting                        | ⚠️ Partial     | `frontend/src/pages/Collection.jsx:30-100`, `frontend/src/components/FilterModal.jsx`                                                                       | Category/subcategory/sort-by-price filtering works. **No size or color filtering.** No price range filter. "Newest" sort option exists in UI but has no implementation in the switch statement. |
 | Search with results page                                          | ⚠️ Partial     | `frontend/src/components/SearchBar.jsx`, `frontend/src/pages/Collection.jsx:36-39`                                                                          | Search only filters within the Collection page by product name. No dedicated search results page.                                                                                               |
-| Product detail page (images, variants, stock status, description) | ⚠️ Partial     | `frontend/src/pages/Product.jsx`                                                                                                                            | Image gallery, size selector, and add-to-cart work. **No stock status.** Description tab shows hardcoded generic text, not the actual product description from the database.                    |
+| Product detail page (images, variants, stock status, description) | ✅ Implemented | `frontend/src/pages/Product.jsx`                                                                                                                            | Image gallery, size selector, add-to-cart, stock status badge, and disabled add-to-cart when out of stock all work. Description tab still shows hardcoded generic text.                                   |
 | Related/recommended products                                      | ⚠️ Partial     | `frontend/src/components/RelatedProducts.jsx`                                                                                                               | First `useEffect` (lines 11-20) has a no-op filter bug (filtered result is discarded). Second `useEffect` (lines 23-31) corrects it. Works end-to-end but double-renders wastefully.            |
 | Reviews and ratings                                               | ❌ Missing     | `frontend/src/pages/Product.jsx:55-60` hardcodes 4/5 stars with "(122)" reviews                                                                             | No review model, no review API, no review UI. Stars are purely decorative.                                                                                                                      |
 
@@ -76,7 +76,7 @@
 | -------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Admin-only route protection            | ⚠️ Partial     | `backend/middleware/adminAuth.js`                                                                 | Backend has `adminAuth` middleware but uses critically flawed JWT (no expiry, plaintext credentials as payload, weak secret "forever"). **Admin panel App.jsx:16 references undefined `token`/`setToken` — the app will crash at runtime.** |
 | Product CRUD (incl. image upload)      | ⚠️ Partial     | `admin/src/pages/Add.jsx`, `admin/src/pages/List.jsx`, `backend/controllers/productController.js` | **Create** ✅ (Add.jsx, up to 4 images via Cloudinary). **Read** ✅ (List.jsx). **Delete** ✅ (List.jsx). **Update** ❌ — no edit product functionality exists.                                                                             |
-| Inventory/stock management             | ❌ Missing     | —                                                                                                 | No stock/quantity field on products. No inventory tracking.                                                                                                                                                                                 |
+| Inventory/stock management             | ✅ Implemented | `backend/models/productModel.js`, `admin/src/pages/Add.jsx`, `admin/src/pages/Edit.jsx`, `admin/src/pages/List.jsx`, `frontend/src/components/ProductItem.jsx` | `stock` field on product model. Admin can set stock via Add/Edit. List shows stock. Product cards show "Out of Stock" badge. Add-to-cart disabled when stock=0. Stock decreases on order. Pre-order stock validation. |
 | Order management (view, update status) | ✅ Implemented | `admin/src/pages/Orders.jsx`, `backend/controllers/orderController.js:174-207`                    | View all orders, update status (Order Placed → Packing → Shipped → Out for Delivery → Delivered). No pagination, no confirmation dialog.                                                                                                    |
 | Basic sales dashboard                  | ❌ Missing     | —                                                                                                 | No dashboard page. No analytics, charts, or summary statistics.                                                                                                                                                                             |
 
@@ -130,7 +130,7 @@
 
 - **`backend/models/userModel.js`** — Sensitive fields (`password`, `verifyToken`, `resetPasswordToken`) have no `select: false`. They are returned in every query by default.
 
-- **`backend/server.js`** — No `helmet` middleware for security headers (`X-Content-Type-Options`, `X-Frame-Options`, `Strict-Transport-Security`, etc.). No global error handler middleware.
+- **`backend/server.js`** — ~~No `helmet` middleware for security headers (`X-Content-Type-Options`, `X-Frame-Options`, `Strict-Transport-Security`, etc.). No global error handler middleware.~~ ✅ `helmet` added. Global error handler added.
 
 ### Medium (functional bugs or quality issues)
 
@@ -279,9 +279,9 @@
 
 - [x] **Add admin sales dashboard** — Create a dashboard page with: total orders, total revenue, orders by status, recent orders, and top-selling products. Use a simple charting library (e.g., Chart.js or Recharts).
 
-- [ ] **Add product inventory/stock** — Add a `stock` field to `productModel`. Decrease stock on order placement. Show "Out of Stock" on product cards when stock is 0. Disable add-to-cart when out of stock.
+- [x] **Add product inventory/stock** — Add a `stock` field to `productModel`. Decrease stock on order placement. Show "Out of Stock" on product cards when stock is 0. Disable add-to-cart when out of stock.
 
-- [ ] **Consistent error handling** — Add a global Express error handler middleware in `backend/server.js`. Add React Error Boundaries in the frontend. Standardize error response format across all controllers.
+- [x] **Consistent error handling** — Add a global Express error handler middleware in `backend/server.js`. Add React Error Boundaries in the frontend. Standardize error response format across all controllers.
 
 ---
 

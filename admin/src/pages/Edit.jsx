@@ -23,6 +23,7 @@ const Edit = ({ token }) => {
 	const [subCategory, setSubCategory] = useState('Topwear');
 	const [bestseller, setBestseller] = useState(false);
 	const [sizes, setSizes] = useState([]);
+	const [stock, setStock] = useState('');
 	const [loading, setLoading] = useState(true);
 
 	const fetchProduct = async () => {
@@ -35,9 +36,10 @@ const Edit = ({ token }) => {
 				setPrice(p.price);
 				setCategory(p.category);
 				setSubCategory(p.subCategory);
-				setBestseller(p.bestseller);
-				setSizes(p.sizes || []);
-				setExistingImages(p.image || []);
+			setBestseller(p.bestseller);
+			setSizes(p.sizes || []);
+			setStock(p.stock ?? '');
+			setExistingImages(p.image || []);
 			} else {
 				toast.error('Product not found');
 				navigate('/list');
@@ -71,6 +73,7 @@ const Edit = ({ token }) => {
 			formData.append('subCategory', subCategory);
 			formData.append('bestseller', bestseller);
 			formData.append('sizes', JSON.stringify(sizes));
+		formData.append('stock', stock);
 
 			image1 && formData.append('image1', image1);
 			image2 && formData.append('image2', image2);
@@ -174,16 +177,28 @@ const Edit = ({ token }) => {
 					</select>
 				</div>
 
-				<div>
-					<p className='mb-2'>Product Price</p>
-					<input
-						onChange={(e) => setPrice(e.target.value)}
-						value={price}
-						type='number'
-						className='w-full px-3 py-2 sm:w-[120px]'
-						placeholder='0'
-					/>
-				</div>
+			<div>
+				<p className='mb-2'>Product Price</p>
+				<input
+					onChange={(e) => setPrice(e.target.value)}
+					value={price}
+					type='number'
+					className='w-full px-3 py-2 sm:w-[120px]'
+					placeholder='0'
+				/>
+			</div>
+
+			<div>
+				<p className='mb-2'>Stock</p>
+				<input
+					onChange={(e) => setStock(e.target.value)}
+					value={stock}
+					type='number'
+					className='w-full px-3 py-2 sm:w-[120px]'
+					placeholder='0'
+					min='0'
+				/>
+			</div>
 			</div>
 
 			<div>

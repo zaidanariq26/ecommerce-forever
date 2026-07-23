@@ -140,6 +140,11 @@ const Product = () => {
           <p className="mt-5 text-gray-500 md:w-4/5">
             {productData.description}
           </p>
+          {productData.stock <= 0 && (
+            <p className="mt-3 inline-block rounded bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
+              Out of Stock
+            </p>
+          )}
           <div className="my-8 flex flex-col gap-4">
             <p>Select Size</p>
             <div className="flex gap-2">
@@ -156,9 +161,10 @@ const Product = () => {
           </div>
           <button
             onClick={() => addToCart(productData._id, size)}
-            className="cursor-pointer bg-gray-900 px-8 py-3 text-sm text-white active:bg-gray-700"
+            disabled={productData.stock <= 0}
+            className="cursor-pointer bg-gray-900 px-8 py-3 text-sm text-white active:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Add To Cart
+            {productData.stock <= 0 ? "Out of Stock" : "Add To Cart"}
           </button>
           <hr className="mt-8 sm:w-4/5" />
           <div className="mt-5 flex flex-col gap-1 text-sm text-gray-500">

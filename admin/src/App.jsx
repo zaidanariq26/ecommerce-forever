@@ -11,6 +11,7 @@ import Coupons from "./pages/Coupons";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ErrorBoundary from "./components/ui/ErrorBoundary";
 
 const App = () => {
 	const [token, setToken] = useState(localStorage.getItem("adminToken") || "");
@@ -35,14 +36,16 @@ const App = () => {
 					<div className="flex">
 						<Sidebar />
 						<div className="flex-1 p-8">
-							<Routes>
-								<Route path="/" element={<Dashboard token={token} />} />
-								<Route path="/add" element={<Add token={token} />} />
-								<Route path="/edit" element={<Edit token={token} />} />
-								<Route path="/list" element={<List token={token} />} />
-								<Route path="/orders" element={<Orders token={token} />} />
-								<Route path="/coupons" element={<Coupons token={token} />} />
-							</Routes>
+							<ErrorBoundary>
+								<Routes>
+									<Route path="/" element={<Dashboard token={token} />} />
+									<Route path="/add" element={<Add token={token} />} />
+									<Route path="/edit" element={<Edit token={token} />} />
+									<Route path="/list" element={<List token={token} />} />
+									<Route path="/orders" element={<Orders token={token} />} />
+									<Route path="/coupons" element={<Coupons token={token} />} />
+								</Routes>
+							</ErrorBoundary>
 						</div>
 					</div>
 				</>

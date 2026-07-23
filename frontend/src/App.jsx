@@ -8,6 +8,7 @@ import AuthInitializer from "./components/auth/AuthInitializer";
 import { routes } from "./routes/routes";
 import useAlertStore from "./zustand/alertStore";
 import AlertDialog from "./components/ui/AlertDialog";
+import ErrorBoundary from "./components/ui/ErrorBoundary";
 
 const App = () => {
   const alertConfig = useAlertStore((state) => state.alertConfig);
@@ -26,11 +27,13 @@ const App = () => {
         <Navbar />
         <SearchBar />
         <main id="main-content" tabIndex={-1}>
-          <Routes>
-            {routes.map(({ path, element }) => (
-              <Route key={path} path={path} element={element} />
-            ))}
-          </Routes>
+          <ErrorBoundary>
+            <Routes>
+              {routes.map(({ path, element }) => (
+                <Route key={path} path={path} element={element} />
+              ))}
+            </Routes>
+          </ErrorBoundary>
         </main>
         <Footer />
       </div>

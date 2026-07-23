@@ -410,7 +410,7 @@ const forgotPassword = async (req, res) => {
 		if (!email) {
 			return res.status(400).json({
 				success: false,
-				messsage: "Email is required",
+				message: "Email is required",
 			});
 		}
 
@@ -685,10 +685,9 @@ const adminLogin = async (req, res) => {
 
 		res.status(200).json({ success: true, token });
 	} catch (error) {
-		console.log(error);
-		res.status(500).json({ success: false, message: error.message });
-	}
-};
+		console.error(error);
+		res.status(500).json({ success: false, message: "Internal server error" });
+	}};
 
 export {
 	registerUser,

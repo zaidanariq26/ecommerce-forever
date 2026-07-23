@@ -11,6 +11,7 @@ const ProductItem = ({
   name,
   image,
   price,
+  stock,
   rating = 0,
   numReviews = 0,
 }) => {
@@ -45,6 +46,11 @@ const ProductItem = ({
               className={`text-lg ${inWishlist ? "text-red-500" : "text-gray-500"}`}
             />
           </button>
+        )}
+        {stock <= 0 && (
+          <span className="absolute top-2 left-2 rounded bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">
+            Out of Stock
+          </span>
         )}
       </div>
       <p className="pt-3 pb-1 text-sm">{name}</p>

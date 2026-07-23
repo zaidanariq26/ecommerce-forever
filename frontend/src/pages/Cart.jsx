@@ -59,6 +59,8 @@ const Cart = () => {
 
           if (!productData) return null;
 
+          const isOutOfStock = productData.stock <= 0;
+
           return (
             <div
               key={index}
@@ -75,6 +77,11 @@ const Cart = () => {
                   {/* Product Detail */}
                   <p className="col-span-3 text-sm font-medium sm:text-base md:text-lg">
                     {productData.name}
+                    {isOutOfStock && (
+                      <span className="ml-2 rounded bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+                        Out of Stock
+                      </span>
+                    )}
                   </p>
 
                   <div className="flex items-center gap-4">
@@ -119,8 +126,9 @@ const Cart = () => {
                       onClick={() =>
                         updateQuantity(item._id, item.size, item.quantity + 1)
                       }
+                      disabled={isOutOfStock || item.quantity >= productData.stock}
                       aria-label="Increase quantity"
-                      className="xs:size-8 flex size-6 cursor-pointer items-center justify-center border border-gray-300 text-gray-700 hover:bg-gray-100"
+                      className="xs:size-8 flex size-6 cursor-pointer items-center justify-center border border-gray-300 text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       <Icon
                         icon="ic:round-plus"

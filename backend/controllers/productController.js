@@ -12,6 +12,7 @@ const addProduct = async (req, res) => {
 			subCategory,
 			sizes,
 			bestseller,
+			stock,
 		} = req.body;
 
 		const image1 = req.files.image1 && req.files.image1[0];
@@ -45,12 +46,13 @@ const addProduct = async (req, res) => {
 			name,
 			description,
 			category,
-			price,
+			price: Number(price),
 			subCategory,
 			bestseller: bestseller === "true" ? true : false,
 			sizes: parsedSizes,
 			image: imagesUrl,
 			date: Date.now(),
+			stock: Number(stock) || 0,
 		};
 
 		const product = new productModel(productData);
@@ -59,7 +61,7 @@ const addProduct = async (req, res) => {
 		res.json({ success: true, message: "Product Added" });
 	} catch (error) {
 		console.log(error);
-		res.json({ success: false, message: error.message });
+		res.status(500).json({ success: false, message: error.message });
 	}
 };
 
@@ -70,7 +72,7 @@ const listProducts = async (req, res) => {
 		res.json({ success: true, products });
 	} catch (error) {
 		console.log(error);
-		res.json({ success: false, message: error.message });
+		res.status(500).json({ success: false, message: error.message });
 	}
 };
 
@@ -81,7 +83,7 @@ const removeProduct = async (req, res) => {
 		res.json({ success: true, message: "Product Removed" });
 	} catch (error) {
 		console.log(error);
-		res.json({ success: false, message: error.message });
+		res.status(500).json({ success: false, message: error.message });
 	}
 };
 
@@ -93,7 +95,7 @@ const singleProduct = async (req, res) => {
 		res.json({ success: true, product });
 	} catch (error) {
 		console.log(error);
-		res.json({ success: false, message: error.message });
+		res.status(500).json({ success: false, message: error.message });
 	}
 };
 
@@ -109,16 +111,18 @@ const updateProduct = async (req, res) => {
 			subCategory,
 			sizes,
 			bestseller,
+			stock,
 		} = req.body;
 
 		const updateData = {
 			name,
 			description,
-			price,
+			price: Number(price),
 			category,
 			subCategory,
 			bestseller: bestseller === "true" ? true : false,
 			sizes: JSON.parse(sizes),
+			stock: Number(stock) || 0,
 		};
 
 		const images = [
@@ -144,7 +148,7 @@ const updateProduct = async (req, res) => {
 		res.json({ success: true, message: "Product Updated" });
 	} catch (error) {
 		console.log(error);
-		res.json({ success: false, message: error.message });
+		res.status(500).json({ success: false, message: error.message });
 	}
 };
 
