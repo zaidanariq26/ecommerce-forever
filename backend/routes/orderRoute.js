@@ -6,6 +6,7 @@ import {
 	allOrders,
 	userOrders,
 	updateStatus,
+	updatePayment,
 	verifyStripe,
 	verifyRazorpay
 } from '../controllers/orderController.js';
@@ -17,6 +18,7 @@ const orderRouter = express.Router();
 // Admin
 orderRouter.post('/list', adminAuth, allOrders);
 orderRouter.post('/status', adminAuth, updateStatus);
+orderRouter.post('/payment', adminAuth, updatePayment);
 
 // Payment Features
 orderRouter.post('/place', authUser, placeOrder);

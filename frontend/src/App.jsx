@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
@@ -13,6 +13,7 @@ import ErrorBoundary from "./components/ui/ErrorBoundary";
 const App = () => {
   const alertConfig = useAlertStore((state) => state.alertConfig);
   const closeAlert = useAlertStore((state) => state.closeAlert);
+  const location = useLocation();
 
   return (
     <AuthInitializer>
@@ -27,7 +28,7 @@ const App = () => {
         <Navbar />
         <SearchBar />
         <main id="main-content" tabIndex={-1}>
-          <ErrorBoundary>
+          <ErrorBoundary key={location.pathname}>
             <Routes>
               {routes.map(({ path, element }) => (
                 <Route key={path} path={path} element={element} />

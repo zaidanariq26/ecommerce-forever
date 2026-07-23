@@ -271,6 +271,19 @@ const updateStatus = async (req, res) => {
 	}
 };
 
+// Update payment status (for COD orders)
+const updatePayment = async (req, res) => {
+	try {
+		const { orderId, payment } = req.body;
+
+		await orderModel.findByIdAndUpdate(orderId, { payment });
+		res.json({ success: true, message: "Payment Updated" });
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ success: false, message: error.message });
+	}
+};
+
 export {
 	verifyRazorpay,
 	verifyStripe,
@@ -280,4 +293,5 @@ export {
 	allOrders,
 	userOrders,
 	updateStatus,
+	updatePayment,
 };

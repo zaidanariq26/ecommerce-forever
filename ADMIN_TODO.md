@@ -16,7 +16,7 @@
 
 ## Phase B: Order Management
 
-- [ ] **Order detail drawer/modal** — Click an order to see full details: customer info, address, items, status timeline.
+- [x] **Order detail drawer/modal** — Click an order to see full details: customer info, address, items, status timeline.
 - [ ] **Bulk status update** — Select multiple orders and update status in batch.
 
 ## Phase C: Product Management

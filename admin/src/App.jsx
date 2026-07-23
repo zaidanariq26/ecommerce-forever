@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Add from "./pages/Add";
 import Edit from "./pages/Edit";
@@ -16,6 +16,7 @@ import ErrorBoundary from "./components/ui/ErrorBoundary";
 const App = () => {
 	const [token, setToken] = useState(localStorage.getItem("adminToken") || "");
 	const [sidebarOpen, setSidebarOpen] = useState(false);
+	const location = useLocation();
 
 	const handleSetToken = (newToken) => {
 		setToken(newToken);
@@ -44,7 +45,7 @@ const App = () => {
 							onClose={() => setSidebarOpen(false)}
 						/>
 						<div className="flex-1 p-4 sm:p-6 lg:p-8">
-							<ErrorBoundary>
+							<ErrorBoundary key={location.pathname}>
 								<Routes>
 									<Route path="/" element={<Dashboard token={token} />} />
 									<Route path="/add" element={<Add token={token} />} />
