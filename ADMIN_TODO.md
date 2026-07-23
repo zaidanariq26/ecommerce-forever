@@ -17,13 +17,13 @@
 ## Phase B: Order Management
 
 - [x] **Order detail drawer/modal** — Click an order to see full details: customer info, address, items, status timeline.
-- [ ] **Bulk status update** — Select multiple orders and update status in batch.
+- [x] **Bulk status update** — Select multiple orders and update status in batch.
 
 ## Phase C: Product Management
 
-- [ ] **Product image in List page** — Show larger product thumbnails in the list table.
-- [ ] **Inline stock editing** — Edit stock directly from the list without going to the edit page.
-- [ ] **Low stock alerts** — Highlight products with `stock <= 5` in List page + Dashboard section.
+- [x] **Product image in List page** — Show larger product thumbnails in the list table.
+- [x] **Inline stock editing** — Edit stock directly from the list without going to the edit page.
+- [x] **Low stock alerts** — Highlight products with `stock <= 5` in List page + Dashboard section.
 
 ## Phase D: Reporting & Utilities
 

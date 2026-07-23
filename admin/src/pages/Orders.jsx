@@ -6,6 +6,14 @@ import { Icon } from "@iconify/react";
 import { assets } from "../assets/assets.js";
 import OrderDetailDrawer from "../components/OrderDetailDrawer";
 
+const STATUSES = [
+  "Order Placed",
+  "Packing",
+  "Shipped",
+  "Out for Delivery",
+  "Delivered",
+];
+
 const STATUS_COLORS = {
   "Order Placed": "bg-blue-100 text-blue-700",
   Packing: "bg-amber-100 text-amber-700",
@@ -18,6 +26,9 @@ const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [bulkStatus, setBulkStatus] = useState("Order Placed");
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   const fetchAllOrders = async () => {
     if (!token) return;
@@ -52,7 +63,6 @@ const Orders = ({ token }) => {
 
       if (response.data.success) {
         await fetchAllOrders();
-        // Update selected order in drawer
         setSelectedOrder((prev) =>
           prev?._id === orderId ? { ...prev, status: newStatus } : prev,
         );
@@ -85,6 +95,61 @@ const Orders = ({ token }) => {
     }
   };
 
+  const bulkStatusHandler = async () => {
+    if (selectedIds.size === 0) return;
+    setBulkLoading(true);
+
+    const ids = [...selectedIds];
+    let updated = 0;
+    let failed = 0;
+
+    for (const id of ids) {
+      const order = orders.find((o) => o._id === id);
+      if (order?.status === bulkStatus) {
+        updated++;
+        continue;
+      }
+      try {
+        const res = await axios.post(
+          BACKEND_URL + "/api/order/status",
+          { orderId: id, status: bulkStatus },
+          { headers: { token } },
+        );
+        if (res.data.success) updated++;
+        else failed++;
+      } catch {
+        failed++;
+      }
+    }
+
+    await fetchAllOrders();
+    setSelectedIds(new Set());
+    setBulkLoading(false);
+
+    if (failed === 0) {
+      toast.success(`${updated} order${updated !== 1 ? "s" : ""} updated`);
+    } else {
+      toast.warn(`${updated} updated, ${failed} failed`);
+    }
+  };
+
+  const toggleSelect = (orderId) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(orderId)) next.delete(orderId);
+      else next.add(orderId);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === orders.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(orders.map((o) => o._id)));
+    }
+  };
+
   const openDrawer = (order) => {
     setSelectedOrder(order);
     setDrawerOpen(true);
@@ -102,9 +167,61 @@ const Orders = ({ token }) => {
     }
   }, [orders]);
 
+  const allSelected = orders.length > 0 && selectedIds.size === orders.length;
+
   return (
     <div>
       <h3 className="mb-4 text-lg font-medium text-gray-800">Orders</h3>
+
+      {/* Bulk Action Bar */}
+      {selectedIds.size > 0 && (
+        <div className="mb-4 flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-gray-600">
+            <span className="font-semibold">{selectedIds.size}</span> order
+            {selectedIds.size !== 1 && "s"} selected
+          </p>
+          <div className="flex items-center gap-2">
+            <select
+              value={bulkStatus}
+              onChange={(e) => setBulkStatus(e.target.value)}
+              className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+            >
+              {STATUSES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={bulkStatusHandler}
+              disabled={bulkLoading}
+              className="cursor-pointer rounded-lg bg-gray-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+            >
+              {bulkLoading ? "Updating..." : "Update Status"}
+            </button>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="cursor-pointer rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Select All */}
+      {orders.length > 0 && (
+        <label className="mb-3 flex cursor-pointer items-center gap-2 text-sm text-gray-600">
+          <input
+            type="checkbox"
+            checked={allSelected}
+            onChange={toggleSelectAll}
+            className="size-4 cursor-pointer accent-gray-900"
+          />
+          Select all
+        </label>
+      )}
+
       <div className="space-y-3">
         {orders.map((order) => (
           <div
@@ -114,6 +231,14 @@ const Orders = ({ token }) => {
           >
             {/* Desktop: side-by-side. Mobile: stacked */}
             <div className="flex flex-col gap-3 md:flex-row md:items-start">
+              {/* Checkbox — stops propagation so it doesn't open drawer */}
+              <input
+                type="checkbox"
+                checked={selectedIds.has(order._id)}
+                onClick={(e) => e.stopPropagation()}
+                onChange={() => toggleSelect(order._id)}
+                className="mt-1 size-4 shrink-0 cursor-pointer accent-gray-900"
+              />
               <img
                 src={assets.parcel_icon}
                 alt=""
@@ -168,11 +293,11 @@ const Orders = ({ token }) => {
                   disabled={order.status === "Delivered"}
                   className={`rounded border border-gray-300 px-2 py-1 text-xs ${order.status === "Delivered" ? "cursor-not-allowed opacity-50" : ""}`}
                 >
-                  <option value="Order Placed">Order Placed</option>
-                  <option value="Packing">Packing</option>
-                  <option value="Shipped">Shipped</option>
-                  <option value="Out for Delivery">Out for Delivery</option>
-                  <option value="Delivered">Delivered</option>
+                  {STATUSES.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>

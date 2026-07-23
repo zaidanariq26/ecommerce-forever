@@ -354,6 +354,50 @@ const Dashboard = ({ token }) => {
           />
         </div>
       </div>
+
+      {/* Low Stock Alerts */}
+      {products.filter((p) => p.stock <= 5).length > 0 && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <Icon icon="solar:danger-outline" className="text-lg text-amber-600" />
+            <h2 className="text-lg font-medium text-amber-800">Low Stock Alerts</h2>
+            <span className="ml-auto rounded-full bg-amber-200 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+              {products.filter((p) => p.stock <= 5).length} items
+            </span>
+          </div>
+          <div className="space-y-2">
+            {products
+              .filter((p) => p.stock <= 5)
+              .sort((a, b) => a.stock - b.stock)
+              .map((product) => (
+                <div
+                  key={product._id}
+                  className="flex items-center justify-between rounded-lg bg-white px-4 py-2.5 border border-amber-200"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <img
+                      src={product.image[0]}
+                      alt=""
+                      className="size-8 shrink-0 rounded object-cover"
+                    />
+                    <p className="truncate text-sm font-medium text-gray-800">
+                      {product.name}
+                    </p>
+                  </div>
+                  <span
+                    className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                      product.stock <= 0
+                        ? "bg-red-100 text-red-700"
+                        : "bg-amber-100 text-amber-700"
+                    }`}
+                  >
+                    {product.stock <= 0 ? "Out of stock" : `${product.stock} left`}
+                  </span>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

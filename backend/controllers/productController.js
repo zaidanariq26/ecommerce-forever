@@ -152,10 +152,28 @@ const updateProduct = async (req, res) => {
 	}
 };
 
+// function for inline stock update
+const updateStock = async (req, res) => {
+	try {
+		const { id, stock } = req.body;
+
+		if (stock < 0) {
+			return res.status(400).json({ success: false, message: "Stock cannot be negative" });
+		}
+
+		await productModel.findByIdAndUpdate(id, { stock: Number(stock) });
+		res.json({ success: true, message: "Stock Updated" });
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ success: false, message: error.message });
+	}
+};
+
 export {
 	addProduct,
 	listProducts,
 	removeProduct,
 	singleProduct,
 	updateProduct,
+	updateStock,
 };

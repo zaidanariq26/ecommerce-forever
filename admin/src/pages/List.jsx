@@ -10,6 +10,8 @@ const ITEMS_PER_PAGE = 10;
 const List = ({ token }) => {
 	const [list, setList] = useState([]);
 	const [currentPage, setCurrentPage] = useState(1);
+	const [editingStock, setEditingStock] = useState(null);
+	const [stockValue, setStockValue] = useState('');
 	const navigate = useNavigate();
 
 	const fetchList = async () => {
@@ -45,6 +47,52 @@ const List = ({ token }) => {
 		}
 	};
 
+	const saveStock = async (productId) => {
+		const newStock = parseInt(stockValue, 10);
+		if (isNaN(newStock) || newStock < 0) {
+			toast.error('Stock must be a non-negative number');
+			setEditingStock(null);
+			return;
+		}
+
+		const product = list.find((p) => p._id === productId);
+		if (product && product.stock === newStock) {
+			setEditingStock(null);
+			return;
+		}
+
+		try {
+			const response = await axios.post(
+				BACKEND_URL + '/api/product/stock',
+				{ id: productId, stock: newStock },
+				{ headers: { token } },
+			);
+			if (response.data.success) {
+				setList((prev) =>
+					prev.map((p) => (p._id === productId ? { ...p, stock: newStock } : p)),
+				);
+				toast.success('Stock updated');
+			} else {
+				toast.error(response.data.message);
+			}
+		} catch (error) {
+			console.log(error);
+			toast.error(error.message);
+		}
+		setEditingStock(null);
+	};
+
+	const startEditStock = (product) => {
+		setEditingStock(product._id);
+		setStockValue(String(product.stock));
+	};
+
+	const stockColor = (stock) => {
+		if (stock <= 0) return 'text-red-600 font-semibold';
+		if (stock <= 5) return 'text-amber-600 font-semibold';
+		return '';
+	};
+
 	useEffect(() => {
 		fetchList();
 	}, []);
@@ -55,7 +103,7 @@ const List = ({ token }) => {
 			<div className='flex flex-col gap-2 overflow-hidden'>
 				{/*  ------ List Table Title ------ */}
 
-			<div className='hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr] items-center py-1 px-2 border bg-gray-100 text-sm'>
+			<div className='hidden md:grid grid-cols-[1.2fr_3fr_1fr_1fr_1fr_1fr] items-center py-1 px-2 border bg-gray-100 text-sm'>
 				<b>Image</b>
 				<b>Name</b>
 				<b>Category</b>
@@ -71,14 +119,40 @@ const List = ({ token }) => {
 				.map((item) => (
 				<div
 					key={item._id}
-					className='flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-3 md:grid md:grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr] md:items-center md:gap-4 md:rounded-none md:border md:border-x-0 md:bg-transparent md:p-2'>
-					<img src={item.image[0]} className='h-12 w-12 shrink-0 rounded object-cover md:h-10 md:w-10' alt={item.name} />
+					className={`flex flex-col gap-2 rounded-lg border bg-white p-3 md:grid md:grid-cols-[1.2fr_3fr_1fr_1fr_1fr_1fr] md:items-center md:gap-4 md:rounded-none md:border md:border-x-0 md:bg-transparent md:p-2 ${
+						item.stock <= 5 ? 'border-amber-300 bg-amber-50/50 md:bg-amber-50/50' : 'border-gray-200'
+					}`}>
+					<img src={item.image[0]} className='h-16 w-16 shrink-0 rounded object-cover md:h-14 md:w-14' alt={item.name} />
 					<p className='min-w-0 truncate text-sm font-medium text-gray-800 md:truncate'>{item.name}</p>
 					<p className='text-sm font-medium text-gray-700 md:hidden'>
 						{CURRENCY}{item.price}
 					</p>
 					<p className='hidden text-sm md:block'>{item.category}</p>
-					<p className={`hidden text-sm md:block ${item.stock <= 0 ? 'text-red-500 font-semibold' : ''}`}>{item.stock}</p>
+					{/* Desktop: inline stock editing */}
+					<div className='hidden md:block'>
+						{editingStock === item._id ? (
+							<input
+								type='number'
+								value={stockValue}
+								onChange={(e) => setStockValue(e.target.value)}
+								onBlur={() => saveStock(item._id)}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter') saveStock(item._id);
+									if (e.key === 'Escape') setEditingStock(null);
+								}}
+								min='0'
+								autoFocus
+								className='w-16 rounded border border-gray-300 px-1 py-0.5 text-sm'
+							/>
+						) : (
+							<button
+								onClick={() => startEditStock(item)}
+								className={`cursor-pointer rounded px-1 py-0.5 text-left text-sm hover:bg-gray-100 ${stockColor(item.stock)}`}
+							>
+								{item.stock}
+							</button>
+						)}
+					</div>
 					<p className='hidden text-sm md:block'>
 						{CURRENCY}{item.price}
 					</p>
@@ -96,10 +170,11 @@ const List = ({ token }) => {
 							<Icon icon='solar:trash-bin-trash-outline' className='text-lg' />
 						</button>
 					</div>
+					{/* Mobile: second row */}
 					<div className='flex items-center justify-between md:hidden'>
 						<div className='flex items-center gap-2 text-xs text-gray-500'>
 							<span className='rounded bg-gray-100 px-1.5 py-0.5'>{item.category}</span>
-							<span className={item.stock <= 0 ? 'font-semibold text-red-500' : ''}>
+							<span className={stockColor(item.stock)}>
 								Stock: {item.stock}
 							</span>
 						</div>
