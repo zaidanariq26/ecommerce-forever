@@ -60,7 +60,7 @@ const Navbar = () => {
       {/* Logo */}
       <div className="flex flex-1">
         <Link to="/">
-          <img src={assets.logo} className="w-28 sm:w-36" alt="" />
+          <img src={assets.logo} className="w-28 sm:w-36" alt="Forever logo" />
         </Link>
       </div>
 
@@ -80,26 +80,28 @@ const Navbar = () => {
 
       {/* Nav Actions */}
       <div className="flex flex-1 items-center justify-end gap-4 lg:gap-6">
-        <Icon
+        <button
           onClick={() => setShowSearch((prev) => (prev = !prev))}
-          icon="si:search-line"
+          aria-label="Toggle search"
           className={
             currentPath === "/collection"
               ? "xs:text-[28px] block text-2xl text-gray-800"
               : "hidden"
           }
-          cursor="pointer"
-        />
+        >
+          <Icon icon="si:search-line" cursor="pointer" />
+        </button>
 
         <div className={isAuthenticated ? "relative" : "hidden"}>
-          <Icon
-            icon="solar:user-outline"
-            className="xs:text-[28px] block text-2xl text-gray-800"
-            cursor="pointer"
+          <button
+            aria-label="Toggle user menu"
             onClick={() => {
               setUserMenuOpen((prev) => !prev);
             }}
-          />
+            className="xs:text-[28px] block text-2xl text-gray-800"
+          >
+            <Icon icon="solar:user-outline" cursor="pointer" />
+          </button>
 
           {/* Dropdown Menu */}
           <div
@@ -182,11 +184,13 @@ const Navbar = () => {
           </Link>
         </div>
 
-        <Icon
+        <button
           onClick={() => setVisible(true)}
-          icon="solar:hamburger-menu-outline"
+          aria-label="Open menu"
           className="xs:text-[28px] cursor-pointer text-2xl text-gray-800 md:hidden"
-        />
+        >
+          <Icon icon="solar:hamburger-menu-outline" />
+        </button>
       </div>
 
       {/* Sidebar Menu For Small Fresa */}

@@ -115,12 +115,12 @@ const Product = () => {
                 src={item}
                 key={index}
                 className="flex-shrink- w-[24%] cursor-pointer sm:mb-3 sm:w-full"
-                alt=""
+                alt={`Thumbnail ${index + 1}`}
               />
             ))}
           </div>
           <div className="w-full sm:w-[80%]">
-            <img src={image} className="h-auto w-full" alt="" />
+            <img src={image} className="h-auto w-full" alt="Product image" />
           </div>
         </div>
 

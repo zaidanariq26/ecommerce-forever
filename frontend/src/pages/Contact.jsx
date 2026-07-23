@@ -14,7 +14,7 @@ const Contact = () => {
         <img
           src={assets.contact_img}
           className="w-full object-cover object-center md:max-w-120"
-          alt=""
+          alt="Contact Forever store"
         />
         <div className="flex flex-col items-center justify-center gap-6">
           <p className="text-xl font-semibold text-gray-600">Our Store</p>

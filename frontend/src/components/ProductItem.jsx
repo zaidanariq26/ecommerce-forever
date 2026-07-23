@@ -32,11 +32,12 @@ const ProductItem = ({
         <img
           className="aspect-3/4 h-full object-cover object-center transition ease-in-out hover:scale-110"
           src={image[0]}
-          alt=""
+          alt="Product image"
         />
         {isAuthenticated && (
           <button
             onClick={handleWishlistToggle}
+            aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
             className="absolute top-2 right-2 cursor-pointer rounded-full bg-white/80 p-1.5 shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
           >
             <Icon

@@ -145,6 +145,7 @@ const AutocompleteInput = ({
               onChange("");
               inputRef.current?.focus();
             }}
+            aria-label="Clear input"
             className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600"
           >
             <Icon icon="solar:close-circle-bold" className="text-base" />

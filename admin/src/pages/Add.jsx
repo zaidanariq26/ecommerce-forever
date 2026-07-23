@@ -76,7 +76,7 @@ const Add = ({ token }) => {
 						<img
 							className="w-20"
 							src={!image1 ? assets.upload_area : URL.createObjectURL(image1)}
-							alt=""
+							alt="Upload image 1"
 						/>
 						<input
 							onChange={(e) => setImage1(e.target.files[0])}
@@ -89,7 +89,7 @@ const Add = ({ token }) => {
 						<img
 							className="w-20"
 							src={!image2 ? assets.upload_area : URL.createObjectURL(image2)}
-							alt=""
+							alt="Upload image 2"
 						/>
 						<input
 							onChange={(e) => setImage2(e.target.files[0])}
@@ -102,7 +102,7 @@ const Add = ({ token }) => {
 						<img
 							className="w-20"
 							src={!image3 ? assets.upload_area : URL.createObjectURL(image3)}
-							alt=""
+							alt="Upload image 3"
 						/>
 						<input
 							onChange={(e) => setImage3(e.target.files[0])}
@@ -115,7 +115,7 @@ const Add = ({ token }) => {
 						<img
 							className="w-20"
 							src={!image4 ? assets.upload_area : URL.createObjectURL(image4)}
-							alt=""
+							alt="Upload image 4"
 						/>
 						<input
 							onChange={(e) => setImage4(e.target.files[0])}

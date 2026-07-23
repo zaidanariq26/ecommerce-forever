@@ -7,7 +7,7 @@ const Footer = () => {
     <div>
       <div className="my-10 flex grid-cols-[3fr_1fr_1fr] flex-col gap-14 text-sm sm:grid">
         <div>
-          <img src={assets.logo} className="mb-5 w-32" alt="" />
+          <img src={assets.logo} className="mb-5 w-32" alt="Forever logo" />
           <p className="w-full text-gray-600 md:w-2/3">
             Forever brings together clean everyday fashion, simple shopping, and
             reliable service so you can find pieces that fit your life with

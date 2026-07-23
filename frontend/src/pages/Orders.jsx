@@ -126,7 +126,7 @@ const Orders = () => {
                   <img
                     className="w-16 shrink-0 sm:w-20"
                     src={item.image[0]}
-                    alt=""
+                    alt={item.name}
                   />
                   <div className="min-w-0 flex-1">
                     <p className="font-medium">{item.name}</p>

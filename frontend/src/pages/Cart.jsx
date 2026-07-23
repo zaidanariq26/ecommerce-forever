@@ -104,6 +104,7 @@ const Cart = () => {
                       onClick={() =>
                         updateQuantity(item._id, item.size, item.quantity - 1)
                       }
+                      aria-label="Decrease quantity"
                       className="xs:size-8 flex size-6 cursor-pointer items-center justify-center border border-gray-300 text-gray-700 hover:bg-gray-100"
                     >
                       <Icon
@@ -118,6 +119,7 @@ const Cart = () => {
                       onClick={() =>
                         updateQuantity(item._id, item.size, item.quantity + 1)
                       }
+                      aria-label="Increase quantity"
                       className="xs:size-8 flex size-6 cursor-pointer items-center justify-center border border-gray-300 text-gray-700 hover:bg-gray-100"
                     >
                       <Icon

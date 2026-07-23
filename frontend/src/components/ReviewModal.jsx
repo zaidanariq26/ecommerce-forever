@@ -99,6 +99,7 @@ const ReviewModal = ({
           <button
             onClick={onClose}
             disabled={submitting}
+            aria-label="Close review"
             className="cursor-pointer text-gray-400 hover:text-gray-600"
           >
             <Icon icon="solar:close-circle-outline" className="text-2xl" />

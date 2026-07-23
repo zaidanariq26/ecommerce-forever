@@ -13,7 +13,7 @@ const About = () => {
         <img
           className="w-full object-cover object-center md:max-w-112.5"
           src={assets.about_img}
-          alt=""
+          alt="About Forever store"
         />
         <div className="flex flex-col justify-center gap-6 text-gray-600 md:w-2/4">
           <p>

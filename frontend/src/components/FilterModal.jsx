@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Icon } from "@iconify/react";
 
 const SORT_OPTIONS = ["Relevant", "Price: Low to High", "Price: High to Low"];
@@ -31,6 +31,8 @@ const FilterModal = ({
     type: selectedType,
   });
 
+  const modalRef = useRef(null);
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -39,7 +41,36 @@ const FilterModal = ({
       category: selectedCategory,
       type: selectedType,
     });
-  }, [isOpen, selectedCategory, selectedSortValue, selectedType]);
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab" || !modalRef.current) return;
+      const focusable = modalRef.current.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, selectedCategory, selectedSortValue, selectedType, onClose]);
 
   const toggleChip = (key, value) => {
     setSelectedFilters((prev) => {
@@ -71,7 +102,7 @@ const FilterModal = ({
       <div onClick={onClose} className="fixed inset-0 z-40 bg-black/40" />
 
       {/* Bottom Sheet */}
-      <div className="fixed right-0 bottom-0 left-0 z-50 bg-white pb-6">
+      <div ref={modalRef} className="fixed right-0 bottom-0 left-0 z-50 bg-white pb-6">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
           <p className="text-sm font-medium text-gray-900">Filter & Sort</p>
@@ -84,6 +115,7 @@ const FilterModal = ({
             </button>
             <button
               onClick={onClose}
+              aria-label="Close filters"
               className="text-gray-400 hover:text-gray-600"
             >
               <Icon icon="solar:close-circle-outline" height={22} />
