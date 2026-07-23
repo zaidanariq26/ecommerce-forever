@@ -271,8 +271,6 @@
 
 - [x] **Add accessibility improvements** — Add descriptive `alt` text to all images. Add `aria-label` to icon-only buttons. Add keyboard focus trapping to AlertDialog and FilterModal. Add a skip-to-content link.
 
-- [ ] **Add basic automated tests** — Install Vitest + React Testing Library for frontend, Jest + Supertest for backend. Write tests for: cart operations, order placement, auth flows, and Collection page filtering.
-
 - [x] **Fix all typos** — "fasion" -> "fashion" (`frontend/src/constant/index.js:9`), "hassel" -> "hassle" (`frontend/src/components/OurPolicy.jsx:9`), "Exeptional" -> "Exceptional" (`frontend/src/pages/About.jsx:57`).
 
 - [x] **Clean up dead code** — Remove commented-out mock data from `frontend/src/assets/assets.js` (600+ lines). Remove dead `products` import from `frontend/src/context/ShopContext.jsx:5`. Remove dead first `useEffect` in `frontend/src/components/RelatedProducts.jsx:11-20`. Remove `nodemailer` from `backend/package.json`. Remove unused Iconify imports from `admin/src/main.jsx`.

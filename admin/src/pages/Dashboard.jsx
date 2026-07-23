@@ -1,11 +1,47 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL, CURRENCY } from "../constants/index.js";
 import { Icon } from "@iconify/react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
+
+const RANGE_OPTIONS = [
+  { label: "7 Days", days: 7 },
+  { label: "30 Days", days: 30 },
+  { label: "90 Days", days: 90 },
+  { label: "All Time", days: null },
+];
+
+const STATUS_COLORS = {
+  "Order Placed": "#3b82f6",
+  Packing: "#f59e0b",
+  Shipped: "#a855f7",
+  "Out for Delivery": "#f97316",
+  Delivered: "#22c55e",
+};
+
+const STATUS_BG = {
+  "Order Placed": "bg-blue-100 text-blue-700",
+  Packing: "bg-amber-100 text-amber-700",
+  Shipped: "bg-purple-100 text-purple-700",
+  "Out for Delivery": "bg-orange-100 text-orange-700",
+  Delivered: "bg-green-100 text-green-700",
+};
 
 const Dashboard = ({ token }) => {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
+  const [range, setRange] = useState(30);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,22 +59,29 @@ const Dashboard = ({ token }) => {
     if (token) fetchData();
   }, [token]);
 
-  const totalRevenue = orders.reduce((sum, o) => sum + o.amount, 0);
-  const deliveredOrders = orders.filter((o) => o.status === "Delivered");
-  const deliveredRevenue = deliveredOrders.reduce((sum, o) => sum + o.amount, 0);
-  const pendingOrders = orders.filter((o) => o.status !== "Delivered");
+  // Filter orders by date range
+  const filteredOrders = useMemo(() => {
+    if (!range) return orders;
+    const cutoff = Date.now() - range * 24 * 60 * 60 * 1000;
+    return orders.filter((o) => o.date >= cutoff);
+  }, [orders, range]);
 
-  const statusCounts = orders.reduce((acc, o) => {
+  const totalRevenue = filteredOrders.reduce((sum, o) => sum + o.amount, 0);
+  const deliveredOrders = filteredOrders.filter((o) => o.status === "Delivered");
+  const deliveredRevenue = deliveredOrders.reduce((sum, o) => sum + o.amount, 0);
+  const pendingOrders = filteredOrders.filter((o) => o.status !== "Delivered");
+
+  const statusCounts = filteredOrders.reduce((acc, o) => {
     acc[o.status] = (acc[o.status] || 0) + 1;
     return acc;
   }, {});
 
-  const recentOrders = [...orders]
+  const recentOrders = [...filteredOrders]
     .sort((a, b) => b.date - a.date)
     .slice(0, 5);
 
   const productSales = {};
-  orders.forEach((order) => {
+  filteredOrders.forEach((order) => {
     order.items.forEach((item) => {
       if (!productSales[item.name]) {
         productSales[item.name] = { count: 0, revenue: 0 };
@@ -51,24 +94,55 @@ const Dashboard = ({ token }) => {
     .sort((a, b) => b[1].count - a[1].count)
     .slice(0, 5);
 
-  const statusColors = {
-    "Order Placed": "bg-blue-100 text-blue-700",
-    Packing: "bg-amber-100 text-amber-700",
-    Shipped: "bg-purple-100 text-purple-700",
-    "Out for Delivery": "bg-orange-100 text-orange-700",
-    Delivered: "bg-green-100 text-green-700",
-  };
+  // Monthly revenue data for bar chart
+  const monthlyRevenue = useMemo(() => {
+    const months = {};
+    filteredOrders.forEach((order) => {
+      const d = new Date(order.date);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      const label = d.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
+      if (!months[key]) months[key] = { key, label, revenue: 0 };
+      months[key].revenue += order.amount;
+    });
+    return Object.values(months)
+      .sort((a, b) => a.key.localeCompare(b.key))
+      .slice(-12);
+  }, [filteredOrders]);
+
+  // Pie chart data
+  const pieData = Object.entries(statusCounts).map(([status, count]) => ({
+    name: status,
+    value: count,
+  }));
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-2xl font-semibold text-gray-800">Dashboard</h1>
+    <div className="space-y-6">
+      {/* Header + Date Range Filter */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-2xl font-semibold text-gray-800">Dashboard</h1>
+        <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
+          {RANGE_OPTIONS.map((opt) => (
+            <button
+              key={opt.label}
+              onClick={() => setRange(opt.days)}
+              className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                range === opt.days
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon="solar:bag-outline"
           label="Total Orders"
-          value={orders.length}
+          value={filteredOrders.length}
           color="bg-blue-50 text-blue-600"
         />
         <StatCard
@@ -88,29 +162,111 @@ const Dashboard = ({ token }) => {
           icon="solar:clock-outline"
           label="Pending"
           value={pendingOrders.length}
-          sub={`${orders.length > 0 ? ((pendingOrders.length / orders.length) * 100).toFixed(0) : 0}% of total`}
+          sub={
+            filteredOrders.length > 0
+              ? `${((pendingOrders.length / filteredOrders.length) * 100).toFixed(0)}% of total`
+              : "0% of total"
+          }
           color="bg-amber-50 text-amber-600"
         />
       </div>
 
-      {/* Status Breakdown */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6">
-        <h2 className="mb-4 text-lg font-medium text-gray-800">Orders by Status</h2>
-        <div className="flex flex-wrap gap-3">
-          {Object.entries(statusCounts).map(([status, count]) => (
-            <span
-              key={status}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium ${statusColors[status] || "bg-gray-100 text-gray-700"}`}
-            >
-              {status}: {count}
-            </span>
-          ))}
-          {Object.keys(statusCounts).length === 0 && (
-            <p className="text-sm text-gray-400">No orders yet</p>
+      {/* Revenue Bar Chart + Status Pie Chart */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Revenue Chart */}
+        <div className="rounded-xl border border-gray-200 bg-white p-6 lg:col-span-2">
+          <h2 className="mb-4 text-lg font-medium text-gray-800">Revenue Trend</h2>
+          {monthlyRevenue.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={monthlyRevenue} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                <XAxis
+                  dataKey="label"
+                  tick={{ fontSize: 12, fill: "#9ca3af" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 12, fill: "#9ca3af" }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `$${v}`}
+                />
+                <Tooltip
+                  formatter={(value) => [`${CURRENCY}${value.toFixed(2)}`, "Revenue"]}
+                  contentStyle={{
+                    borderRadius: "8px",
+                    border: "1px solid #e5e7eb",
+                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05)",
+                    fontSize: "13px",
+                  }}
+                />
+                <Bar dataKey="revenue" fill="#111827" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-[280px] items-center justify-center">
+              <p className="text-sm text-gray-400">No revenue data</p>
+            </div>
           )}
+        </div>
+
+        {/* Status Pie Chart */}
+        <div className="rounded-xl border border-gray-200 bg-white p-6">
+          <h2 className="mb-4 text-lg font-medium text-gray-800">Orders by Status</h2>
+          {pieData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="45%"
+                  innerRadius={55}
+                  outerRadius={85}
+                  paddingAngle={3}
+                  dataKey="value"
+                >
+                  {pieData.map((entry) => (
+                    <Cell
+                      key={entry.name}
+                      fill={STATUS_COLORS[entry.name] || "#9ca3af"}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value, name) => [value, name]}
+                  contentStyle={{
+                    borderRadius: "8px",
+                    border: "1px solid #e5e7eb",
+                    fontSize: "13px",
+                  }}
+                />
+                <Legend
+                  iconType="circle"
+                  iconSize={8}
+                  wrapperStyle={{ fontSize: "12px" }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-[280px] items-center justify-center">
+              <p className="text-sm text-gray-400">No orders yet</p>
+            </div>
+          )}
+          {/* Fallback badges */}
+          <div className="mt-2 flex flex-wrap gap-2">
+            {Object.entries(statusCounts).map(([status, count]) => (
+              <span
+                key={status}
+                className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_BG[status] || "bg-gray-100 text-gray-700"}`}
+              >
+                {status}: {count}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
+      {/* Recent Orders + Top Selling */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Recent Orders */}
         <div className="rounded-xl border border-gray-200 bg-white p-6">
@@ -129,13 +285,13 @@ const Dashboard = ({ token }) => {
                     {new Date(order.date).toLocaleDateString()}
                   </p>
                 </div>
-                <div className="ml-4 flex items-center gap-3">
+                <div className="shrink-0 flex items-center gap-2 sm:gap-3 ml-3">
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[order.status] || "bg-gray-100 text-gray-700"}`}
+                    className={`hidden sm:inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BG[order.status] || "bg-gray-100 text-gray-700"}`}
                   >
                     {order.status}
                   </span>
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
                     {CURRENCY}{order.amount.toFixed(2)}
                   </span>
                 </div>
@@ -156,18 +312,18 @@ const Dashboard = ({ token }) => {
                 key={name}
                 className="flex items-center justify-between rounded-lg border border-gray-100 px-4 py-3"
               >
-                <div className="flex items-center gap-3">
-                  <span className="flex size-7 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600">
                     {i + 1}
                   </span>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-gray-800">{name}</p>
                     <p className="text-xs text-gray-400">
                       {data.count} sold
                     </p>
                   </div>
                 </div>
-                <span className="text-sm font-medium text-gray-700">
+                <span className="shrink-0 text-sm font-medium text-gray-700 ml-3">
                   {CURRENCY}{data.revenue.toFixed(2)}
                 </span>
               </div>
@@ -191,8 +347,8 @@ const Dashboard = ({ token }) => {
           <QuickStat
             label="Avg. Order Value"
             value={
-              orders.length > 0
-                ? `${CURRENCY}${(totalRevenue / orders.length).toFixed(2)}`
+              filteredOrders.length > 0
+                ? `${CURRENCY}${(totalRevenue / filteredOrders.length).toFixed(2)}`
                 : `${CURRENCY}0.00`
             }
           />

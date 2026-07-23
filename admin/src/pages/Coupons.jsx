@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BACKEND_URL, CURRENCY } from "../constants";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Icon } from "@iconify/react";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -198,12 +199,15 @@ const Coupons = ({ token }) => {
 								{formatDate(coupon.expiry)}
 								{isExpired(coupon.expiry) && " (Expired)"}
 							</p>
-							<p
+						<div className="flex items-center justify-end md:justify-center">
+							<button
 								onClick={() => removeCoupon(coupon._id)}
-								className="text-right md:text-center cursor-pointer text-lg"
+								aria-label="Delete coupon"
+								className="cursor-pointer rounded-lg p-1.5 text-red-600 hover:bg-red-50"
 							>
-								X
-							</p>
+								<Icon icon="solar:trash-bin-trash-outline" className="text-lg" />
+							</button>
+						</div>
 						</div>
 					))}
 			</div>

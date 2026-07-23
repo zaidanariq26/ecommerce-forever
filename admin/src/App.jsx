@@ -15,6 +15,7 @@ import ErrorBoundary from "./components/ui/ErrorBoundary";
 
 const App = () => {
 	const [token, setToken] = useState(localStorage.getItem("adminToken") || "");
+	const [sidebarOpen, setSidebarOpen] = useState(false);
 
 	const handleSetToken = (newToken) => {
 		setToken(newToken);
@@ -32,10 +33,17 @@ const App = () => {
 				<Login setToken={handleSetToken} />
 			) : (
 				<>
-					<Navbar setToken={handleSetToken} />
+					<Navbar
+						setToken={handleSetToken}
+						token={token}
+						onMenuToggle={() => setSidebarOpen((prev) => !prev)}
+					/>
 					<div className="flex">
-						<Sidebar />
-						<div className="flex-1 p-8">
+						<Sidebar
+							isOpen={sidebarOpen}
+							onClose={() => setSidebarOpen(false)}
+						/>
+						<div className="flex-1 p-4 sm:p-6 lg:p-8">
 							<ErrorBoundary>
 								<Routes>
 									<Route path="/" element={<Dashboard token={token} />} />
