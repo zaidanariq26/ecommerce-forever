@@ -6,7 +6,7 @@ const OurPolicy = () => {
       <div>
         <img src={assets.exchange_icon} className="m-auto mb-5 w-12" alt="Exchange policy icon" />
         <p className="font-semibold">Easy Exchange Policy</p>
-        <p className="text-gray-400">We offer free hassel exchange policy</p>
+        <p className="text-gray-400">We offer free hassle exchange policy</p>
       </div>
       <div>
         <img src={assets.quality_icon} className="m-auto mb-5 w-12" alt="Return policy icon" />

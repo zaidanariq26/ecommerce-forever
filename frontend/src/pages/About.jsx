@@ -56,7 +56,7 @@ const About = () => {
           </p>
         </div>
         <div className="flex flex-col gap-5 px-10 py-8 sm:py-12 md:px-8">
-          <b>Exeptional Customer Service: </b>
+          <b>Exceptional Customer Service: </b>
           <p className="text-gray-600">
             We keep support friendly and responsive, from order questions to
             returns, exchanges, and delivery updates.

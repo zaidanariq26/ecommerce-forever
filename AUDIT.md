@@ -265,17 +265,17 @@
 
 - [x] **Add coupon/discount system** — Create a `couponModel` (code, discountPercent, minOrder, maxUses, expiry). Add validation in checkout and apply discount to order total.
 
-- [ ] **Add order tracking UI** — Replace the "Track Order" button refresh behavior with a proper order detail view showing a timeline of status changes with dates.
+- [x] **Add order tracking UI** — Replace the "Track Order" button refresh behavior with a proper order detail view showing a timeline of status changes with dates.
 
-- [ ] **Add image lazy loading** — Add `loading="lazy"` to all product images. Consider Cloudinary auto-optimization (`/w_auto,f_auto/` URL transformations).
+- [x] **Add image lazy loading** — Add `loading="lazy"` to all product images. Consider Cloudinary auto-optimization (`/w_auto,f_auto/` URL transformations).
 
-- [ ] **Add accessibility improvements** — Add descriptive `alt` text to all images. Add `aria-label` to icon-only buttons. Add keyboard focus trapping to AlertDialog and FilterModal. Add a skip-to-content link.
+- [x] **Add accessibility improvements** — Add descriptive `alt` text to all images. Add `aria-label` to icon-only buttons. Add keyboard focus trapping to AlertDialog and FilterModal. Add a skip-to-content link.
 
 - [ ] **Add basic automated tests** — Install Vitest + React Testing Library for frontend, Jest + Supertest for backend. Write tests for: cart operations, order placement, auth flows, and Collection page filtering.
 
-- [ ] **Fix all typos** — "fasion" -> "fashion" (`frontend/src/constant/index.js:9`), "hassel" -> "hassle" (`frontend/src/components/OurPolicy.jsx:9`), "Exeptional" -> "Exceptional" (`frontend/src/pages/About.jsx:57`).
+- [x] **Fix all typos** — "fasion" -> "fashion" (`frontend/src/constant/index.js:9`), "hassel" -> "hassle" (`frontend/src/components/OurPolicy.jsx:9`), "Exeptional" -> "Exceptional" (`frontend/src/pages/About.jsx:57`).
 
-- [ ] **Clean up dead code** — Remove commented-out mock data from `frontend/src/assets/assets.js` (600+ lines). Remove dead `products` import from `frontend/src/context/ShopContext.jsx:5`. Remove dead first `useEffect` in `frontend/src/components/RelatedProducts.jsx:11-20`. Remove `nodemailer` from `backend/package.json`. Remove unused Iconify imports from `admin/src/main.jsx`.
+- [x] **Clean up dead code** — Remove commented-out mock data from `frontend/src/assets/assets.js` (600+ lines). Remove dead `products` import from `frontend/src/context/ShopContext.jsx:5`. Remove dead first `useEffect` in `frontend/src/components/RelatedProducts.jsx:11-20`. Remove `nodemailer` from `backend/package.json`. Remove unused Iconify imports from `admin/src/main.jsx`.
 
 - [ ] **Add admin sales dashboard** — Create a dashboard page with: total orders, total revenue, orders by status, recent orders, and top-selling products. Use a simple charting library (e.g., Chart.js or Recharts).
 
