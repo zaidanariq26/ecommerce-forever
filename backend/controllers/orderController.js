@@ -4,6 +4,7 @@ import productModel from "../models/productModel.js";
 import Stripe from "stripe";
 import Razorpay from "razorpay";
 import { incrementCouponUsage } from "../controllers/couponController.js";
+import logActivity from "../utils/activityLogger.js";
 
 // global variables
 const currency = "usd";
@@ -264,6 +265,7 @@ const updateStatus = async (req, res) => {
 			status,
 			$push: { statusHistory: { status, date: Date.now() } },
 		});
+		await logActivity("Status Updated", "Order", orderId, `Status: ${status}`);
 		res.json({ success: true, message: "Status Updated" });
 	} catch (error) {
 		console.log(error);
@@ -277,6 +279,12 @@ const updatePayment = async (req, res) => {
 		const { orderId, payment } = req.body;
 
 		await orderModel.findByIdAndUpdate(orderId, { payment });
+		await logActivity(
+			payment ? "Payment Confirmed" : "Payment Reverted",
+			"Order",
+			orderId,
+			`Payment: ${payment ? "Paid" : "Pending"}`,
+		);
 		res.json({ success: true, message: "Payment Updated" });
 	} catch (error) {
 		console.log(error);

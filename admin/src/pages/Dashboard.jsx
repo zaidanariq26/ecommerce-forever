@@ -31,27 +31,41 @@ const STATUS_COLORS = {
 };
 
 const STATUS_BG = {
-  "Order Placed": "bg-blue-100 text-blue-700",
-  Packing: "bg-amber-100 text-amber-700",
-  Shipped: "bg-purple-100 text-purple-700",
-  "Out for Delivery": "bg-orange-100 text-orange-700",
-  Delivered: "bg-green-100 text-green-700",
+  "Order Placed": "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  Packing: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  Shipped: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+  "Out for Delivery": "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+  Delivered: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+};
+
+const ACTIVITY_ICONS = {
+  "Status Updated": { icon: "solar:refresh-outline", color: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" },
+  "Payment Confirmed": { icon: "solar:check-circle-outline", color: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" },
+  "Payment Reverted": { icon: "solar:close-circle-outline", color: "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400" },
+  "Product Added": { icon: "solar:add-circle-outline", color: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" },
+  "Product Removed": { icon: "solar:trash-bin-trash-outline", color: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" },
+  "Stock Updated": { icon: "solar:box-outline", color: "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400" },
+  "Coupon Created": { icon: "solar:ticket-outline", color: "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" },
+  "Coupon Deleted": { icon: "solar:forbidden-outline", color: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" },
 };
 
 const Dashboard = ({ token }) => {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
+  const [activities, setActivities] = useState([]);
   const [range, setRange] = useState(30);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [ordersRes, productsRes] = await Promise.all([
+        const [ordersRes, productsRes, activityRes] = await Promise.all([
           axios.post(BACKEND_URL + "/api/order/list", {}, { headers: { token } }),
           axios.get(BACKEND_URL + "/api/product/list"),
+          axios.get(BACKEND_URL + "/api/activity/list?limit=10", { headers: { token } }),
         ]);
         if (ordersRes.data.success) setOrders(ordersRes.data.orders);
         if (productsRes.data.success) setProducts(productsRes.data.products);
+        if (activityRes.data.success) setActivities(activityRes.data.activities);
       } catch (error) {
         console.error(error);
       }
@@ -119,16 +133,16 @@ const Dashboard = ({ token }) => {
     <div className="space-y-6">
       {/* Header + Date Range Filter */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-semibold text-gray-800">Dashboard</h1>
-        <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
+        <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Dashboard</h1>
+        <div className="flex flex-wrap gap-1 rounded-lg bg-gray-100 dark:bg-gray-800 p-1">
           {RANGE_OPTIONS.map((opt) => (
             <button
               key={opt.label}
               onClick={() => setRange(opt.days)}
               className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 range === opt.days
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
               }`}
             >
               {opt.label}
@@ -174,8 +188,8 @@ const Dashboard = ({ token }) => {
       {/* Revenue Bar Chart + Status Pie Chart */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Revenue Chart */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6 lg:col-span-2">
-          <h2 className="mb-4 text-lg font-medium text-gray-800">Revenue Trend</h2>
+        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 lg:col-span-2">
+          <h2 className="mb-4 text-lg font-medium text-gray-800 dark:text-white">Revenue Trend</h2>
           {monthlyRevenue.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={monthlyRevenue} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
@@ -195,8 +209,10 @@ const Dashboard = ({ token }) => {
                   formatter={(value) => [`${CURRENCY}${value.toFixed(2)}`, "Revenue"]}
                   contentStyle={{
                     borderRadius: "8px",
-                    border: "1px solid #e5e7eb",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05)",
+                    border: "1px solid #374151",
+                    backgroundColor: "#1f2937",
+                    color: "#f3f4f6",
+                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.3)",
                     fontSize: "13px",
                   }}
                 />
@@ -211,8 +227,8 @@ const Dashboard = ({ token }) => {
         </div>
 
         {/* Status Pie Chart */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6">
-          <h2 className="mb-4 text-lg font-medium text-gray-800">Orders by Status</h2>
+        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
+          <h2 className="mb-4 text-lg font-medium text-gray-800 dark:text-white">Orders by Status</h2>
           {pieData.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
@@ -236,7 +252,9 @@ const Dashboard = ({ token }) => {
                   formatter={(value, name) => [value, name]}
                   contentStyle={{
                     borderRadius: "8px",
-                    border: "1px solid #e5e7eb",
+                    border: "1px solid #374151",
+                    backgroundColor: "#1f2937",
+                    color: "#f3f4f6",
                     fontSize: "13px",
                   }}
                 />
@@ -269,75 +287,75 @@ const Dashboard = ({ token }) => {
       {/* Recent Orders + Top Selling */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Recent Orders */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6">
-          <h2 className="mb-4 text-lg font-medium text-gray-800">Recent Orders</h2>
+        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
+          <h2 className="mb-4 text-lg font-medium text-gray-800 dark:text-white">Recent Orders</h2>
           <div className="space-y-3">
             {recentOrders.map((order) => (
               <div
                 key={order._id}
-                className="flex items-center justify-between rounded-lg border border-gray-100 px-4 py-3"
+                className="flex items-center justify-between rounded-lg border border-gray-100 dark:border-gray-800 px-4 py-3"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-gray-800">
+                  <p className="truncate text-sm font-medium text-gray-800 dark:text-white">
                     {order.items.map((i) => i.name).join(", ")}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
                     {new Date(order.date).toLocaleDateString()}
                   </p>
                 </div>
                 <div className="shrink-0 flex items-center gap-2 sm:gap-3 ml-3">
                   <span
-                    className={`hidden sm:inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BG[order.status] || "bg-gray-100 text-gray-700"}`}
+                    className={`hidden sm:inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BG[order.status] || "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"}`}
                   >
                     {order.status}
                   </span>
-                  <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
                     {CURRENCY}{order.amount.toFixed(2)}
                   </span>
                 </div>
               </div>
             ))}
             {recentOrders.length === 0 && (
-              <p className="text-sm text-gray-400">No orders yet</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">No orders yet</p>
             )}
           </div>
         </div>
 
         {/* Top Selling Products */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6">
-          <h2 className="mb-4 text-lg font-medium text-gray-800">Top Selling Products</h2>
+        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
+          <h2 className="mb-4 text-lg font-medium text-gray-800 dark:text-white">Top Selling Products</h2>
           <div className="space-y-3">
             {topSelling.map(([name, data], i) => (
               <div
                 key={name}
-                className="flex items-center justify-between rounded-lg border border-gray-100 px-4 py-3"
+                className="flex items-center justify-between rounded-lg border border-gray-100 dark:border-gray-800 px-4 py-3"
               >
                 <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600">
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-xs font-medium text-gray-600 dark:text-gray-400">
                     {i + 1}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-gray-800">{name}</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="truncate text-sm font-medium text-gray-800 dark:text-white">{name}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
                       {data.count} sold
                     </p>
                   </div>
                 </div>
-                <span className="shrink-0 text-sm font-medium text-gray-700 ml-3">
+                <span className="shrink-0 text-sm font-medium text-gray-700 dark:text-gray-300 ml-3">
                   {CURRENCY}{data.revenue.toFixed(2)}
                 </span>
               </div>
             ))}
             {topSelling.length === 0 && (
-              <p className="text-sm text-gray-400">No sales data yet</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">No sales data yet</p>
             )}
           </div>
         </div>
       </div>
 
       {/* Quick Stats */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6">
-        <h2 className="mb-4 text-lg font-medium text-gray-800">Quick Stats</h2>
+      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
+        <h2 className="mb-4 text-lg font-medium text-gray-800 dark:text-white">Quick Stats</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           <QuickStat label="Total Products" value={products.length} />
           <QuickStat
@@ -357,11 +375,11 @@ const Dashboard = ({ token }) => {
 
       {/* Low Stock Alerts */}
       {products.filter((p) => p.stock <= 5).length > 0 && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-6">
+        <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-6">
           <div className="mb-4 flex items-center gap-2">
-            <Icon icon="solar:danger-outline" className="text-lg text-amber-600" />
-            <h2 className="text-lg font-medium text-amber-800">Low Stock Alerts</h2>
-            <span className="ml-auto rounded-full bg-amber-200 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+            <Icon icon="solar:danger-outline" className="text-lg text-amber-600 dark:text-amber-400" />
+            <h2 className="text-lg font-medium text-amber-800 dark:text-amber-300">Low Stock Alerts</h2>
+            <span className="ml-auto rounded-full bg-amber-200 dark:bg-amber-800 px-2.5 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-300">
               {products.filter((p) => p.stock <= 5).length} items
             </span>
           </div>
@@ -372,7 +390,7 @@ const Dashboard = ({ token }) => {
               .map((product) => (
                 <div
                   key={product._id}
-                  className="flex items-center justify-between rounded-lg bg-white px-4 py-2.5 border border-amber-200"
+                  className="flex items-center justify-between rounded-lg bg-white dark:bg-gray-900 px-4 py-2.5 border border-amber-200 dark:border-amber-800"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <img
@@ -380,15 +398,15 @@ const Dashboard = ({ token }) => {
                       alt=""
                       className="size-8 shrink-0 rounded object-cover"
                     />
-                    <p className="truncate text-sm font-medium text-gray-800">
+                    <p className="truncate text-sm font-medium text-gray-800 dark:text-white">
                       {product.name}
                     </p>
                   </div>
                   <span
                     className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${
                       product.stock <= 0
-                        ? "bg-red-100 text-red-700"
-                        : "bg-amber-100 text-amber-700"
+                        ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                        : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
                     }`}
                   >
                     {product.stock <= 0 ? "Out of stock" : `${product.stock} left`}
@@ -398,27 +416,65 @@ const Dashboard = ({ token }) => {
           </div>
         </div>
       )}
+
+      {/* Recent Activity */}
+      {activities.length > 0 && (
+        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
+          <h2 className="mb-4 text-lg font-medium text-gray-800 dark:text-white">Recent Activity</h2>
+          <div className="space-y-0">
+            {activities.map((activity) => {
+              const config = ACTIVITY_ICONS[activity.action] || {
+                icon: "solar:info-circle-outline",
+                color: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
+              };
+              return (
+                <div key={activity._id} className="flex gap-3">
+                  <div className="flex flex-col items-center">
+                    <div className={`flex size-8 shrink-0 items-center justify-center rounded-full ${config.color}`}>
+                      <Icon icon={config.icon} className="text-sm" />
+                    </div>
+                    <div className="w-px flex-1 bg-gray-200 dark:bg-gray-700" />
+                  </div>
+                  <div className="min-w-0 flex-1 pb-4">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {activity.action}
+                      <span className="ml-1 text-gray-400 dark:text-gray-600">·</span>
+                      <span className="ml-1 text-gray-500 dark:text-gray-400">{activity.entity}</span>
+                    </p>
+                    {activity.details && (
+                      <p className="truncate text-xs text-gray-400 dark:text-gray-500">{activity.details}</p>
+                    )}
+                    <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+                      {new Date(activity.timestamp).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 const StatCard = ({ icon, label, value, sub, color }) => (
-  <div className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5">
-    <div className={`flex size-12 items-center justify-center rounded-full ${color}`}>
+  <div className="flex items-center gap-4 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 sm:p-5">
+    <div className={`flex size-12 shrink-0 items-center justify-center rounded-full ${color}`}>
       <Icon icon={icon} className="text-xl" />
     </div>
-    <div>
-      <p className="text-sm text-gray-500">{label}</p>
-      <p className="text-xl font-semibold text-gray-800">{value}</p>
-      {sub && <p className="text-xs text-gray-400">{sub}</p>}
+    <div className="min-w-0">
+      <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
+      <p className="truncate text-xl font-semibold text-gray-800 dark:text-white">{value}</p>
+      {sub && <p className="truncate text-xs text-gray-400 dark:text-gray-500">{sub}</p>}
     </div>
   </div>
 );
 
 const QuickStat = ({ label, value }) => (
-  <div className="rounded-lg bg-gray-50 p-4 text-center">
-    <p className="text-sm text-gray-500">{label}</p>
-    <p className="text-lg font-semibold text-gray-800">{value}</p>
+  <div className="min-w-0 overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-800 p-4 text-center">
+    <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
+    <p className="truncate text-lg font-semibold text-gray-800 dark:text-white">{value}</p>
   </div>
 );
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import { Routes, Route, useLocation } from "react-router-dom";
@@ -12,11 +12,17 @@ import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ErrorBoundary from "./components/ui/ErrorBoundary";
+import useThemeStore, { applyDarkClass } from "./zustand/themeStore";
 
 const App = () => {
 	const [token, setToken] = useState(localStorage.getItem("adminToken") || "");
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const location = useLocation();
+	const dark = useThemeStore((s) => s.dark);
+
+	useEffect(() => {
+		applyDarkClass(dark);
+	}, [dark]);
 
 	const handleSetToken = (newToken) => {
 		setToken(newToken);
@@ -28,7 +34,7 @@ const App = () => {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-50">
+		<div className="min-h-screen overflow-x-hidden bg-gray-50 dark:bg-gray-950">
 			<ToastContainer />
 			{token === "" ? (
 				<Login setToken={handleSetToken} />

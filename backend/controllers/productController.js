@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
+import logActivity from "../utils/activityLogger.js";
 
 // function for add product
 const addProduct = async (req, res) => {
@@ -58,6 +59,7 @@ const addProduct = async (req, res) => {
 		const product = new productModel(productData);
 		await product.save();
 
+		await logActivity("Product Added", "Product", product._id, name);
 		res.json({ success: true, message: "Product Added" });
 	} catch (error) {
 		console.log(error);
@@ -79,7 +81,12 @@ const listProducts = async (req, res) => {
 // function for remove product
 const removeProduct = async (req, res) => {
 	try {
+		const product = await productModel.findById(req.body.id);
+		if (!product) {
+			return res.status(404).json({ success: false, message: "Product not found" });
+		}
 		await productModel.findByIdAndDelete(req.body.id);
+		await logActivity("Product Removed", "Product", req.body.id, product.name);
 		res.json({ success: true, message: "Product Removed" });
 	} catch (error) {
 		console.log(error);
@@ -121,9 +128,18 @@ const updateProduct = async (req, res) => {
 			category,
 			subCategory,
 			bestseller: bestseller === "true" ? true : false,
-			sizes: JSON.parse(sizes),
 			stock: Number(stock) || 0,
 		};
+
+		let parsedSizes;
+		try {
+			parsedSizes = JSON.parse(sizes);
+		} catch {
+			return res
+				.status(400)
+				.json({ success: false, message: "Invalid sizes JSON" });
+		}
+		updateData.sizes = parsedSizes;
 
 		const images = [
 			req.files.image1 && req.files.image1[0],
@@ -162,6 +178,7 @@ const updateStock = async (req, res) => {
 		}
 
 		await productModel.findByIdAndUpdate(id, { stock: Number(stock) });
+		await logActivity("Stock Updated", "Product", id, `Stock: ${stock}`);
 		res.json({ success: true, message: "Stock Updated" });
 	} catch (error) {
 		console.log(error);

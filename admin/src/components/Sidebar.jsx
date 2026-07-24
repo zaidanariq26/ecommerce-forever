@@ -22,17 +22,17 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 z-50 h-full border-r border-gray-200 bg-white transition-transform duration-300 lg:static lg:translate-x-0 lg:z-auto ${
+        className={`fixed top-0 left-0 z-50 h-full border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 transition-transform duration-300 lg:static lg:translate-x-0 lg:z-auto ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Mobile close button */}
         <div className="flex items-center justify-between px-4 pt-4 lg:hidden">
-          <span className="text-sm font-semibold text-gray-800">Menu</span>
+          <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Menu</span>
           <button
             onClick={onClose}
             aria-label="Close menu"
-            className="flex size-8 cursor-pointer items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100"
+            className="flex size-8 cursor-pointer items-center justify-center rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             <Icon icon="solar:close-outline" className="text-lg" />
           </button>
@@ -49,8 +49,8 @@ const Sidebar = ({ isOpen, onClose }) => {
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                   isActive
-                    ? "bg-gray-900 text-white"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100"
                 }`
               }
             >

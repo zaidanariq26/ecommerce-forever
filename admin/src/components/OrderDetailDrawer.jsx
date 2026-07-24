@@ -1,13 +1,13 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Icon } from "@iconify/react";
 import { CURRENCY } from "../constants";
 
 const STATUS_COLORS = {
-  "Order Placed": "bg-blue-100 text-blue-700 border-blue-300",
-  Packing: "bg-amber-100 text-amber-700 border-amber-300",
-  Shipped: "bg-purple-100 text-purple-700 border-purple-300",
-  "Out for Delivery": "bg-orange-100 text-orange-700 border-orange-300",
-  Delivered: "bg-green-100 text-green-700 border-green-300",
+  "Order Placed": "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-700",
+  Packing: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700",
+  Shipped: "bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-700",
+  "Out for Delivery": "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-700",
+  Delivered: "bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700",
 };
 
 const STATUS_ICONS = {
@@ -20,6 +20,7 @@ const STATUS_ICONS = {
 
 const OrderDetailDrawer = ({ order, isOpen, onClose, onStatusChange, onPaymentChange }) => {
   const drawerRef = useRef(null);
+  const [paymentLoading, setPaymentLoading] = useState(false);
 
   useEffect(() => {
     const handleKey = (e) => {
@@ -34,6 +35,10 @@ const OrderDetailDrawer = ({ order, isOpen, onClose, onStatusChange, onPaymentCh
       document.body.style.overflow = "";
     };
   }, [isOpen, onClose]);
+
+  useEffect(() => {
+    setPaymentLoading(false);
+  }, [order?.payment]);
 
   if (!isOpen || !order) return null;
 
@@ -65,6 +70,15 @@ const OrderDetailDrawer = ({ order, isOpen, onClose, onStatusChange, onPaymentCh
   ];
   const currentIdx = allStatuses.indexOf(order.status);
 
+  const handlePaymentToggle = async () => {
+    setPaymentLoading(true);
+    try {
+      await onPaymentChange(order._id, !order.payment);
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
   return (
     <>
       {/* Backdrop */}
@@ -76,15 +90,15 @@ const OrderDetailDrawer = ({ order, isOpen, onClose, onStatusChange, onPaymentCh
       {/* Drawer */}
       <div
         ref={drawerRef}
-        className="fixed top-0 right-0 z-50 flex h-full w-[88vw] flex-col bg-white shadow-2xl sm:w-[420px]"
+        className="fixed top-0 right-0 z-50 flex h-full w-[88vw] flex-col bg-white dark:bg-gray-900 shadow-2xl sm:w-[420px]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
-          <h2 className="text-lg font-semibold text-gray-800">Order Details</h2>
+        <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-5 py-4">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Order Details</h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="flex size-8 cursor-pointer items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            className="flex size-8 cursor-pointer items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-600 dark:hover:text-gray-300"
           >
             <Icon icon="solar:close-outline" className="text-xl" />
           </button>
@@ -94,16 +108,16 @@ const OrderDetailDrawer = ({ order, isOpen, onClose, onStatusChange, onPaymentCh
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {/* Order ID + Date */}
           <div className="mb-5">
-            <p className="text-xs text-gray-400">Order ID</p>
-            <p className="truncate font-mono text-sm text-gray-600">{order._id}</p>
-            <p className="mt-1 text-xs text-gray-400">
+            <p className="text-xs text-gray-400 dark:text-gray-500">Order ID</p>
+            <p className="truncate font-mono text-sm text-gray-600 dark:text-gray-300">{order._id}</p>
+            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
               Placed on {formatDate(order.date)}
             </p>
           </div>
 
           {/* Status Progress */}
           <div className="mb-6">
-            <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
+            <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">
               Status
             </p>
             <div className="flex items-center gap-1">
@@ -113,7 +127,7 @@ const OrderDetailDrawer = ({ order, isOpen, onClose, onStatusChange, onPaymentCh
                     className={`flex size-8 items-center justify-center rounded-full border-2 text-sm ${
                       i <= currentIdx
                         ? STATUS_COLORS[s] || "bg-gray-100 text-gray-700 border-gray-300"
-                        : "border-gray-200 bg-gray-50 text-gray-300"
+                        : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-300 dark:text-gray-600"
                     }`}
                   >
                     <Icon
@@ -123,7 +137,7 @@ const OrderDetailDrawer = ({ order, isOpen, onClose, onStatusChange, onPaymentCh
                   </div>
                   <span
                     className={`hidden text-center text-[10px] leading-tight sm:block ${
-                      i <= currentIdx ? "font-medium text-gray-700" : "text-gray-300"
+                      i <= currentIdx ? "font-medium text-gray-700 dark:text-gray-300" : "text-gray-300 dark:text-gray-600"
                     }`}
                   >
                     {s}
@@ -134,33 +148,33 @@ const OrderDetailDrawer = ({ order, isOpen, onClose, onStatusChange, onPaymentCh
           </div>
 
           {/* Customer Info */}
-          <div className="mb-5 rounded-lg border border-gray-200 p-4">
-            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
+          <div className="mb-5 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">
               Customer
             </p>
-            <p className="text-sm font-medium text-gray-800">
+            <p className="text-sm font-medium text-gray-800 dark:text-white">
               {order.address.firstName} {order.address.lastName}
             </p>
-            <p className="mt-1 text-sm text-gray-500">{order.address.phone}</p>
-            <p className="mt-0.5 text-sm text-gray-500">{order.address.email}</p>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{order.address.phone}</p>
+            <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{order.address.email}</p>
           </div>
 
           {/* Address */}
-          <div className="mb-5 rounded-lg border border-gray-200 p-4">
-            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
+          <div className="mb-5 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">
               Shipping Address
             </p>
-            <p className="text-sm text-gray-700">{order.address.street}</p>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-gray-700 dark:text-gray-300">{order.address.street}</p>
+            <p className="text-sm text-gray-700 dark:text-gray-300">
               {order.address.city}, {order.address.state},{" "}
               {order.address.country}
             </p>
-            <p className="text-sm text-gray-700">{order.address.zipcode}</p>
+            <p className="text-sm text-gray-700 dark:text-gray-300">{order.address.zipcode}</p>
           </div>
 
           {/* Items */}
-          <div className="mb-5 rounded-lg border border-gray-200 p-4">
-            <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
+          <div className="mb-5 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">
               Items ({order.items.length})
             </p>
             <div className="space-y-2">
@@ -170,21 +184,21 @@ const OrderDetailDrawer = ({ order, isOpen, onClose, onStatusChange, onPaymentCh
                   className="flex items-center justify-between text-sm"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-gray-800">{item.name}</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="truncate text-gray-800 dark:text-white">{item.name}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
                       Size: {item.size} &middot; Qty: {item.quantity}
                     </p>
                   </div>
-                  <p className="shrink-0 font-medium text-gray-700 ml-3">
+                  <p className="shrink-0 font-medium text-gray-700 dark:text-gray-300 ml-3">
                     {CURRENCY}
                     {(item.price * item.quantity).toFixed(2)}
                   </p>
                 </div>
               ))}
             </div>
-            <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
-              <span className="text-sm font-medium text-gray-500">Total</span>
-              <span className="text-sm font-semibold text-gray-800">
+            <div className="mt-3 flex items-center justify-between border-t border-gray-100 dark:border-gray-700 pt-3">
+              <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Total</span>
+              <span className="text-sm font-semibold text-gray-800 dark:text-white">
                 {CURRENCY}
                 {order.amount.toFixed(2)}
               </span>
@@ -192,21 +206,21 @@ const OrderDetailDrawer = ({ order, isOpen, onClose, onStatusChange, onPaymentCh
           </div>
 
           {/* Payment Info */}
-          <div className="mb-5 rounded-lg border border-gray-200 p-4">
-            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
+          <div className="mb-5 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">
               Payment
             </p>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Method</span>
-              <span className="font-medium text-gray-700">
+              <span className="text-gray-500 dark:text-gray-400">Method</span>
+              <span className="font-medium text-gray-700 dark:text-gray-300">
                 {order.paymentMethod}
               </span>
             </div>
             <div className="mt-1 flex items-center justify-between text-sm">
-              <span className="text-gray-500">Status</span>
+              <span className="text-gray-500 dark:text-gray-400">Status</span>
               <span
                 className={`font-medium ${
-                  order.payment ? "text-green-600" : "text-amber-600"
+                  order.payment ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"
                 }`}
               >
                 {order.payment ? "Paid" : "Pending"}
@@ -214,20 +228,21 @@ const OrderDetailDrawer = ({ order, isOpen, onClose, onStatusChange, onPaymentCh
             </div>
             {order.paymentMethod === "COD" && (
               <button
-                onClick={() => onPaymentChange(order._id, !order.payment)}
-                className={`mt-3 w-full cursor-pointer rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                onClick={handlePaymentToggle}
+                disabled={paymentLoading}
+                className={`mt-3 w-full cursor-pointer rounded-lg border px-3 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
                   order.payment
-                    ? "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
-                    : "border-green-300 bg-green-50 text-green-700 hover:bg-green-100"
+                    ? "border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40"
+                    : "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/40"
                 }`}
               >
-                {order.payment ? "Mark as Unpaid" : "Mark as Paid"}
+                {paymentLoading ? "Updating..." : order.payment ? "Mark as Unpaid" : "Mark as Paid"}
               </button>
             )}
             {order.coupon?.code && (
               <div className="mt-1 flex items-center justify-between text-sm">
-                <span className="text-gray-500">Coupon</span>
-                <span className="font-medium text-purple-600">
+                <span className="text-gray-500 dark:text-gray-400">Coupon</span>
+                <span className="font-medium text-purple-600 dark:text-purple-400">
                   {order.coupon.code} (-{order.coupon.discountPercent}%)
                 </span>
               </div>
@@ -237,7 +252,7 @@ const OrderDetailDrawer = ({ order, isOpen, onClose, onStatusChange, onPaymentCh
           {/* Status History Timeline */}
           {timeline.length > 0 && (
             <div className="mb-5">
-              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
+              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">
                 Timeline
               </p>
               <div className="space-y-0">
@@ -247,19 +262,19 @@ const OrderDetailDrawer = ({ order, isOpen, onClose, onStatusChange, onPaymentCh
                       <div
                         className={`size-2.5 rounded-full ${
                           i === timeline.length - 1
-                            ? "bg-gray-900"
-                            : "bg-gray-300"
+                            ? "bg-gray-900 dark:bg-gray-100"
+                            : "bg-gray-300 dark:bg-gray-600"
                         }`}
                       />
                       {i < timeline.length - 1 && (
-                        <div className="w-px flex-1 bg-gray-200" />
+                        <div className="w-px flex-1 bg-gray-200 dark:bg-gray-700" />
                       )}
                     </div>
                     <div className="pb-4">
-                      <p className="text-sm font-medium text-gray-700">
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {entry.status}
                       </p>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-gray-400 dark:text-gray-500">
                         {formatDateTime(entry.date)}
                       </p>
                     </div>
@@ -271,15 +286,15 @@ const OrderDetailDrawer = ({ order, isOpen, onClose, onStatusChange, onPaymentCh
         </div>
 
         {/* Footer: Status Update */}
-        <div className="border-t border-gray-200 px-5 py-4">
-          <label className="mb-1 block text-xs font-medium text-gray-400">
+        <div className="border-t border-gray-200 dark:border-gray-700 px-5 py-4">
+          <label className="mb-1 block text-xs font-medium text-gray-400 dark:text-gray-500">
             Update Status
           </label>
           <select
             value={order.status}
             onChange={(e) => onStatusChange(order._id, e.target.value)}
             disabled={order.status === "Delivered"}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white px-3 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {allStatuses.map((s) => (
               <option key={s} value={s}>

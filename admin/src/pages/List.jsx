@@ -38,7 +38,6 @@ const List = ({ token }) => {
 				toast.success(response.data.message);
 				await fetchList();
 			} else {
-				console.log(response.data.success);
 				toast.error(response.data.message);
 			}
 		} catch (error) {
@@ -88,8 +87,8 @@ const List = ({ token }) => {
 	};
 
 	const stockColor = (stock) => {
-		if (stock <= 0) return 'text-red-600 font-semibold';
-		if (stock <= 5) return 'text-amber-600 font-semibold';
+		if (stock <= 0) return 'text-red-600 dark:text-red-400 font-semibold';
+		if (stock <= 5) return 'text-amber-600 dark:text-amber-400 font-semibold';
 		return '';
 	};
 
@@ -99,11 +98,11 @@ const List = ({ token }) => {
 
 	return (
 		<div>
-			<p className='mb-2'>All Products List</p>
+			<p className='mb-2 text-gray-700 dark:text-gray-300'>All Products List</p>
 			<div className='flex flex-col gap-2 overflow-hidden'>
 				{/*  ------ List Table Title ------ */}
 
-			<div className='hidden md:grid grid-cols-[1.2fr_3fr_1fr_1fr_1fr_1fr] items-center py-1 px-2 border bg-gray-100 text-sm'>
+			<div className='hidden md:grid grid-cols-[1.2fr_3fr_1fr_1fr_1fr_1fr] items-center py-1 px-2 border bg-gray-100 dark:bg-gray-800 text-sm'>
 				<b>Image</b>
 				<b>Name</b>
 				<b>Category</b>
@@ -119,15 +118,15 @@ const List = ({ token }) => {
 				.map((item) => (
 				<div
 					key={item._id}
-					className={`flex flex-col gap-2 rounded-lg border bg-white p-3 md:grid md:grid-cols-[1.2fr_3fr_1fr_1fr_1fr_1fr] md:items-center md:gap-4 md:rounded-none md:border md:border-x-0 md:bg-transparent md:p-2 ${
-						item.stock <= 5 ? 'border-amber-300 bg-amber-50/50 md:bg-amber-50/50' : 'border-gray-200'
+					className={`flex flex-col gap-2 rounded-lg border bg-white dark:bg-gray-900 p-3 md:grid md:grid-cols-[1.2fr_3fr_1fr_1fr_1fr_1fr] md:items-center md:gap-4 md:rounded-none md:border md:border-x-0 md:bg-transparent md:p-2 ${
+						item.stock <= 5 ? 'border-amber-300 bg-amber-50/50 dark:bg-amber-900/20 md:bg-amber-50/50 md:dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'
 					}`}>
 					<img src={item.image[0]} className='h-16 w-16 shrink-0 rounded object-cover md:h-14 md:w-14' alt={item.name} />
-					<p className='min-w-0 truncate text-sm font-medium text-gray-800 md:truncate'>{item.name}</p>
-					<p className='text-sm font-medium text-gray-700 md:hidden'>
+					<p className='min-w-0 truncate text-sm font-medium text-gray-800 dark:text-gray-100 md:truncate'>{item.name}</p>
+					<p className='text-sm font-medium text-gray-700 dark:text-gray-300 md:hidden'>
 						{CURRENCY}{item.price}
 					</p>
-					<p className='hidden text-sm md:block'>{item.category}</p>
+					<p className='hidden text-sm text-gray-700 dark:text-gray-300 md:block'>{item.category}</p>
 					{/* Desktop: inline stock editing */}
 					<div className='hidden md:block'>
 						{editingStock === item._id ? (
@@ -142,12 +141,12 @@ const List = ({ token }) => {
 								}}
 								min='0'
 								autoFocus
-								className='w-16 rounded border border-gray-300 px-1 py-0.5 text-sm'
+								className='w-16 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 px-1 py-0.5 text-sm'
 							/>
 						) : (
 							<button
 								onClick={() => startEditStock(item)}
-								className={`cursor-pointer rounded px-1 py-0.5 text-left text-sm hover:bg-gray-100 ${stockColor(item.stock)}`}
+								className={`cursor-pointer rounded px-1 py-0.5 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${stockColor(item.stock)}`}
 							>
 								{item.stock}
 							</button>
@@ -160,20 +159,20 @@ const List = ({ token }) => {
 						<button
 							onClick={() => navigate(`/edit?id=${item._id}`)}
 							aria-label='Edit product'
-							className='cursor-pointer rounded-lg p-1.5 text-blue-600 hover:bg-blue-50'>
+							className='cursor-pointer rounded-lg p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30'>
 							<Icon icon='solar:pen-bold' className='text-lg' />
 						</button>
 						<button
 							onClick={() => removeProduct(item._id)}
 							aria-label='Delete product'
-							className='cursor-pointer rounded-lg p-1.5 text-red-600 hover:bg-red-50'>
+							className='cursor-pointer rounded-lg p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30'>
 							<Icon icon='solar:trash-bin-trash-outline' className='text-lg' />
 						</button>
 					</div>
 					{/* Mobile: second row */}
 					<div className='flex items-center justify-between md:hidden'>
-						<div className='flex items-center gap-2 text-xs text-gray-500'>
-							<span className='rounded bg-gray-100 px-1.5 py-0.5'>{item.category}</span>
+						<div className='flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400'>
+							<span className='rounded bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5'>{item.category}</span>
 							<span className={stockColor(item.stock)}>
 								Stock: {item.stock}
 							</span>
@@ -182,13 +181,13 @@ const List = ({ token }) => {
 							<button
 								onClick={() => navigate(`/edit?id=${item._id}`)}
 								aria-label='Edit product'
-								className='cursor-pointer rounded-lg p-1.5 text-blue-600 hover:bg-blue-50'>
+								className='cursor-pointer rounded-lg p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30'>
 								<Icon icon='solar:pen-bold' className='text-base' />
 							</button>
 							<button
 								onClick={() => removeProduct(item._id)}
 								aria-label='Delete product'
-								className='cursor-pointer rounded-lg p-1.5 text-red-600 hover:bg-red-50'>
+								className='cursor-pointer rounded-lg p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30'>
 								<Icon icon='solar:trash-bin-trash-outline' className='text-base' />
 							</button>
 						</div>
@@ -202,10 +201,10 @@ const List = ({ token }) => {
 					<button
 						onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
 						disabled={currentPage === 1}
-						className='cursor-pointer border border-gray-300 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-40'>
+						className='cursor-pointer border border-gray-300 dark:border-gray-600 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-40'>
 						Prev
 					</button>
-					<span className='text-sm text-gray-600 sm:hidden'>
+					<span className='text-sm text-gray-600 dark:text-gray-400 sm:hidden'>
 						{currentPage} / {Math.ceil(list.length / ITEMS_PER_PAGE)}
 					</span>
 					{Array.from({ length: Math.ceil(list.length / ITEMS_PER_PAGE) }, (_, i) => i + 1).map(
@@ -214,7 +213,7 @@ const List = ({ token }) => {
 								key={page}
 								onClick={() => setCurrentPage(page)}
 								className={`cursor-pointer border px-3 py-1 text-sm hidden sm:inline-block ${
-									currentPage === page ? 'bg-gray-900 text-white border-gray-900' : 'border-gray-300 hover:bg-gray-100'
+									currentPage === page ? 'bg-gray-900 text-white border-gray-900 dark:border-gray-100' : 'border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
 								}`}>
 								{page}
 							</button>
@@ -223,7 +222,7 @@ const List = ({ token }) => {
 					<button
 						onClick={() => setCurrentPage((p) => Math.min(Math.ceil(list.length / ITEMS_PER_PAGE), p + 1))}
 						disabled={currentPage === Math.ceil(list.length / ITEMS_PER_PAGE)}
-						className='cursor-pointer border border-gray-300 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-40'>
+						className='cursor-pointer border border-gray-300 dark:border-gray-600 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-40'>
 						Next
 					</button>
 				</div>

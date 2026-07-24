@@ -97,7 +97,7 @@ const Coupons = ({ token }) => {
 	return (
 		<div>
 			<form onSubmit={onSubmitHandler} className="flex flex-col w-full items-start gap-3 mb-8">
-				<p className="mb-2">Add Coupon</p>
+				<p className="mb-2 text-gray-700 dark:text-gray-300">Add Coupon</p>
 
 				<div className="flex flex-col sm:flex-row gap-3 w-full sm:gap-8">
 					<div className="w-full sm:w-auto">
@@ -106,7 +106,7 @@ const Coupons = ({ token }) => {
 							onChange={(e) => setCode(e.target.value)}
 							value={code}
 							type="text"
-							className="w-full px-3 py-2 sm:w-[160px]"
+							className="w-full px-3 py-2 sm:w-[160px] dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600"
 							placeholder="e.g. SUMMER20"
 							required
 						/>
@@ -120,7 +120,7 @@ const Coupons = ({ token }) => {
 							type="number"
 							min="1"
 							max="90"
-							className="w-full px-3 py-2 sm:w-[100px]"
+							className="w-full px-3 py-2 sm:w-[100px] dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600"
 							placeholder="e.g. 20"
 							required
 						/>
@@ -133,7 +133,7 @@ const Coupons = ({ token }) => {
 							value={minOrder}
 							type="number"
 							min="0"
-							className="w-full px-3 py-2 sm:w-[100px]"
+							className="w-full px-3 py-2 sm:w-[100px] dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600"
 							placeholder="0"
 						/>
 					</div>
@@ -145,7 +145,7 @@ const Coupons = ({ token }) => {
 							value={maxUses}
 							type="number"
 							min="0"
-							className="w-full px-3 py-2 sm:w-[100px]"
+							className="w-full px-3 py-2 sm:w-[100px] dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600"
 							placeholder="0 = unlimited"
 						/>
 					</div>
@@ -156,7 +156,7 @@ const Coupons = ({ token }) => {
 							onChange={(e) => setExpiry(e.target.value)}
 							value={expiry}
 							type="date"
-							className="w-full px-3 py-2 sm:w-[160px]"
+							className="w-full px-3 py-2 sm:w-[160px] dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600"
 							required
 						/>
 					</div>
@@ -167,9 +167,9 @@ const Coupons = ({ token }) => {
 				</button>
 			</form>
 
-			<p className="mb-2">All Coupons</p>
+			<p className="mb-2 text-gray-700 dark:text-gray-300">All Coupons</p>
 			<div className="flex flex-col gap-2">
-				<div className="hidden md:grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr] items-center py-1 px-2 border bg-gray-100 text-sm">
+				<div className="hidden md:grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr] items-center py-1 px-2 border bg-gray-100 dark:bg-gray-800 text-sm">
 					<b>Code</b>
 					<b>Discount</b>
 					<b>Min Order</b>
@@ -184,18 +184,18 @@ const Coupons = ({ token }) => {
 					.map((coupon) => (
 						<div
 							key={coupon._id}
-							className="grid grid-cols-[1fr_1fr_1fr] md:grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr] items-center py-1 px-2 border text-sm"
+							className="grid grid-cols-[1fr_1fr_1fr] md:grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr] items-center py-1 px-2 border dark:border-gray-700 text-sm"
 						>
-							<p className="font-medium">{coupon.code}</p>
-							<p>{coupon.discountPercent}%</p>
-							<p>
+							<p className="font-medium text-gray-800 dark:text-white">{coupon.code}</p>
+							<p className="text-gray-700 dark:text-gray-300">{coupon.discountPercent}%</p>
+							<p className="text-gray-700 dark:text-gray-300">
 								{coupon.minOrder > 0
 									? `${CURRENCY}${coupon.minOrder}`
 									: "-"}
 							</p>
-							<p>{coupon.maxUses > 0 ? coupon.maxUses : "Unlimited"}</p>
-							<p>{coupon.usedCount}</p>
-							<p className={isExpired(coupon.expiry) ? "text-red-500" : ""}>
+							<p className="text-gray-700 dark:text-gray-300">{coupon.maxUses > 0 ? coupon.maxUses : "Unlimited"}</p>
+							<p className="text-gray-700 dark:text-gray-300">{coupon.usedCount}</p>
+							<p className={isExpired(coupon.expiry) ? "text-red-500 dark:text-red-400" : ""}>
 								{formatDate(coupon.expiry)}
 								{isExpired(coupon.expiry) && " (Expired)"}
 							</p>
@@ -203,7 +203,7 @@ const Coupons = ({ token }) => {
 							<button
 								onClick={() => removeCoupon(coupon._id)}
 								aria-label="Delete coupon"
-								className="cursor-pointer rounded-lg p-1.5 text-red-600 hover:bg-red-50"
+								className="cursor-pointer rounded-lg p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"
 							>
 								<Icon icon="solar:trash-bin-trash-outline" className="text-lg" />
 							</button>
@@ -217,11 +217,11 @@ const Coupons = ({ token }) => {
 					<button
 						onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
 						disabled={currentPage === 1}
-						className="cursor-pointer border border-gray-300 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+						className="cursor-pointer border border-gray-300 dark:border-gray-600 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-40"
 					>
 						Prev
 					</button>
-					<span className="text-sm text-gray-600 sm:hidden">
+					<span className="text-sm text-gray-600 dark:text-gray-400 sm:hidden">
 						{currentPage} / {Math.ceil(coupons.length / ITEMS_PER_PAGE)}
 					</span>
 					{Array.from({ length: Math.ceil(coupons.length / ITEMS_PER_PAGE) }, (_, i) => i + 1).map(
@@ -231,8 +231,8 @@ const Coupons = ({ token }) => {
 								onClick={() => setCurrentPage(page)}
 								className={`cursor-pointer border px-3 py-1 text-sm hidden sm:inline-block ${
 									currentPage === page
-										? "bg-gray-900 text-white border-gray-900"
-										: "border-gray-300 hover:bg-gray-100"
+										? "bg-gray-900 text-white border-gray-900 dark:border-gray-100"
+										: "border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
 								}`}
 							>
 								{page}
@@ -246,7 +246,7 @@ const Coupons = ({ token }) => {
 							)
 						}
 						disabled={currentPage === Math.ceil(coupons.length / ITEMS_PER_PAGE)}
-						className="cursor-pointer border border-gray-300 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+						className="cursor-pointer border border-gray-300 dark:border-gray-600 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-40"
 					>
 						Next
 					</button>

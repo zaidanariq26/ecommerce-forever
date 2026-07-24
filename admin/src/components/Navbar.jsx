@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets.js";
 import axios from "axios";
 import { BACKEND_URL, CURRENCY, FRONTEND_URL } from "../constants";
+import useThemeStore from "../zustand/themeStore";
 
 const Navbar = ({ setToken, token, onMenuToggle }) => {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ const Navbar = ({ setToken, token, onMenuToggle }) => {
   const [userOpen, setUserOpen] = useState(false);
   const notifRef = useRef(null);
   const userRef = useRef(null);
+  const dark = useThemeStore((s) => s.dark);
+  const toggleTheme = useThemeStore((s) => s.toggle);
 
   useEffect(() => {
     if (!token) return;
@@ -79,13 +82,13 @@ const Navbar = ({ setToken, token, onMenuToggle }) => {
   };
 
   return (
-    <div className="relative flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 sm:px-[4%]">
+    <div className="relative flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900 sm:px-[4%]">
       {/* Left: Hamburger + Logo */}
       <div className="flex items-center gap-3">
         <button
           onClick={onMenuToggle}
           aria-label="Toggle menu"
-          className="flex size-9 cursor-pointer items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 lg:hidden"
+          className="flex size-9 cursor-pointer items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 lg:hidden"
         >
           <Icon icon="solar:hamburger-menu-outline" className="text-xl" />
         </button>
@@ -94,33 +97,41 @@ const Navbar = ({ setToken, token, onMenuToggle }) => {
           src={assets.logo}
           alt="Forever Store admin"
         />
-        <span className="hidden text-sm font-semibold text-gray-800 sm:inline">
+        <span className="hidden text-sm font-semibold text-gray-800 dark:text-gray-200 sm:inline">
           Admin Panel
         </span>
       </div>
 
       {/* Center: Greeting + Stats */}
       <div className="hidden items-center gap-4 md:flex">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           {getGreeting()},{" "}
-          <span className="font-medium text-gray-700">Admin</span>
+          <span className="font-medium text-gray-700 dark:text-gray-200">Admin</span>
         </p>
         {pendingOrders.length > 0 && (
-          <span className="flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">
+          <span className="flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
             <Icon icon="solar:clock-outline" className="text-sm" />
             {pendingOrders.length} pending
           </span>
         )}
         {lowStockProducts.length > 0 && (
-          <span className="flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700">
+          <span className="flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400">
             <Icon icon="solar:danger-outline" className="text-sm" />
             {lowStockProducts.length} low stock
           </span>
         )}
       </div>
 
-      {/* Right: Notification Bell + User Menu */}
+      {/* Right: Theme Toggle + Notification Bell + User Menu */}
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          aria-label="Toggle dark mode"
+          className="flex size-9 cursor-pointer items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+        >
+          <Icon icon={dark ? "solar:sun-outline" : "solar:moon-outline"} className="text-lg" />
+        </button>
         {/* Notification Bell */}
         <div ref={notifRef} className="relative">
           <button
@@ -129,7 +140,7 @@ const Navbar = ({ setToken, token, onMenuToggle }) => {
               setUserOpen(false);
             }}
             aria-label="Notifications"
-            className="relative flex size-9 cursor-pointer items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100"
+            className="relative flex size-9 cursor-pointer items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
           >
             <Icon icon="solar:bell-outline" className="text-lg" />
             {notifCount > 0 && (
@@ -141,15 +152,15 @@ const Navbar = ({ setToken, token, onMenuToggle }) => {
 
           {/* Notification Dropdown */}
           {notifOpen && (
-            <div className="fixed left-4 right-4 top-16 z-50 max-h-[70vh] overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 sm:fixed-auto">
-              <div className="border-b border-gray-100 px-4 py-3">
-                <p className="text-sm font-semibold text-gray-800">Notifications</p>
+            <div className="fixed left-4 right-4 top-16 z-50 max-h-[70vh] overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 sm:fixed-auto">
+              <div className="border-b border-gray-100 px-4 py-3 dark:border-gray-700">
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Notifications</p>
               </div>
 
               {/* Pending Orders */}
               {pendingOrders.length > 0 && (
                 <div>
-                  <p className="px-4 pt-3 pb-1 text-xs font-medium text-gray-400 uppercase tracking-wide">
+                  <p className="px-4 pt-3 pb-1 text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">
                     Pending Orders
                   </p>
                   {pendingOrders.map((order) => (
@@ -159,16 +170,16 @@ const Navbar = ({ setToken, token, onMenuToggle }) => {
                         navigate("/orders");
                         setNotifOpen(false);
                       }}
-                      className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-gray-50"
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
-                      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-amber-100">
-                        <Icon icon="solar:bag-outline" className="text-sm text-amber-600" />
+                      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
+                        <Icon icon="solar:bag-outline" className="text-sm text-amber-600 dark:text-amber-400" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm text-gray-700">
+                        <p className="truncate text-sm text-gray-700 dark:text-gray-300">
                           {order.items.map((i) => i.name).join(", ")}
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
                           {order.status} — {CURRENCY}
                           {order.amount.toFixed(2)}
                         </p>
@@ -181,7 +192,7 @@ const Navbar = ({ setToken, token, onMenuToggle }) => {
               {/* Low Stock */}
               {lowStockProducts.length > 0 && (
                 <div>
-                  <p className="px-4 pt-3 pb-1 text-xs font-medium text-gray-400 uppercase tracking-wide">
+                  <p className="px-4 pt-3 pb-1 text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">
                     Low Stock
                   </p>
                   {lowStockProducts.map((product) => (
@@ -191,14 +202,14 @@ const Navbar = ({ setToken, token, onMenuToggle }) => {
                         navigate("/list");
                         setNotifOpen(false);
                       }}
-                      className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-gray-50"
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
-                      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-red-100">
-                        <Icon icon="solar:danger-outline" className="text-sm text-red-600" />
+                      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                        <Icon icon="solar:danger-outline" className="text-sm text-red-600 dark:text-red-400" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm text-gray-700">{product.name}</p>
-                        <p className="text-xs text-gray-400">
+                        <p className="truncate text-sm text-gray-700 dark:text-gray-300">{product.name}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
                           {product.stock <= 0 ? "Out of stock" : `${product.stock} left`}
                         </p>
                       </div>
@@ -211,7 +222,7 @@ const Navbar = ({ setToken, token, onMenuToggle }) => {
               {pendingOrders.length === 0 && lowStockProducts.length === 0 && (
                 <div className="px-4 py-8 text-center">
                   <Icon icon="solar:check-circle-outline" className="mx-auto mb-2 text-3xl text-green-500" />
-                  <p className="text-sm text-gray-500">All caught up!</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">All caught up!</p>
                 </div>
               )}
             </div>
@@ -226,39 +237,39 @@ const Navbar = ({ setToken, token, onMenuToggle }) => {
               setNotifOpen(false);
             }}
             aria-label="User menu"
-            className="flex items-center gap-2 cursor-pointer rounded-lg p-1 hover:bg-gray-100"
+            className="flex items-center gap-2 cursor-pointer rounded-lg p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
           >
-            <div className="flex size-8 items-center justify-center rounded-full bg-gray-800 text-xs font-semibold text-white">
+            <div className="flex size-8 items-center justify-center rounded-full bg-gray-800 text-xs font-semibold text-white dark:bg-gray-600">
               AD
             </div>
             <Icon
               icon="solar:alt-arrow-down-outline"
-              className="hidden text-sm text-gray-500 sm:block"
+              className="hidden text-sm text-gray-500 dark:text-gray-400 sm:block"
             />
           </button>
 
           {/* User Dropdown */}
           {userOpen && (
-            <div className="fixed left-4 right-4 top-16 z-50 rounded-xl border border-gray-200 bg-white shadow-lg sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-56 sm:fixed-auto">
-              <div className="border-b border-gray-100 px-4 py-3">
-                <p className="text-sm font-medium text-gray-800">Admin</p>
-                <p className="text-xs text-gray-400">Administrator</p>
+            <div className="fixed left-4 right-4 top-16 z-50 max-h-[70vh] overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-56 sm:fixed-auto">
+              <div className="border-b border-gray-100 dark:border-gray-700 px-4 py-3">
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">Admin</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Administrator</p>
               </div>
               <div className="py-1">
                 <a
                   href={FRONTEND_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <Icon icon="solar:external-link-outline" className="text-base" />
                   View Storefront
                 </a>
               </div>
-              <div className="border-t border-gray-100 py-1">
+              <div className="border-t border-gray-100 dark:border-gray-700 py-1">
                 <button
                   onClick={() => setToken("")}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"
                 >
                   <Icon icon="solar:logout-outline" className="text-base" />
                   Logout

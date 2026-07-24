@@ -101,20 +101,20 @@ const Edit = ({ token }) => {
 	};
 
 	if (loading) {
-		return <p>Loading product...</p>;
+		return <p className="text-gray-700 dark:text-gray-300">Loading product...</p>;
 	}
 
 	return (
 		<form onSubmit={onSubmitHandler} className='flex flex-col w-full items-start gap-3'>
 			<div>
-				<p className='mb-2'>Upload Image (leave empty to keep existing)</p>
+				<p className='mb-2 text-gray-700 dark:text-gray-300'>Upload Image (leave empty to keep existing)</p>
 				<div className='flex gap-2'>
 					{existingImages.length > 0 &&
 						existingImages.map((img, i) => (
 							<img key={i} src={img} className='w-20 opacity-50' alt='' />
 						))}
 				</div>
-				<p className='mt-2 mb-2 text-sm text-gray-500'>New images (optional):</p>
+				<p className='mt-2 mb-2 text-sm text-gray-500 dark:text-gray-400'>New images (optional):</p>
 				<div className='flex gap-2'>
 					<label htmlFor='image1'>
 						<img className='w-20' src={!image1 ? assets.upload_area : URL.createObjectURL(image1)} alt='' />
@@ -136,11 +136,11 @@ const Edit = ({ token }) => {
 			</div>
 
 			<div className='w-full'>
-				<p className='mb-2'>Product name</p>
+				<p className='mb-2 text-gray-700 dark:text-gray-300'>Product name</p>
 				<input
 					onChange={(e) => setName(e.target.value)}
 					value={name}
-					className='w-full max-w-[500px] px-3 py-2'
+					className='w-full max-w-[500px] px-3 py-2 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600'
 					type='text'
 					placeholder='Type here'
 					required
@@ -148,11 +148,11 @@ const Edit = ({ token }) => {
 			</div>
 
 			<div className='w-full'>
-				<p className='mb-2'>Product description</p>
+				<p className='mb-2 text-gray-700 dark:text-gray-300'>Product description</p>
 				<textarea
 					onChange={(e) => setDescription(e.target.value)}
 					value={description}
-					className='w-full max-w-[500px] px-3 py-2'
+					className='w-full max-w-[500px] px-3 py-2 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600'
 					placeholder='Write content here'
 					required
 				/>
@@ -160,8 +160,8 @@ const Edit = ({ token }) => {
 
 			<div className='flex flex-col sm:flex-row gap-2 w-full sm:gap-8'>
 				<div>
-					<p className='mb-2'>Product category</p>
-					<select onChange={(e) => setCategory(e.target.value)} value={category} className='w-full px-3 py-2'>
+					<p className='mb-2 text-gray-700 dark:text-gray-300'>Product category</p>
+					<select onChange={(e) => setCategory(e.target.value)} value={category} className='w-full px-3 py-2 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600'>
 						<option value='Men'>Men</option>
 						<option value='Women'>Women</option>
 						<option value='Kids'>Kids</option>
@@ -169,8 +169,8 @@ const Edit = ({ token }) => {
 				</div>
 
 				<div>
-					<p className='mb-2'>Sub category</p>
-					<select onChange={(e) => setSubCategory(e.target.value)} value={subCategory} className='w-full px-3 py-2'>
+					<p className='mb-2 text-gray-700 dark:text-gray-300'>Sub category</p>
+					<select onChange={(e) => setSubCategory(e.target.value)} value={subCategory} className='w-full px-3 py-2 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600'>
 						<option value='Topwear'>Topwear</option>
 						<option value='Bottomwear'>Bottomwear</option>
 						<option value='Winterwear'>Winterwear</option>
@@ -178,23 +178,23 @@ const Edit = ({ token }) => {
 				</div>
 
 			<div>
-				<p className='mb-2'>Product Price</p>
+				<p className='mb-2 text-gray-700 dark:text-gray-300'>Product Price</p>
 				<input
 					onChange={(e) => setPrice(e.target.value)}
 					value={price}
 					type='number'
-					className='w-full px-3 py-2 sm:w-[120px]'
+					className='w-full px-3 py-2 sm:w-[120px] dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600'
 					placeholder='0'
 				/>
 			</div>
 
 			<div>
-				<p className='mb-2'>Stock</p>
+				<p className='mb-2 text-gray-700 dark:text-gray-300'>Stock</p>
 				<input
 					onChange={(e) => setStock(e.target.value)}
 					value={stock}
 					type='number'
-					className='w-full px-3 py-2 sm:w-[120px]'
+					className='w-full px-3 py-2 sm:w-[120px] dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600'
 					placeholder='0'
 					min='0'
 				/>
@@ -202,11 +202,11 @@ const Edit = ({ token }) => {
 			</div>
 
 			<div>
-				<p className='mb-2'>Product Sizes</p>
+				<p className='mb-2 text-gray-700 dark:text-gray-300'>Product Sizes</p>
 				<div className='flex gap-3'>
 					{['S', 'M', 'L', 'XL', 'XXL'].map((size) => (
 						<div key={size} onClick={() => toggleSize(size)}>
-							<p className={`${sizes.includes(size) ? 'bg-pink-100' : 'bg-slate-200'} px-3 py-1 cursor-pointer`}>{size}</p>
+							<p className={`${sizes.includes(size) ? 'bg-pink-100 dark:bg-pink-900/30' : 'bg-slate-200 dark:bg-slate-700'} px-3 py-1 cursor-pointer`}>{size}</p>
 						</div>
 					))}
 				</div>
@@ -214,7 +214,7 @@ const Edit = ({ token }) => {
 
 			<div className='flex gap-2 mt-2'>
 				<input onChange={() => setBestseller((prev) => !prev)} type='checkbox' id='bestseller' checked={bestseller} />
-				<label className='cursor-pointer' htmlFor='bestseller'>
+				<label className='cursor-pointer text-gray-700 dark:text-gray-300' htmlFor='bestseller'>
 					Add to bestseller
 				</label>
 			</div>
@@ -223,7 +223,7 @@ const Edit = ({ token }) => {
 				<button type='submit' className='w-28 py-3 bg-gray-900 text-white'>
 					UPDATE
 				</button>
-				<button type='button' onClick={() => navigate('/list')} className='w-28 py-3 bg-gray-300 text-gray-700'>
+				<button type='button' onClick={() => navigate('/list')} className='w-28 py-3 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200'>
 					CANCEL
 				</button>
 			</div>

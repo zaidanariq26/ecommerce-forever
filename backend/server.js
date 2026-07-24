@@ -12,6 +12,7 @@ import orderRouter from "./routes/orderRoute.js";
 import reviewRouter from "./routes/reviewRoute.js";
 import wishlistRouter from "./routes/wishlistRoute.js";
 import couponRouter from "./routes/couponRoute.js";
+import activityRouter from "./routes/activityRoute.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -28,6 +29,7 @@ app.use(
 	cors({
 		origin: [
 			process.env.FRONTEND_URL,
+			process.env.ADMIN_URL,
 			"http://localhost:5173",
 			"http://localhost:5174",
 		].filter(Boolean),
@@ -43,6 +45,7 @@ app.use("/api/order", orderRouter);
 app.use("/api/review", reviewRouter);
 app.use("/api/wishlist", wishlistRouter);
 app.use("/api/coupon", couponRouter);
+app.use("/api/activity", activityRouter);
 
 app.get("/", (req, res) => {
 	res.send("API WORKING");

@@ -27,6 +27,6 @@
 
 ## Phase D: Reporting & Utilities
 
-- [ ] **Export orders to CSV** — Download button for orders data.
-- [ ] **Activity log / audit trail** — Track admin actions (status changes, product edits, coupon creation).
-- [ ] **Dark mode** — Theme toggle with Tailwind `dark:` classes.
+- [x] **Export orders to CSV** — Download button for orders data.
+- [x] **Activity log / audit trail** — Track admin actions (status changes, product edits, coupon creation).
+- [x] **Dark mode** — Theme toggle with Tailwind `dark:` classes.

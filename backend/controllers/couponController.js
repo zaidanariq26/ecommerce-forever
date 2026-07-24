@@ -1,4 +1,5 @@
 import couponModel from "../models/couponModel.js";
+import logActivity from "../utils/activityLogger.js";
 
 const createCoupon = async (req, res) => {
 	try {
@@ -28,6 +29,7 @@ const createCoupon = async (req, res) => {
 		});
 
 		await coupon.save();
+		await logActivity("Coupon Created", "Coupon", coupon._id, `Code: ${coupon.code} (${coupon.discountPercent}%)`);
 		res.json({ success: true, message: "Coupon created", coupon });
 	} catch (error) {
 		console.log(error);
@@ -48,7 +50,9 @@ const listCoupons = async (req, res) => {
 const deleteCoupon = async (req, res) => {
 	try {
 		const { id } = req.body;
+		const coupon = await couponModel.findById(id);
 		await couponModel.findByIdAndDelete(id);
+		await logActivity("Coupon Deleted", "Coupon", id, `Code: ${coupon?.code || "unknown"}`);
 		res.json({ success: true, message: "Coupon deleted" });
 	} catch (error) {
 		console.log(error);

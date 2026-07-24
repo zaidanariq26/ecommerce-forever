@@ -15,11 +15,11 @@ const STATUSES = [
 ];
 
 const STATUS_COLORS = {
-  "Order Placed": "bg-blue-100 text-blue-700",
-  Packing: "bg-amber-100 text-amber-700",
-  Shipped: "bg-purple-100 text-purple-700",
-  "Out for Delivery": "bg-orange-100 text-orange-700",
-  Delivered: "bg-green-100 text-green-700",
+  "Order Placed": "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  Packing: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  Shipped: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+  "Out for Delivery": "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+  Delivered: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
 };
 
 const Orders = ({ token }) => {
@@ -155,6 +155,54 @@ const Orders = ({ token }) => {
     setDrawerOpen(true);
   };
 
+  const exportCSV = () => {
+    if (orders.length === 0) {
+      toast.warn("No orders to export");
+      return;
+    }
+
+    const headers = [
+      "Order ID",
+      "Date",
+      "Customer",
+      "City",
+      "Country",
+      "Items",
+      "Total",
+      "Payment Method",
+      "Payment Status",
+      "Order Status",
+    ];
+
+    const rows = orders.map((o) => [
+      o._id,
+      new Date(o.date).toLocaleDateString(),
+      `${o.address.firstName} ${o.address.lastName}`,
+      o.address.city,
+      o.address.country,
+      o.items.map((i) => `${i.name} x${i.quantity}`).join("; "),
+      o.amount.toFixed(2),
+      o.paymentMethod,
+      o.payment ? "Paid" : "Pending",
+      o.status,
+    ]);
+
+    const csv = [headers, ...rows]
+      .map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
+      )
+      .join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `orders-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("Orders exported");
+  };
+
   useEffect(() => {
     fetchAllOrders();
   }, [token]);
@@ -171,12 +219,21 @@ const Orders = ({ token }) => {
 
   return (
     <div>
-      <h3 className="mb-4 text-lg font-medium text-gray-800">Orders</h3>
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-lg font-medium text-gray-800 dark:text-white">Orders</h3>
+        <button
+          onClick={exportCSV}
+          className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+        >
+          <Icon icon="solar:download-outline" className="text-base" />
+          <span className="hidden sm:inline">Export CSV</span>
+        </button>
+      </div>
 
       {/* Bulk Action Bar */}
       {selectedIds.size > 0 && (
-        <div className="mb-4 flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-gray-600">
+        <div className="mb-4 flex flex-col gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             <span className="font-semibold">{selectedIds.size}</span> order
             {selectedIds.size !== 1 && "s"} selected
           </p>
@@ -184,7 +241,7 @@ const Orders = ({ token }) => {
             <select
               value={bulkStatus}
               onChange={(e) => setBulkStatus(e.target.value)}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+              className="rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white px-3 py-1.5 text-sm"
             >
               {STATUSES.map((s) => (
                 <option key={s} value={s}>
@@ -195,13 +252,13 @@ const Orders = ({ token }) => {
             <button
               onClick={bulkStatusHandler}
               disabled={bulkLoading}
-              className="cursor-pointer rounded-lg bg-gray-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+              className="cursor-pointer rounded-lg bg-gray-900 dark:bg-gray-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-gray-800 dark:hover:bg-gray-600 disabled:opacity-50"
             >
               {bulkLoading ? "Updating..." : "Update Status"}
             </button>
             <button
               onClick={() => setSelectedIds(new Set())}
-              className="cursor-pointer rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+              className="cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               Clear
             </button>
@@ -211,7 +268,7 @@ const Orders = ({ token }) => {
 
       {/* Select All */}
       {orders.length > 0 && (
-        <label className="mb-3 flex cursor-pointer items-center gap-2 text-sm text-gray-600">
+        <label className="mb-3 flex cursor-pointer items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
           <input
             type="checkbox"
             checked={allSelected}
@@ -227,11 +284,11 @@ const Orders = ({ token }) => {
           <div
             key={order._id}
             onClick={() => openDrawer(order)}
-            className="cursor-pointer rounded-lg border border-gray-200 bg-white p-4 transition-colors hover:border-gray-300 hover:bg-gray-50 md:p-5"
+            className="cursor-pointer rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 transition-colors hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 md:p-5"
           >
             {/* Desktop: side-by-side. Mobile: stacked */}
             <div className="flex flex-col gap-3 md:flex-row md:items-start">
-              {/* Checkbox — stops propagation so it doesn't open drawer */}
+              {/* Checkbox */}
               <input
                 type="checkbox"
                 checked={selectedIds.has(order._id)}
@@ -248,21 +305,21 @@ const Orders = ({ token }) => {
                 {/* Items */}
                 <div className="mb-2">
                   {order.items.map((item, i) => (
-                    <p key={i} className="truncate text-sm text-gray-700">
+                    <p key={i} className="truncate text-sm text-gray-700 dark:text-gray-300">
                       {item.name} x {item.quantity}{" "}
-                      <span className="text-gray-400">({item.size})</span>
+                      <span className="text-gray-400 dark:text-gray-500">({item.size})</span>
                     </p>
                   ))}
                 </div>
 
                 {/* Address */}
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   {order.address.firstName} {order.address.lastName},{" "}
                   {order.address.city}, {order.address.country}
                 </p>
 
                 {/* Meta row */}
-                <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-gray-400">
+                <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
                   <span>
                     {order.items.length} item{order.items.length !== 1 && "s"}
                   </span>
@@ -271,18 +328,17 @@ const Orders = ({ token }) => {
                 </div>
               </div>
 
-              {/* Right side: price + status + select. Mobile: full width row. md+: right-aligned column. */}
+              {/* Right side */}
               <div className="flex flex-row flex-wrap items-center gap-2 md:w-auto md:flex-col md:items-end md:gap-2">
-                <p className="text-sm font-semibold text-gray-800">
+                <p className="text-sm font-semibold text-gray-800 dark:text-white">
                   {CURRENCY}
                   {order.amount.toFixed(2)}
                 </p>
                 <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_COLORS[order.status] || "bg-gray-100 text-gray-700"}`}
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_COLORS[order.status] || "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"}`}
                 >
                   {order.status}
                 </span>
-                {/* Status select — stops propagation so it doesn't open drawer */}
                 <select
                   onClick={(e) => e.stopPropagation()}
                   onChange={(e) => {
@@ -291,7 +347,7 @@ const Orders = ({ token }) => {
                   }}
                   value={order.status}
                   disabled={order.status === "Delivered"}
-                  className={`rounded border border-gray-300 px-2 py-1 text-xs ${order.status === "Delivered" ? "cursor-not-allowed opacity-50" : ""}`}
+                  className={`rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white px-2 py-1 text-xs ${order.status === "Delivered" ? "cursor-not-allowed opacity-50" : ""}`}
                 >
                   {STATUSES.map((s) => (
                     <option key={s} value={s}>
@@ -308,9 +364,9 @@ const Orders = ({ token }) => {
           <div className="py-12 text-center">
             <Icon
               icon="solar:bag-outline"
-              className="mx-auto mb-3 text-4xl text-gray-300"
+              className="mx-auto mb-3 text-4xl text-gray-300 dark:text-gray-600"
             />
-            <p className="text-sm text-gray-400">No orders yet</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">No orders yet</p>
           </div>
         )}
       </div>
