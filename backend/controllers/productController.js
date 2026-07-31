@@ -2,6 +2,19 @@ import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
 import logActivity from "../utils/activityLogger.js";
 
+const uploadBufferToCloudinary = (buffer) => {
+	return new Promise((resolve, reject) => {
+		const stream = cloudinary.uploader.upload_stream(
+			{ resource_type: "image" },
+			(error, result) => {
+				if (error) reject(error);
+				else resolve(result.secure_url);
+			},
+		);
+		stream.end(buffer);
+	});
+};
+
 // function for add product
 const addProduct = async (req, res) => {
 	try {
@@ -26,12 +39,7 @@ const addProduct = async (req, res) => {
 		);
 
 		let imagesUrl = await Promise.all(
-			images.map(async (item) => {
-				let result = await cloudinary.uploader.upload(item.path, {
-					resource_type: "image",
-				});
-				return result.secure_url;
-			}),
+			images.map(async (item) => await uploadBufferToCloudinary(item.buffer)),
 		);
 
 		let parsedSizes;
@@ -150,12 +158,7 @@ const updateProduct = async (req, res) => {
 
 		if (images.length > 0) {
 			let imagesUrl = await Promise.all(
-				images.map(async (item) => {
-					let result = await cloudinary.uploader.upload(item.path, {
-						resource_type: "image",
-					});
-					return result.secure_url;
-				}),
+				images.map(async (item) => await uploadBufferToCloudinary(item.buffer)),
 			);
 			updateData.image = imagesUrl;
 		}

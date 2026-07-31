@@ -1,40 +1,30 @@
 import mongoose from 'mongoose';
 
-const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 5000;
+let cached = global.mongoose;
 
-const connectDB = async (retries = MAX_RETRIES) => {
-	try {
-		// Event listeners (register only once)
-		if (mongoose.connection.listenerCount('connected') === 0) {
-			mongoose.connection.on('connected', () => {
-				console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`);
-			});
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
 
-			mongoose.connection.on('error', (err) => {
-				console.error('❌ MongoDB Error:', err.message);
-			});
+const connectDB = async () => {
+  if (cached.conn) return cached.conn;
 
-			mongoose.connection.on('disconnected', () => {
-				console.warn('⚠️ MongoDB Disconnected. Attempting to reconnect...');
-			});
-		}
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
+  }
 
-		await mongoose.connect(process.env.MONGODB_URI, {
-			serverSelectionTimeoutMS: 5000, // fail fast if server unreachable
-		});
-	} catch (error) {
-		console.error(`❌ Connection failed: ${error.message}`);
+  try {
+    cached.conn = await cached.promise;
+    console.log(`MongoDB Connected: ${mongoose.connection.host}`);
+  } catch (error) {
+    cached.promise = null;
+    console.error('MongoDB connection error:', error.message);
+    throw error;
+  }
 
-		if (retries > 0) {
-			console.log(`🔄 Retrying... (${retries} attempts left)`);
-			await new Promise((res) => setTimeout(res, RETRY_DELAY_MS));
-			return connectDB(retries - 1);
-		}
-
-		console.error('💀 Could not connect to MongoDB. Exiting...');
-		process.exit(1); // stop the app if DB is unreachable
-	}
+  return cached.conn;
 };
 
 export default connectDB;

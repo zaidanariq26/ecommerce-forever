@@ -1,1 +1,5 @@
 *.txt
+.env
+backend/.env
+frontend/.env
+admin/.env

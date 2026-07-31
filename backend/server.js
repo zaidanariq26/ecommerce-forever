@@ -17,10 +17,6 @@ import activityRouter from "./routes/activityRoute.js";
 const app = express();
 const port = process.env.PORT || 4000;
 
-// Connection
-connectDB();
-connectCloudinary();
-
 // Middlewares
 app.use(helmet());
 app.use(express.json());
@@ -57,4 +53,14 @@ app.use((err, req, res, next) => {
 	res.status(500).json({ success: false, message: "Internal server error" });
 });
 
-app.listen(port, () => console.log("Server started on PORT " + port));
+// For local development
+if (process.env.VERCEL !== '1') {
+	const start = async () => {
+		await connectDB();
+		await connectCloudinary();
+		app.listen(port, () => console.log("Server started on PORT " + port));
+	};
+	start();
+}
+
+export default app;
