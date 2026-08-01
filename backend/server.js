@@ -30,6 +30,16 @@ app.use(
 		credentials: true,
 	}),
 );
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        await connectCloudinary();
+        next();
+    } catch (error) {
+        console.error("Initialization error:", error);
+        res.status(500).json({ success: false, message: "Server connection error" });
+    }
+});
 
 // API endpoints
 app.use("/api/user", userRouter);
@@ -54,8 +64,6 @@ app.use((err, req, res, next) => {
 // For local development
 if (process.env.VERCEL !== '1') {
 	const start = async () => {
-		await connectDB();
-		await connectCloudinary();
 		app.listen(port, () => console.log("Server started on PORT " + port));
 	};
 	start();
